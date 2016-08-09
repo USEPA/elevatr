@@ -1,0 +1,33 @@
+Package: elevatr
+Type: Package
+Title: Pull elevation data into R
+Version: 0.0.1.999
+Date: 2016-08-09
+Authors@R: person(given = "Jeffrey W.",family = "Hollister",
+    role = c("aut","cre"),
+    email = "hollister.jeff@epa.gov")
+URL: https://www.github.com/jhollist/elevatr
+BugReports: https://github.com/jhollist/elevatr/issues
+Maintainer: Jeffrey W. Hollister <hollister.jeff@epa.gov>
+License: CC0
+Description: There are many sources of elevation data available on the web.  A
+few existing packages access some of this data but the interfaces are not 
+consistent and many sources are not utilized.  The vision for this package is
+to provide a consistent interface for accessing elevation data across a variety
+of APIs and services.
+Depends:
+    R (>= 3.0.0)
+Imports:
+    rgeos,
+    sp,
+    rgdal,
+    stats,
+    grDevices,
+    graphics,
+    methods,
+    httr,
+    raster
+Suggests:
+    testthat,
+    knitr
+RoxygenNote: 5.0.1
