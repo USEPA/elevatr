@@ -8,8 +8,15 @@
 #' @param source
 #' @param key
 #' @param out
+#' @importFrom httr GET
+#' @importFrom jsonlite::fromJSON
 #' @export
 #' @examples 
 get_elevation <- function(location, source, key, out){
-  
+  url <- "http://ned.usgs.gov/epqs/pqs.php?x=-72&y=42&units=Meters&output=json"
+  resp <- GET(url)
+  if (http_type(resp) != "application/json") {
+    stop("API did not return json", call. = FALSE)
+  }
+  resp
 }
