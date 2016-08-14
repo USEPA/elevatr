@@ -3,11 +3,9 @@
 #' Primary function for accessing elevation data from a variety of online 
 #' sources
 #' 
-#' @param location  The location for which you wish to return elevation.  You 
-#'                  may either enter a data frame of Longitude and Latitude, a 
-#'                  \code{sp} object, a \code{bbox}, or \code{extent} object.  A 
-#'                  data frame will return a data frame, and the other object 
-#'                  will return a raster.
+#' @param location  A data.frame of the location(s) for which you wish to return 
+#'                  elevation. The first colum is Longitude and the second 
+#'                  column is Latitude.  
 #' @param source
 #' @param units
 #'
