@@ -26,7 +26,7 @@ Primary function for accessing elevation data from a variety of online
 sources
 }
 \examples{
-xdf <- data.frame(x=c(-72,-71.5),y=c(41.5,43))
+xdf<-data.frame(runif(100,-80,-72),runif(100,35,45))
 get_elevation(xdf)
 get_elevation(xdf,"srtm")
 }

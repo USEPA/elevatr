@@ -14,7 +14,7 @@
 #'            the 90 meter SRTM (i.e., SRTM GL3 (Global 90m))
 #' @export
 #' @examples 
-#' xdf <- data.frame(x=c(-72,-71.5),y=c(41.5,43))
+#' xdf<-data.frame(runif(100,-75,-72),runif(100,40,45))
 #' get_elevation(xdf)
 #' get_elevation(xdf,"srtm")
 get_elevation <- function(location, source = c("epqs","srtm"), 
