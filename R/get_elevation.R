@@ -6,48 +6,77 @@
 #' @param location  A data.frame of the location(s) for which you wish to return 
 #'                  elevation. The first colum is Longitude and the second 
 #'                  column is Latitude.  
-#' @param source
-#' @param units
-#' @param ...
-#' @importFrom httr GET POST
-#' @importFrom jsonlite::fromJSON
+#' @param source  character string indicating 'epqs' for USGS elevation point 
+#'                query service or 'srtm' for Open Topography SRTM service
+#' @param units Character string of either meters or feet.  Only works for 'epqs'
+#' @param res Character string of either 30 or 90. Only works for 'srtm' and 
+#'            fetches data for the 30 meter SRTM (i.e., SRTM GL1 (Global 30m)) or
+#'            the 90 meter SRTM (i.e., SRTM GL3 (Global 90m))
 #' @export
 #' @examples 
+#' xdf <- data.frame(x=c(-72,-71.5),y=c(41.5,43))
+#' get_elevation(xdf)
 get_elevation <- function(location, source = c("epqs","srtm"), 
-                          units = c("Meters","Feet"),...){
+                          units = c("Meters","Feet"),
+                          res = c("30","90")){
   source <- match.arg(source)
   units <- match.arg(units)
-  #####################################
-  #Add internals for different sources#
-  #####################################
+  res <- match.arg(res)
   if(source == "epqs"){
-  df <- data.frame(matrix(ncol = 3, nrow = nrow(location)))
-  base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
-  units <- paste0("&units=",units)
-    for(i in seq_along(location[,1])){
-      x <- location[i,1]
-      y <- location[i,2]
-      loc <- paste0("x=",x, "&y=", y)
-      url <- paste0(base_url,loc,units,"&output=json")
-      resp <- GET(url)
-      if (http_type(resp) != "application/json") {
-        stop("API did not return json", call. = FALSE)
-      } 
-      resp <- fromJSON(content(resp, "text"), simplifyVector = FALSE)
-      df[i,] <- c(x,y,resp[[1]][[1]]$Elevation)
-    }
-  df
+    return(get_epqs(location,units))
+  }
+  if(source == "srtm"){
+    return(get_srtm(location,res))
   }
 }
 
 #' Get EPQS
 #' @keywords internal
-get_epqs <- function(){
-  
+#' @param location location from get_elevation
+#' @param units units from get_elevation
+get_epqs <- function(location,units){
+  df <- data.frame(matrix(ncol = 3, nrow = nrow(location)))
+  base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
+  units <- paste0("&units=",units)
+  for(i in seq_along(location[,1])){
+    x <- location[i,1]
+    y <- location[i,2]
+    loc <- paste0("x=",x, "&y=", y)
+    url <- paste0(base_url,loc,units,"&output=json")
+    resp <- httr::GET(url)
+    if (httr::http_type(resp) != "application/json") {
+      stop("API did not return json", call. = FALSE)
+    } 
+    resp <- jsonlite::fromJSON(content(resp, "text"), simplifyVector = FALSE)
+    df[i,] <- c(x,y,resp[[1]][[1]]$Elevation)
+  }
+  df
 }
 
-#' Get EPQS
+#' Get SRTM from Open Topography
 #' @keywords internal
-get_srtm <- function(){
-  
+#' @param location location from get_elevation
+#' @param res res from get_elevation
+get_srtm <- function(location,res){
+   browser()
+   df <- data.frame(matrix(ncol = 3, nrow = nrow(location)))
+   base_url <- "http://opentopo.sdsc.edu/otr/getdem?"
+   if(res == 90){dem <- "demtype=SRTMGL3"}
+   if(res == 30){dem <- "demtype=SRTMGL1"}
+   for(i in seq_along(location[,1])){
+     west <- location[i,1]
+     east <- west
+     north <- location[i,2]
+     south <- north
+     loc <- paste0("&west=",west,"&south=",south,"&east=",east,"&north=",north)
+     url <- paste0(base_url,res,loc)
+     tmp_gtif <- tempfile()
+     resp <- httr::POST(url, httr::write_disk(tmp_gtif,overwrite=T))
+     if (httr::http_type(resp) != "application/json") {
+       stop("API did not return json", call. = FALSE)
+     } 
+     resp <- jsonlite::fromJSON(content(resp, "text"), simplifyVector = FALSE)
+     df[i,] <- c(x,y,resp[[1]][[1]]$Elevation)
+   }
+   df
 }
