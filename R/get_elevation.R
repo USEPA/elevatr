@@ -39,16 +39,18 @@ get_epqs <- function(location,units){
   df <- data.frame(matrix(ncol = 3, nrow = nrow(location)))
   base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
   units <- paste0("&units=",units)
+  #NEED FUNCTION TO EXTRACT BOUNDING
   for(i in seq_along(location[,1])){
     x <- location[i,1]
     y <- location[i,2]
     loc <- paste0("x=",x, "&y=", y)
     url <- paste0(base_url,loc,units,"&output=json")
     resp <- httr::GET(url)
+    #NEED TO FIGURE OUT RESPONSE TYPE (octet-stream?)
     if (httr::http_type(resp) != "application/json") {
       stop("API did not return json", call. = FALSE)
     } 
-    resp <- jsonlite::fromJSON(content(resp, "text"), simplifyVector = FALSE)
+    #NEED FUNCTION TO GET SINGLE POINT ELEVATION FROM RASTER
     df[i,] <- c(x,y,resp[[1]][[1]]$Elevation)
   }
   df
