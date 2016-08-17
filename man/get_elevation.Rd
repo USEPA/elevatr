@@ -28,5 +28,6 @@ sources
 \examples{
 xdf <- data.frame(x=c(-72,-71.5),y=c(41.5,43))
 get_elevation(xdf)
+get_elevation(xdf,"srtm")
 }
 

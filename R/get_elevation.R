@@ -16,6 +16,7 @@
 #' @examples 
 #' xdf <- data.frame(x=c(-72,-71.5),y=c(41.5,43))
 #' get_elevation(xdf)
+#' get_elevation(xdf,"srtm")
 get_elevation <- function(location, source = c("epqs","srtm"), 
                           units = c("Meters","Feet"),
                           res = c("30","90")){
@@ -63,19 +64,22 @@ get_srtm <- function(location,res){
    base_url <- "http://opentopo.sdsc.edu/otr/getdem?"
    if(res == 90){dem <- "demtype=SRTMGL3"}
    if(res == 30){dem <- "demtype=SRTMGL1"}
+   #NEED FUNCTION TO SET LOCATION FOR a single SRTM download
+   west <- location[i,1]
+   east <- west + 10
+   north <- location[i,2]
+   south <- north - 10
+   loc <- paste0("&west=",west,"&south=",south,"&east=",east,"&north=",north)
+   url <- paste0(base_url,dem,loc)
+   tmp_gtif <- tempfile(fileext=".tif")
+   resp <- httr::POST(url,httr::write_disk(tmp_gtif,overwrite=T))
+   
+   if (httr::http_type(resp) != "application/octet-stream") {
+     stop("API did not return json", call. = FALSE)
+   } 
    for(i in seq_along(location[,1])){
-     west <- location[i,1]
-     east <- west
-     north <- location[i,2]
-     south <- north
-     loc <- paste0("&west=",west,"&south=",south,"&east=",east,"&north=",north)
-     url <- paste0(base_url,res,loc)
-     tmp_gtif <- tempfile()
-     resp <- httr::POST(url, httr::write_disk(tmp_gtif,overwrite=T))
-     if (httr::http_type(resp) != "application/json") {
-       stop("API did not return json", call. = FALSE)
-     } 
-     resp <- jsonlite::fromJSON(content(resp, "text"), simplifyVector = FALSE)
+ 
+     
      df[i,] <- c(x,y,resp[[1]][[1]]$Elevation)
    }
    df
