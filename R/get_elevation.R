@@ -8,15 +8,18 @@
 #'                  column is Latitude.  
 #' @param source
 #' @param units
-#'
-#' @importFrom httr GET
+#' @param ...
+#' @importFrom httr GET POST
 #' @importFrom jsonlite::fromJSON
 #' @export
 #' @examples 
 get_elevation <- function(location, source = c("epqs","srtm"), 
-                          units = c("Meters","Feet")){
+                          units = c("Meters","Feet"),...){
   source <- match.arg(source)
   units <- match.arg(units)
+  #####################################
+  #Add internals for different sources#
+  #####################################
   if(source == "epqs"){
   df <- data.frame(matrix(ncol = 3, nrow = nrow(location)))
   base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
@@ -35,4 +38,16 @@ get_elevation <- function(location, source = c("epqs","srtm"),
     }
   df
   }
+}
+
+#' Get EPQS
+#' @keywords internal
+get_epqs <- function(){
+  
+}
+
+#' Get EPQS
+#' @keywords internal
+get_srtm <- function(){
+  
 }
