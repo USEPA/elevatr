@@ -14,7 +14,7 @@
 #'            the 90 meter SRTM (i.e., SRTM GL3 (Global 90m))
 #' @export
 #' @examples 
-#' xdf<-data.frame(runif(100,-75,-72),runif(100,40,45))
+#' xdf<-data.frame(runif(10,-75,-72),runif(10,40,45))
 #' get_elevation(xdf)
 #' get_elevation(xdf,"srtm")
 get_elevation <- function(location, source = c("epqs","srtm"), 
@@ -39,20 +39,22 @@ get_epqs <- function(location,units){
   df <- data.frame(matrix(ncol = 3, nrow = nrow(location)))
   base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
   units <- paste0("&units=",units)
-  #NEED FUNCTION TO EXTRACT BOUNDING
+  #Add Progress bar
   for(i in seq_along(location[,1])){
     x <- location[i,1]
     y <- location[i,2]
     loc <- paste0("x=",x, "&y=", y)
     url <- paste0(base_url,loc,units,"&output=json")
     resp <- httr::GET(url)
-    #NEED TO FIGURE OUT RESPONSE TYPE (octet-stream?)
     if (httr::http_type(resp) != "application/json") {
       stop("API did not return json", call. = FALSE)
     } 
-    #NEED FUNCTION TO GET SINGLE POINT ELEVATION FROM RASTER
+    resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+                               simplifyVector = FALSE,
+                                )
     df[i,] <- c(x,y,resp[[1]][[1]]$Elevation)
   }
+  names(df) <- c("long","lat","elev")
   df
 }
 
@@ -75,13 +77,13 @@ get_srtm <- function(location,res){
    url <- paste0(base_url,dem,loc)
    tmp_gtif <- tempfile(fileext=".tif")
    resp <- httr::POST(url,httr::write_disk(tmp_gtif,overwrite=T))
-   
+   #NEED TO FIGURE OUT RESPONSE TYPE (octet-stream?)
    if (httr::http_type(resp) != "application/octet-stream") {
      stop("API did not return json", call. = FALSE)
    } 
    for(i in seq_along(location[,1])){
  
-     
+     #NEED FUNCTION TO GET SINGLE POINT ELEVATION FROM RASTER
      df[i,] <- c(x,y,resp[[1]][[1]]$Elevation)
    }
    df
