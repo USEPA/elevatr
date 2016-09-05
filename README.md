@@ -1,11 +1,11 @@
 # elevatr
 An R package for accessing elevation data
 
-This package will provide an interface to the 
-[USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/) 
-for US only elevation and for global data the SRTM REST service from 
-[OpenTopography](http://www.opentopography.org/developers#SRTM).  Other 
-elevation services may be added at a later date.  The interface expects a data
-frame as entry and will return a data frame.  Input data frame should consist of
-two columns, Longitude and Latitude.  Output data frame will contain a third 
-columns with the elevation for that location.
+There are many sources for elevation data and these are offered up via a variety of services.  The `elevatr` package will provide access to some of these.  Two interfaces will be provided to access the data. First is via a data.frame of locations which will return a data.frame of locations and the elevation and second will be via a `raster` `Extent` object which will return a `RasterLayer` object of the elevation for that area.  Data sets currently included in `elevatr` include:
+
+|Dataset|Access via data.frame|Access via Extent|
+|-------|---------------------|-----------------|
+|Shttule Radar Topography Mission version 3 | [GeoNames](http://www.geonames.org/export/web-services.html#srtm3) using the [`geonames` package](https://github.com/ropensci/geonames) |[OpenTopography](http://www.opentopography.org/developers#SRTM)|
+|USGS National Elevation Dataset (NED)| [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/) | Not available at this time. | 
+
+
