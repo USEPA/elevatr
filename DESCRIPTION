@@ -1,11 +1,15 @@
 Package: elevatr
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends:
-    R (>= 3.3.1)
-License: What license is it under?
+Title: Download Elevation Data
+Version: 0.0.0.9001
+Authors@R: person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
+                  role = c("aut", "cre"))
+Description: Two services available from Mapzen.com provide access to elevation 
+             data as a raster digital elevation model or as height at a single 
+             point.  This package provides access to those services and returns
+             elevation data either as a data frame (from the Mapzen Elevation 
+             Service) or as a raster object (from the Mapzen Terrain Service).
+Depends: R (>= 3.0.0)
+License: CC0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1
