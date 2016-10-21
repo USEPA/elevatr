@@ -89,6 +89,11 @@ get_srtm <- function(location,res){
    df
 }
 
-get_mapzen_terrain <- function(x,y,x,api_key,format){
-  #https://tile.mapzen.com/mapzen/terrain/v1/geotiff/{z}/{x}/{y}.tif?api_key=mapzen-xxxxxxx
+get_mapzen_terrain <- function(x,y,x,api_key = getOption("mapzen_key"),format){
+  
+  #https://tile.mapzen.com/mapzen/terrain/v1/geotiff/10/-70/45.tif?api_key=mapzen-RVEVhbW
+}
+
+get_mapzen_elev <- function(){
+  
 }
