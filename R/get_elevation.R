@@ -89,24 +89,35 @@ get_srtm <- function(location,res){
    df
 }
 
-get_mapzen_terrain <- function(x,y,x,api_key = getOption("mapzen_key"),format){
+#' Get a digital elevation model from the Mapzen Terrain Tiles
+#' 
+#' This function uses the Mapzen Terrain Tile service to retrieve an elevation
+#' raster.  It accepts a \code{sp::bbox} object as input and returns a single
+#' raster object covering that extent.  You must have an api_key from Mapzen.
+#' 
+#' @param bbx a \code{sp::bbox} object that defines the area to return
+#' @param z The zoom level to return.  The zoom ranges from 1 to 15.  Resolution
+#'          of the resultant raster is determined by the zoom and latitude.  For 
+#'          details on zoom and resolution see the documentation from Mapzen at 
+#'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
+#' @param api_key An API Key from Mapzen, create at 
+#'                \url{https://mapzen.com/developer} Required. Set in your 
+#'                \code{.Rprofile} file with the option \code{mapzen_key}
+#' @param file_format Several file formats are provided by Mapzen: terrarium, 
+#'                    normal, geotiff, and skadi.  Currently only the geotiff
+#'                    format is supported
+#' @export
+get_mapzen_terrain <- function(bbx, z=10, api_key = getOption("mapzen_key"),
+                               file_format = c("geotiff")){
   
   #sk: 41.447569 -71.524667
   #https://tile.mapzen.com/mapzen/terrain/v1/geotiff/10/308/382.tif?api_key=mapzen-RVEVhbW
 }
 
-get_mapzen_elev <- function(){
+get_mapzen_elev <- function(location){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
 }
 
-latlong_to_tilexy <- function(lat_deg, lon_deg, zoom){
-  #Code from http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Coordinates_to_tile_numbers_2
-  lat_rad <- lat_deg * pi /180
-  n <- 2.0 ^ zoom
-  xtile <- floor((lon_deg + 180.0) / 360.0 * n)
-  ytile = floor((1.0 - log(tan(lat_rad) + (1 / cos(lat_rad))) / pi) / 2.0 * n)
-  return( c(xtile, ytile))
-  #  return(paste(paste("http://a.tile.openstreetmap.org", zoom, xtile, ytile, sep="/"),".png",sep=""))
-}
+
 
 latlong_to_tilexy(41.448,-71.525,2)
