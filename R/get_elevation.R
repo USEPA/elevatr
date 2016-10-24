@@ -107,17 +107,42 @@ get_srtm <- function(location,res){
 #'                    normal, geotiff, and skadi.  Currently only the geotiff
 #'                    format is supported
 #' @export
+#' @examples 
+#' library(quickmapr)
+#' library(sp)
+#' data(lake)
+#' wgs84_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+#' lake_dd <- spTransform(lake,CRS(wgs84_dd))
+#' get_mapzen_terrain(bbox(lake_dd),z=13)
 get_mapzen_terrain <- function(bbx, z=10, api_key = getOption("mapzen_key"),
                                file_format = c("geotiff")){
   
   #sk: 41.447569 -71.524667
   #https://tile.mapzen.com/mapzen/terrain/v1/geotiff/10/308/382.tif?api_key=mapzen-RVEVhbW
+  web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
+  wgs84_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+  base_url <- "https://tile.mapzen.com/mapzen/terrain/v1/geotiff/"
+  tiles <- get_tilexy(bbx,z-1)
+  dem_list<-vector("list",length = nrow(tiles))
+  tmpfile <- tempfile()
+  for(i in seq_along(tiles[,1])){
+    url <- paste0(base_url,z-1,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",api_key)
+    httr::GET(url,httr::write_disk(tmpfile,overwrite=T))
+    dem_list[[i]] <- raster::raster(tmpfile)
+    raster::projection(dem_list[[i]]) <- web_merc
+    dem_list[[i]] <- raster::projectRaster(dem_list[[i]],crs=CRS(wgs84_dd))
+  }
+  browser()
+  if(length(dem_list) == 1){
+    return(dem_list[[1]])
+  } else if (length(dem_list) > 1){
+    return(do.call(mosaic, dem_list))
+  } else {
+    stop("Whoa, something is not right")
+  }
+
 }
 
 get_mapzen_elev <- function(location){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
 }
-
-
-
-latlong_to_tilexy(41.448,-71.525,2)
