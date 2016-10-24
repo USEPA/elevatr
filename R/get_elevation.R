@@ -115,7 +115,8 @@ get_srtm <- function(location,res){
 #' lake_dd <- spTransform(lake,CRS(wgs84_dd))
 #' get_mapzen_terrain(bbox(lake_dd),z=13)
 get_mapzen_terrain <- function(bbx, z=10, api_key = getOption("mapzen_key"),
-                               file_format = c("geotiff")){
+                               file_format = c("geotiff"),
+                               ...){
   
   #sk: 41.447569 -71.524667
   #https://tile.mapzen.com/mapzen/terrain/v1/geotiff/10/308/382.tif?api_key=mapzen-RVEVhbW
@@ -132,15 +133,20 @@ get_mapzen_terrain <- function(bbx, z=10, api_key = getOption("mapzen_key"),
     raster::projection(dem_list[[i]]) <- web_merc
     dem_list[[i]] <- raster::projectRaster(dem_list[[i]],crs=CRS(wgs84_dd))
   }
-  browser()
+  origins<-t(data.frame(lapply(dem_list,raster::origin)))
+  min_origin<-c(min(origins[,1]),min(origins[,2]))
+  change_origins <- function(x,y){
+    raster::origin(x)<-y
+    x
+  }
+  dem_list <- lapply(dem_list, function(x,y) change_origins(x,min_origin))
   if(length(dem_list) == 1){
     return(dem_list[[1]])
   } else if (length(dem_list) > 1){
-    return(do.call(mosaic, dem_list))
+    return(do.call(raster::merge, dem_list))
   } else {
     stop("Whoa, something is not right")
   }
-
 }
 
 get_mapzen_elev <- function(location){

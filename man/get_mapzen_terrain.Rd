@@ -5,7 +5,7 @@
 \title{Get a digital elevation model from the Mapzen Terrain Tiles}
 \usage{
 get_mapzen_terrain(bbx, z = 10, api_key = getOption("mapzen_key"),
-  file_format = c("geotiff"))
+  file_format = c("geotiff"), ...)
 }
 \arguments{
 \item{bbx}{a \code{sp::bbox} object that defines the area to return}
