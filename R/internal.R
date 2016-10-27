@@ -15,4 +15,18 @@ get_tilexy <- function(bbx,z){
   return(expand.grid(min_tile[1]:max_tile[1],min_tile[2]:max_tile[2]))
 }
 
-#' function to check input type and set projection
+#' function to check input type and projection and convert data frame to 
+#' SpatialPoints
+loc_check <- function(locations,prj = NULL){
+  if(class(locations)=="data.frame"){ 
+    if(is.null(prj)){
+      stop("Please supply a valid proj.4 string.")
+    }
+    locations<-SpatialPointsDataFrame(coordinates(loc_df),
+                             proj4string = CRS(prj))
+  } else if(grepl("SpatialPoints",class(locations)) & 
+                 is.na(sp::proj4string(locations))){
+    stop("Please supply a valid proj.4 string.")
+  } 
+  locations
+}

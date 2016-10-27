@@ -4,8 +4,8 @@
 \alias{get_elev_point}
 \title{Get Point Elevation}
 \usage{
-get_elev_point(locations, prj, source = c("mapzen", "eqps"), api_key = NULL,
-  ...)
+get_elev_point(locations, prj = NULL, source = c("mapzen", "eqps"),
+  api_key = NULL, ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the first column 

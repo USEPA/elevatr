@@ -36,9 +36,11 @@
 #' loc_df <- data.frame(x = runif(6,min=bbox(lake)[1,1], max=bbox(lake)[1,2]),
 #'                      y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
 #' get_elev_point(locations = loc_df, prj = sp::proj4string(lake))
-get_elev_point <- function(locations, prj, source = c("mapzen","eqps"),
+get_elev_point <- function(locations, prj = NULL, source = c("mapzen","eqps"),
                            api_key = NULL, ...){
   # Check location type and if sp, set prj.  If no prj (for either) then error
+  locations <- loc_check(locations,prj)
+  prj <- proj4string(locations)
   # Re-project locations to dd
   # Pass of reprojected to eqps or mapzen to get data as spatialpointsdataframe
   # Re-project back to original and return

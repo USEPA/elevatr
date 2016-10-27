@@ -9,5 +9,4 @@ latlong_to_tilexy(lat_deg, lon_deg, zoom)
 \description{
 function to convert lat long to xyz tile
 }
-\keyword{internal}
 
