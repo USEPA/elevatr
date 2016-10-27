@@ -5,8 +5,8 @@ Two services available from Mapzen.com provide access to elevation data as a ras
 
 Current plan for this package includes just two functions to access elevation web services:
 
-    - `get_elev_point()`:  Get point elevations using the Mapzen Elevation Service or (for the US Only) the USGS Elevation Point Query Service.  This will accept a data frame of x (long) and y (lat) or a SpatialPoints/SpatialPointsDataFame as input.  A SpatialPointsDataFrame is returned.
-    - `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital Elevation Model) from the Mapzen Terrain GeoTIFF Service.  Other sources may be added later.  This will accepts a data frame of of x (long) and y (lat) or any `sp` or `raster` object as input and will return a `raster` object of the elevation tiles that cover the bounding box of the input spatial data. 
+- `get_elev_point()`:  Get point elevations using the Mapzen Elevation Service or (for the US Only) the USGS Elevation Point Query Service.  This will accept a data frame of x (long) and y (lat) or a SpatialPoints/SpatialPointsDataFame as input.  A SpatialPointsDataFrame is returned.
+- `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital Elevation Model) from the Mapzen Terrain GeoTIFF Service.  Other sources may be added later.  This will accepts a data frame of of x (long) and y (lat) or any `sp` or `raster` object as input and will return a `raster` object of the elevation tiles that cover the bounding box of the input spatial data. 
 
 ## Installation
 

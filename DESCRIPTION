@@ -3,12 +3,19 @@ Title: Download Elevation Data
 Version: 0.0.0.9001
 Authors@R: person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"))
-Description: Two services available from Mapzen.com provide access to elevation 
-             data as a raster digital elevation model or as height at a single 
-             point.  This package provides access to those services and returns
-             elevation data either as a data frame (from the Mapzen Elevation 
-             Service) or as a raster object (from the Mapzen Terrain Service).
+Description: Several web services are available that provide access to elevation
+             data. This package provides access to several of those services and 
+             returns elevation data either as a SpatialPointsDataFrame from 
+             point elevation services or as a raster object from raster 
+             elevation services.  Currently, the package supports access to the
+             Mapzen Elevation Service, Mapezen Terrain Service, and the USGS
+             Elevation Point Query Service.
 Depends: R (>= 3.0.0)
+Imports:
+    sp,
+    rgdal,
+    raster,
+    httr
 License: CC0
 Encoding: UTF-8
 LazyData: true

@@ -1,37 +1,34 @@
-#' Get elevation data from the USGS Elevation Point Query Service (eqps)
+#' Get Raster Elevation
 #' 
-#' Primary function for accessing elevation data from a variety of online 
-#' sources
+#' Several web services provide access to raster elevation. Currently, this 
+#' function provides access to the Mapzen Terrain Service The function 
+#' accepts a \code{data.frame} of x (long) and y (lat), an 
+#' \code{sp}, or \code{raster} object as input.  A \code{raster} object is returned.
 #' 
-#' @param location  A data.frame of the location(s) for which you wish to return 
-#'                  elevation. The first colum is Longitude and the second 
-#'                  column is Latitude.  
-#' @param units Character string of either meters or feet.  Only works for 'epqs'
+#' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
+#'                  \code{sp}, or \code{raster} object as input. 
+#' @param prj A PROJ.4 string defining the projection of the locations argument. 
+#'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 string 
+#'            will be taken from that.  This argument is required for a 
+#'            \code{data.frame} of locations.
+#' @param source A character indicating which API to use, currently only 
+#'               "mapzen" is used.
+#' @param api_key A valid API key.  
+#' @param ... Extra parameters to pass to API specific fucntions
+#' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
+#'         specified by the \code{prj} argument.
 #' @export
 #' @examples 
-#' xdf<-data.frame(runif(10,-75,-72),runif(10,40,45))
-#' get_eqps(xdf)
-get_epqs <- function(location,units){
-  df <- data.frame(matrix(ncol = 3, nrow = nrow(location)))
-  base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
-  units <- paste0("&units=",units)
-  #Add Progress bar
-  for(i in seq_along(location[,1])){
-    x <- location[i,1]
-    y <- location[i,2]
-    loc <- paste0("x=",x, "&y=", y)
-    url <- paste0(base_url,loc,units,"&output=json")
-    resp <- httr::GET(url)
-    if (httr::http_type(resp) != "application/json") {
-      stop("API did not return json", call. = FALSE)
-    } 
-    resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
-                               simplifyVector = FALSE,
-                                )
-    df[i,] <- c(x,y,resp[[1]][[1]]$Elevation)
-  }
-  names(df) <- c("long","lat","elev")
-  df
+#' data(lake)
+#' loc_df <- data.frame(x = runif(6,min=bbox(lake)[1,1], max=bbox(lake)[1,2]),
+#'                      y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
+#' get_elev_raster(locations = loc_df, prj = proj4string(lake))
+get_elev_raster <- function(locations,prj,source = c("mapzen"),
+                           api_key = NULL, ...){
+  # Check location type and if sp, set prj.  If no prj (for either) then error
+  # Re-project locations to dd
+  # Pass of reprojected to mapzen to get data as raster
+  # Re-project from webmerc back to original and return
 }
 
 #' Get a digital elevation model from the Mapzen Terrain Tiles
@@ -40,6 +37,11 @@ get_epqs <- function(location,units){
 #' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
 #' input and returns a single raster object covering that extent.  You must have
 #' an api_key from Mapzen.
+#' 
+#' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
+#'         content courtesy of the U.S. Geological Survey and ETOPO1 content 
+#'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
+#'         \url{https://mapzen.com/documentation/terrain-tiles/} 
 #' 
 #' @param bbx a \code{sp::bbox} object that defines the area to return
 #' @param z The zoom level to return.  The zoom ranges from 1 to 15.  Resolution
@@ -50,6 +52,7 @@ get_epqs <- function(location,units){
 #'                \url{https://mapzen.com/developer} Required. Set in your 
 #'                \code{.Rprofile} file with the option \code{mapzen_key}
 #' @export
+#' @keywords internal
 #' @examples 
 #' library(quickmapr)
 #' library(sp)
@@ -86,8 +89,4 @@ get_mapzen_terrain <- function(bbx, z=10, api_key = getOption("mapzen_key")){
   } else {
     stop("Whoa, something is not right")
   }
-}
-
-get_mapzen_elev <- function(location){
-  #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
 }
