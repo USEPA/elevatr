@@ -1,7 +1,7 @@
 # elevatr
-An R package for accessing elevation data from [Mapzen Tile Service](https://mapzen.com/documentation/terrain-tiles/) and the [Mapzen Elevation Service](https://mapzen.com/documentation/elevation/elevation-service/)
+An R package for accessing elevation data from various sources
 
-Two services available from Mapzen.com provide access to elevation data as a raster digital elevation model or as height at a single point.  This package provides access to those services and returns elevation data either as a data frame (from the Mapzen Elevation Service) or as a raster object (from the Mapzen Terrain Service).  Additional elevation data sources may be added.
+This package currently provides access to elevation data from from Mapzen ([Mapzen Tile Service](https://mapzen.com/documentation/terrain-tiles/) for raster digital elevation models or  [Mapzen Elevation Service](https://mapzen.com/documentation/elevation/elevation-service/) for a point elevation) and USGS (via the [Elevation Point Query Service](http://ned.usgs.gov/epqs/)).  This package provides access to those services and returns elevation data either as a spatial points datafrom (from the Mapzen and USGS Elevation Services) or as a raster object (from the Mapzen Terrain Service).  Additional elevation data sources may be added.
 
 Current plan for this package includes just two functions to access elevation web services:
 
