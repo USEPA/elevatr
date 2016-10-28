@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Download Elevation Data
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"))
 Description: Several web services are available that provide access to elevation
@@ -15,7 +15,8 @@ Imports:
     sp,
     rgdal,
     raster,
-    httr
+    httr,
+    jsonlite
 License: CC0
 Encoding: UTF-8
 LazyData: true

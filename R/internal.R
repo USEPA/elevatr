@@ -22,11 +22,32 @@ loc_check <- function(locations,prj = NULL){
     if(is.null(prj)){
       stop("Please supply a valid proj.4 string.")
     }
-    locations<-SpatialPointsDataFrame(coordinates(loc_df),
-                             proj4string = CRS(prj))
-  } else if(grepl("SpatialPoints",class(locations)) & 
-                 is.na(sp::proj4string(locations))){
-    stop("Please supply a valid proj.4 string.")
-  } 
+    locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations),
+                             proj4string = CRS(prj),
+                             data = data.frame(elevation = 
+                                                 vector("numeric",
+                                                        nrow(locations))))
+  } else if(class(locations) == "SpatialPoints"){
+    if(is.na(sp::proj4string(locations))){
+      stop("Please supply a valid proj.4 string.")
+    }
+    locations<-sp::SpatialPointsDataFrame(locations,
+                                          data = data.frame(elevation = 
+                                                              vector("numeric",
+                                                                     nrow(coordinates(locations)))))
+  } else if(class(locations) == "SpatialPointsDataFrame"){
+    if(is.na(sp::proj4string(locations))) {
+      stop("Please supply a valid proj.4 string.")
+    }
+    locations@data <- data.frame(locations@data,
+                                 elevation = vector("numeric",nrow(locations))) 
+  }
   locations
+}
+
+#' function to get api key based on source
+get_api_key<-function(src){
+  if(src == "mapzen"){
+    return(getOption("mapzen_key"))
+  }
 }

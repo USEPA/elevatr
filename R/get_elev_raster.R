@@ -11,7 +11,7 @@
 #'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 string 
 #'            will be taken from that.  This argument is required for a 
 #'            \code{data.frame} of locations.
-#' @param source A character indicating which API to use, currently only 
+#' @param src A character indicating which API to use, currently only 
 #'               "mapzen" is used.
 #' @param api_key A valid API key.  
 #' @param ... Extra parameters to pass to API specific fucntions
@@ -23,8 +23,8 @@
 #' loc_df <- data.frame(x = runif(6,min=bbox(lake)[1,1], max=bbox(lake)[1,2]),
 #'                      y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
 #' get_elev_raster(locations = loc_df, prj = proj4string(lake))
-get_elev_raster <- function(locations,prj,source = c("mapzen"),
-                           api_key = NULL, ...){
+get_elev_raster <- function(locations,prj,src = c("mapzen"),
+                           api_key = get_api_key(src), ...){
   # Check location type and if sp, set prj.  If no prj (for either) then error
   # Re-project locations to dd
   # Pass of reprojected to mapzen to get data as raster
