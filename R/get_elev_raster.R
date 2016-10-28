@@ -3,13 +3,14 @@
 #' Several web services provide access to raster elevation. Currently, this 
 #' function provides access to the Mapzen Terrain Service The function 
 #' accepts a \code{data.frame} of x (long) and y (lat), an 
-#' \code{sp}, or \code{raster} object as input.  A \code{raster} object is returned.
+#' \code{sp}, or \code{raster} object as input.  A \code{raster} object is 
+#' returned.
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
 #'                  \code{sp}, or \code{raster} object as input. 
 #' @param prj A PROJ.4 string defining the projection of the locations argument. 
-#'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 string 
-#'            will be taken from that.  This argument is required for a 
+#'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 
+#'            string will be taken from that.  This argument is required for a 
 #'            \code{data.frame} of locations.
 #' @param src A character indicating which API to use, currently only 
 #'               "mapzen" is used.
@@ -23,12 +24,24 @@
 #' loc_df <- data.frame(x = runif(6,min=bbox(lake)[1,1], max=bbox(lake)[1,2]),
 #'                      y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
 #' get_elev_raster(locations = loc_df, prj = proj4string(lake))
-get_elev_raster <- function(locations,prj,src = c("mapzen"),
+#' get_elev_raster(lake)
+#' 
+get_elev_raster <- function(locations,prj = NULL,src = c("mapzen"),
                            api_key = get_api_key(src), ...){
+  src <- match.arg(src)
   # Check location type and if sp, set prj.  If no prj (for either) then error
+  locations <- loc_check(locations,prj)
+  prj <- proj4string(locations)
   # Re-project locations to dd
-  # Pass of reprojected to mapzen to get data as raster
+  locations_dd <- sp::spTransform(locations,
+                                  CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+  # Pass of reprojected to apis to get data as raster
+  if(src == "mapzen"){
+    raster_elev <- get_mapzen_terrain(sp::bbox(locations_dd),api_key = api_key, ...)
+  }
   # Re-project from webmerc back to original and return
+  raster_elev <- raster::projectRaster(raster_elev, crs = CRS(prj))
+  raster_elev
 }
 
 #' Get a digital elevation model from the Mapzen Terrain Tiles
@@ -60,20 +73,18 @@ get_elev_raster <- function(locations,prj,src = c("mapzen"),
 #' wgs84_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
 #' lake_dd <- spTransform(lake,CRS(wgs84_dd))
 #' get_mapzen_terrain(bbox(lake_dd),z=13)
-get_mapzen_terrain <- function(bbx, z=10, api_key = getOption("mapzen_key")){
+get_mapzen_terrain <- function(bbx, z=14, api_key = getOption("mapzen_key")){
   
   web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
-  wgs84_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
   base_url <- "https://tile.mapzen.com/mapzen/terrain/v1/geotiff/"
-  tiles <- get_tilexy(bbx,z-1)
+  tiles <- get_tilexy(bbx,z)
   dem_list<-vector("list",length = nrow(tiles))
   tmpfile <- tempfile() 
   for(i in seq_along(tiles[,1])){
-    url <- paste0(base_url,z-1,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",api_key)
+    url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",api_key)
     httr::GET(url,httr::write_disk(tmpfile,overwrite=T))
     dem_list[[i]] <- raster::raster(tmpfile)
     raster::projection(dem_list[[i]]) <- web_merc
-    dem_list[[i]] <- raster::projectRaster(dem_list[[i]],crs=CRS(wgs84_dd))
   }
   origins<-t(data.frame(lapply(dem_list,raster::origin)))
   min_origin<-c(min(origins[,1]),min(origins[,2]))

@@ -56,7 +56,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
                   CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if(src == "mapzen"){ 
-    locations_dd <- get_mapzen_elev(locations_dd,...)
+    locations_dd <- get_mapzen_elev(locations_dd,api_key = api_key,...)
   } else if (src == "epqs"){
     locations_dd <- get_epqs(locations_dd,...)
   }
