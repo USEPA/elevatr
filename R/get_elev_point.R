@@ -24,9 +24,6 @@
 #'               (\url{https://mapzen.com/developers/}) requests are limited to
 #'               20,000 per day or 2 per second.  Per day and per second rates
 #'               are enforced by the \code{\link{elevatr}} package.
-#' @param api_key A valid Mapzen API key.  Not required, but higher rate limits
-#'                are allowed with a key. Defaults to 
-#'                \code{getOption("mapzen_key")}.
 #' @param ... Additional arguments passed to get_eqps or get_mapzen_elevation
 #' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
 #'         specified by the \code{prj} argument.
@@ -37,12 +34,19 @@
 #'                      y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
 #' get_elev_point(locations = loc_df, prj = sp::proj4string(lake))
 get_elev_point <- function(locations, prj = NULL, source = c("mapzen","eqps"),
-                           api_key = NULL, ...){
+                           ...){
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   prj <- proj4string(locations)
   # Re-project locations to dd
+  locations_dd <- sp::spTransform(locations,
+                  CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
   # Pass of reprojected to eqps or mapzen to get data as spatialpointsdataframe
+  if(source == "mapzen"){ 
+    get_mapzen_elev(locations_dd,...)
+  } else if (source == "eqps"){
+    
+  }
   # Re-project back to original and return
 }
 
@@ -84,12 +88,15 @@ get_epqs <- function(locations, units = c("meters","feet"), ...){
 
 #' Get point elevations from Mapzen
 #' 
+#' @param api_key A valid Mapzen API key.  Not required, but higher rate limits
+#'                are allowed with a key. Defaults to 
+#'                \code{getOption("mapzen_key")}.
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
 #'         content courtesy of the U.S. Geological Survey and ETOPO1 content 
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
 #'         \url{https://mapzen.com/documentation/elevation/elevation-service/} 
 #' @export
 #' @keywords internal
-get_mapzen_elev <- function(locations){
+get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
 }
