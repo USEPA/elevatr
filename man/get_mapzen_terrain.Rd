@@ -10,19 +10,27 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
         \url{https://mapzen.com/documentation/terrain-tiles/}
 }
 \usage{
-get_mapzen_terrain(bbx, z = 10, api_key = getOption("mapzen_key"))
+get_mapzen_terrain(bbx, z = 9, prj, api_key = getOption("mapzen_key"),
+  expand = NULL)
 }
 \arguments{
-\item{bbx}{a \code{sp::bbox} object that defines the area to return}
+\item{bbx}{a \code{sp::bbox} object that is used to select x,y,z tiles.}
 
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 15.  Resolution
 of the resultant raster is determined by the zoom and latitude.  For 
 details on zoom and resolution see the documentation from Mapzen at 
 \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}}
 
+\item{prj}{Proj.4 string for input bbox}
+
 \item{api_key}{An API Key from Mapzen, create at 
 \url{https://mapzen.com/developer} Required. Set in your 
 \code{.Rprofile} file with the option \code{mapzen_key}}
+
+\item{expand}{A numeric value of a distance, in map units, used to expand the
+bounding box that is used to fetch the terrain tiles. This can 
+be used for features that fall close to the edge of a tile and 
+additional area around the feature is desired. Default is NULL.}
 }
 \description{
 This function uses the Mapzen Terrain Tile service to retrieve an elevation
@@ -31,12 +39,10 @@ input and returns a single raster object covering that extent.  You must have
 an api_key from Mapzen.
 }
 \examples{
-library(quickmapr)
-library(sp)
 data(lake)
 wgs84_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-lake_dd <- spTransform(lake,CRS(wgs84_dd))
-get_mapzen_terrain(bbox(lake_dd),z=13)
+lake_dd <- sp::spTransform(lake,sp::CRS(wgs84_dd))
+get_mapzen_terrain(sp::bbox(lake_dd),prj = wgs84_dd, z=13)
 }
 \keyword{internal}
 

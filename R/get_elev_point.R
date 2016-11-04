@@ -1,17 +1,17 @@
 #' Get Point Elevation
 #' 
-#' Several web services provide access to point elevations.  This function provides
-#' access to several of those.  Currently it uses either the Mapzen Elevation 
-#' Service or the USGS Elevation Point Query Service (US Only).  The function 
-#' accepts a \code{data.frame} of x (long) and y (lat) or a 
+#' Several web services provide access to point elevations.  This function 
+#' provides access to several of those.  Currently it uses either the Mapzen 
+#' Elevation Service or the USGS Elevation Point Query Service (US Only).  The 
+#' function accepts a \code{data.frame} of x (long) and y (lat) or a 
 #' \code{SpatialPoints}/\code{SpatialPointsDataFame} as input.  A 
 #' SpatialPointsDataFrame is returned with elevation as an added 
 #' \code{data.frame}.
 #' 
-#' @param locations Either a \code{data.frame} with x (e.g. longitude) as the first column 
-#'                 and y (e.g. latitude) as the second column or a 
-#'                 \code{SpatialPoints}/\code{SpatialPointsDataFrame}.  
-#'                 Elevation for these points will be returned.
+#' @param locations Either a \code{data.frame} with x (e.g. longitude) as the 
+#'                  first column and y (e.g. latitude) as the second column or a 
+#'                  \code{SpatialPoints}/\code{SpatialPointsDataFrame}.  
+#'                  Elevation for these points will be returned.
 #' @param prj A PROJ.4 string defining the projection of the locations argument. 
 #'            If a \code{SpatialPoints} or \code{SpatialPointsDataFrame} is 
 #'            provided, the PROJ.4 string will be taken from that.  This 
@@ -33,14 +33,16 @@
 #' @export
 #' @examples
 #' mt_wash <- data.frame(x = -71.3036, y = 44.2700)
-#' mt_wash_sp <- sp::SpatialPoints(coordinates(mt_wash),
-#'                                 proj4string = CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")) 
-#' get_elev_point(locations = mt_wash, 
-#'                prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-#' get_elev_point(locations = mt_wash, src = "epqs", units="feet",
-#'                prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-#' get_elev_point(locations = mt_wash, src = "epqs", units="meters",
-#'                prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+#' mt_mans <- data.frame(x = -72.8145, y = 44.5438)
+#' mts <- rbind(mt_wash,mt_mans)
+#' ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+#' mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
+#'                             proj4string = sp::CRS(ll_prj)) 
+#' get_elev_point(locations = mt_wash,prj = ll_prj)
+#' get_elev_point(locations = mt_wash, src = "epqs", units="feet", prj = ll_prj)
+#' get_elev_point(locations = mt_wash, src = "epqs", units="meters", 
+#'                prj = ll_prj)
+#' get_elev_point(locations = mts_sp)
 #' \dontrun{
 #' data(lake)
 #' options(mapzen_key = "mapzen-XXXXXXX")
@@ -50,10 +52,10 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
   src <- match.arg(src)
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
-  prj <- proj4string(locations)
+  prj <- sp::proj4string(locations)
   # Re-project locations to dd
   locations_dd <- sp::spTransform(locations,
-                  CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+                  sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if(src == "mapzen"){ 
     locations_dd <- get_mapzen_elev(locations_dd,api_key = api_key,...)
@@ -61,7 +63,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
     locations_dd <- get_epqs(locations_dd,...)
   }
   # Re-project back to original and return
-  locations <- sp::spTransform(locations_dd,CRS(prj))
+  locations <- sp::spTransform(locations_dd,sp::CRS(prj))
   if(length(list(...)) > 0){ 
     if(names(list(...)) %in% "units" & list(...)$units == "feet"){
       locations$elev_units <- rep("feet", nrow(locations))
@@ -78,10 +80,10 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
 #' 
 #' Function for accessing elevation data from the USGS epqs
 #' 
-#' @param locations  A SpatialPointsDataFrame of the location(s) for which you wish to return 
-#'                  elevation. The first colum is Longitude and the second 
-#'                  column is Latitude.  
-#' @param units Character string of either meters or feet.  Only works for 'epqs'
+#' @param locations A SpatialPointsDataFrame of the location(s) for which you 
+#'                  wish to return elevation. The first colum is Longitude and 
+#'                  the second column is Latitude.  
+#' @param units Character string of either meters or feet. Only works for 'epqs'
 #' @return a SpatialPointsDataFrame with elevation added to the data slot
 #' @export
 #' @keywords internal
@@ -129,11 +131,12 @@ get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)
-  coords <- data.frame(coordinates(locations))
+  coords <- data.frame(sp::coordinates(locations))
   names(coords) <- c("lon","lat")
   json_coords <- jsonlite::toJSON(list(shape=coords))
   url <- paste0(base_url,json_coords,key)
   resp <- httr::GET(url)
+  browser()
   if (httr::http_type(resp) != "application/json") {
     stop("API did not return json", call. = FALSE)
   } 

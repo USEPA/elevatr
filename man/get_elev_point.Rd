@@ -4,12 +4,12 @@
 \alias{get_elev_point}
 \title{Get Point Elevation}
 \usage{
-get_elev_point(locations, prj = NULL, source = c("mapzen", "eqps"),
-  api_key = NULL, ...)
+get_elev_point(locations, prj = NULL, src = c("mapzen", "epqs"),
+  api_key = get_api_key(src), ...)
 }
 \arguments{
-\item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the first column 
-and y (e.g. latitude) as the second column or a 
+\item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the 
+first column and y (e.g. latitude) as the second column or a 
 \code{SpatialPoints}/\code{SpatialPointsDataFrame}.  
 Elevation for these points will be returned.}
 
@@ -18,8 +18,8 @@ If a \code{SpatialPoints} or \code{SpatialPointsDataFrame} is
 provided, the PROJ.4 string will be taken from that.  This 
 argument is required for a \code{data.frame} of locations.}
 
-\item{source}{A character indicating which API to use, currently "mapzen" or 
-"eqps".  Default is "mapzen".  Note that the Mapzen Elevation 
+\item{src}{A character indicating which API to use, currently "mapzen" or 
+"epqs".  Default is "mapzen".  Note that the Mapzen Elevation 
 Service is subject to rate limits.  Keyless access limits 
 requests to 1,000 requests per day, 6 per minute, and 1 per 
 second.  With a Mapzen API key 
@@ -27,29 +27,40 @@ second.  With a Mapzen API key
 20,000 per day or 2 per second.  Per day and per second rates
 are enforced by the \code{\link{elevatr}} package.}
 
-\item{api_key}{A valid Mapzen API key.  Not required, but higher rate limits
-are allowed with a key. Defaults to 
-\code{getOption("mapzen_key")}.}
+\item{api_key}{A character for the approriate API key.  Default is to use key
+as defined in \code{\link{options}}.  Acceptable option name 
+is currently only "mapzen_key".}
 
-\item{...}{Additional arguments passed to get_eqps or get_mapzen_elevation}
+\item{...}{Additional arguments passed to get_epqs or get_mapzen_elevation}
 }
 \value{
 Function returns a \code{SpatialPointsDataFrame} in the projection 
         specified by the \code{prj} argument.
 }
 \description{
-Several web services provide access to point elevations.  This function provides
-access to several of those.  Currently it uses either the Mapzen Elevation 
-Service or the USGS Elevation Point Query Service (US Only).  The function 
-accepts a \code{data.frame} of x (long) and y (lat) or a 
+Several web services provide access to point elevations.  This function 
+provides access to several of those.  Currently it uses either the Mapzen 
+Elevation Service or the USGS Elevation Point Query Service (US Only).  The 
+function accepts a \code{data.frame} of x (long) and y (lat) or a 
 \code{SpatialPoints}/\code{SpatialPointsDataFame} as input.  A 
 SpatialPointsDataFrame is returned with elevation as an added 
 \code{data.frame}.
 }
 \examples{
+mt_wash <- data.frame(x = -71.3036, y = 44.2700)
+mt_mans <- data.frame(x = -72.8145, y = 44.5438)
+mts <- rbind(mt_wash,mt_mans)
+ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
+                            proj4string = sp::CRS(ll_prj)) 
+get_elev_point(locations = mt_wash,prj = ll_prj)
+get_elev_point(locations = mt_wash, src = "epqs", units="feet", prj = ll_prj)
+get_elev_point(locations = mt_wash, src = "epqs", units="meters", 
+               prj = ll_prj)
+get_elev_point(locations = mts_sp)
+\dontrun{
 data(lake)
-loc_df <- data.frame(x = runif(6,min=bbox(lake)[1,1], max=bbox(lake)[1,2]),
-                     y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
-get_elev_point(locations = loc_df, prj = sp::proj4string(lake))
+options(mapzen_key = "mapzen-XXXXXXX")
+get_elev_point(samples)}
 }
 

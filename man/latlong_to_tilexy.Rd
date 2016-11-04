@@ -2,11 +2,13 @@
 % Please edit documentation in R/internal.R
 \name{latlong_to_tilexy}
 \alias{latlong_to_tilexy}
-\title{function to convert lat long to xyz tile}
+\title{function to convert lat long to xyz tile with decimals
+rounding to tile occurs in \code{get_tilexy}}
 \usage{
-latlong_to_tilexy(lat_deg, lon_deg, zoom)
+latlong_to_tilexy(lon_deg, lat_deg, zoom)
 }
 \description{
-function to convert lat long to xyz tile
+function to convert lat long to xyz tile with decimals
+rounding to tile occurs in \code{get_tilexy}
 }
 

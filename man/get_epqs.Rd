@@ -7,18 +7,21 @@
 get_epqs(locations, units = c("meters", "feet"), ...)
 }
 \arguments{
-\item{locations}{A data.frame of the location(s) for which you wish to return 
-elevation. The first colum is Longitude and the second 
-column is Latitude.}
+\item{locations}{A SpatialPointsDataFrame of the location(s) for which you 
+wish to return elevation. The first colum is Longitude and 
+the second column is Latitude.}
 
-\item{units}{Character string of either meters or feet.  Only works for 'epqs'}
+\item{units}{Character string of either meters or feet. Only works for 'epqs'}
+}
+\value{
+a SpatialPointsDataFrame with elevation added to the data slot
 }
 \description{
-Function for accessing elevation data from the USGS eqps
+Function for accessing elevation data from the USGS epqs
 }
 \examples{
 xdf<-data.frame(runif(10,-75,-72),runif(10,40,45))
-get_eqps(xdf)
+get_epqs(xdf)
 }
 \keyword{internal}
 

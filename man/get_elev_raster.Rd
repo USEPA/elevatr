@@ -4,21 +4,27 @@
 \alias{get_elev_raster}
 \title{Get Raster Elevation}
 \usage{
-get_elev_raster(locations, prj, source = c("mapzen"), api_key = NULL, ...)
+get_elev_raster(locations, prj = NULL, src = c("mapzen"),
+  api_key = get_api_key(src), expand = NULL, ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
 \code{sp}, or \code{raster} object as input.}
 
 \item{prj}{A PROJ.4 string defining the projection of the locations argument. 
-If a \code{sp} or \code{raster} object is provided, the PROJ.4 string 
-will be taken from that.  This argument is required for a 
+If a \code{sp} or \code{raster} object is provided, the PROJ.4 
+string will be taken from that.  This argument is required for a 
 \code{data.frame} of locations.}
 
-\item{source}{A character indicating which API to use, currently only 
+\item{src}{A character indicating which API to use, currently only 
 "mapzen" is used.}
 
 \item{api_key}{A valid API key.}
+
+\item{expand}{A numeric value of a distance, in map units, used to expand the
+bounding box that is used to fetch the terrain tiles. This can 
+be used for features that fall close to the edge of a tile and 
+additional area around the feature is desired. Default is NULL.}
 
 \item{...}{Extra parameters to pass to API specific fucntions}
 }
@@ -30,12 +36,15 @@ Function returns a \code{SpatialPointsDataFrame} in the projection
 Several web services provide access to raster elevation. Currently, this 
 function provides access to the Mapzen Terrain Service The function 
 accepts a \code{data.frame} of x (long) and y (lat), an 
-\code{sp}, or \code{raster} object as input.  A \code{raster} object is returned.
+\code{sp}, or \code{raster} object as input.  A \code{raster} object is 
+returned.
 }
 \examples{
 data(lake)
 loc_df <- data.frame(x = runif(6,min=bbox(lake)[1,1], max=bbox(lake)[1,2]),
                      y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
-get_elev_raster(locations = loc_df, prj = proj4string(lake))
+x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10)
+x <- get_elev_raster(lake, z = 12)
+
 }
 

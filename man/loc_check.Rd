@@ -2,13 +2,13 @@
 % Please edit documentation in R/internal.R
 \name{loc_check}
 \alias{loc_check}
-\title{function to check input type and projection and convert data frame to 
-SpatialPoints}
+\title{function to check input type and projection.  All input types convert to a
+SpatialPointsDataFrame for point elevation and bbx for raster.}
 \usage{
 loc_check(locations, prj = NULL)
 }
 \description{
-function to check input type and projection and convert data frame to 
-SpatialPoints
+function to check input type and projection.  All input types convert to a
+SpatialPointsDataFrame for point elevation and bbx for raster.
 }
 
