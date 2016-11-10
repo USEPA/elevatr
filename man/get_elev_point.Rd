@@ -25,7 +25,8 @@ requests to 1,000 requests per day, 6 per minute, and 1 per
 second.  With a Mapzen API key 
 (\url{https://mapzen.com/developers/}) requests are limited to
 20,000 per day or 2 per second.  Per day and per second rates
-are enforced by the \code{\link{elevatr}} package.}
+are not yet enforced by the \code{\link{elevatr}} package, but 
+will be in the future.}
 
 \item{api_key}{A character for the approriate API key.  Default is to use key
 as defined in \code{\link{options}}.  Acceptable option name 

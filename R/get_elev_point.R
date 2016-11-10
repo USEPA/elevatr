@@ -23,7 +23,8 @@
 #'               second.  With a Mapzen API key 
 #'               (\url{https://mapzen.com/developers/}) requests are limited to
 #'               20,000 per day or 2 per second.  Per day and per second rates
-#'               are enforced by the \code{\link{elevatr}} package.
+#'               are not yet enforced by the \code{\link{elevatr}} package, but 
+#'               will be in the future.
 #' @param api_key A character for the approriate API key.  Default is to use key
 #'                as defined in \code{\link{options}}.  Acceptable option name 
 #'                is currently only "mapzen_key".
@@ -136,7 +137,6 @@ get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
   json_coords <- jsonlite::toJSON(list(shape=coords))
   url <- paste0(base_url,json_coords,key)
   resp <- httr::GET(url)
-  browser()
   if (httr::http_type(resp) != "application/json") {
     stop("API did not return json", call. = FALSE)
   } 
