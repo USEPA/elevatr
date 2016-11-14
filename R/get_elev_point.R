@@ -24,7 +24,8 @@
 #'               (\url{https://mapzen.com/developers/}) requests are limited to
 #'               20,000 per day or 2 per second.  Per day and per second rates
 #'               are not yet enforced by the \code{\link{elevatr}} package, but 
-#'               will be in the future.
+#'               will be in the future.  The "epqs" source is relatively slow 
+#'               for larger numbers of points (e.g. > 500). 
 #' @param api_key A character for the approriate API key.  Default is to use key
 #'                as defined in \code{\link{options}}.  Acceptable option name 
 #'                is currently only "mapzen_key".
@@ -99,7 +100,9 @@ get_epqs <- function(locations, units = c("meters","feet"), ...){
     units <- "Feet"
   }
   units <- paste0("&units=",units)
-  #Add Progress bar
+  pb <- progress::progress_bar$new(format = " Accessing point elevations [:bar] :percent",
+                                   total = nrow(locations), clear = FALSE, 
+                                   width= 60)
   for(i in seq_along(locations[,1])){
     x <- sp::coordinates(locations)[i,1]
     y <- sp::coordinates(locations)[i,2]
@@ -113,6 +116,8 @@ get_epqs <- function(locations, units = c("meters","feet"), ...){
                                simplifyVector = FALSE
                                 )
     locations$elevation[i] <- resp[[1]][[1]]$Elevation
+    pb$tick()
+    Sys.sleep(1 / 100)
   }
   locations
 }
@@ -133,6 +138,7 @@ get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)
   coords <- data.frame(sp::coordinates(locations))
+  if(nrow(coords)<201){
   names(coords) <- c("lon","lat")
   json_coords <- jsonlite::toJSON(list(shape=coords))
   url <- paste0(base_url,json_coords,key)
@@ -142,7 +148,15 @@ get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
   } 
   resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                              simplifyVector = FALSE)
-  #Add Progress bar
   locations$elevation <- unlist(resp$height)
+  } else if(nrow(coords)>200){
+    browser()
+    idx_e <- seq(0,nrow(coords),by=200)
+    idx_e <- c(idx[-1],nrow(coords))
+    idx_s <- seq(1,nrow(coords),by=200)
+    for(i in seq_along(idx_e)){
+      
+    }
+  }
   locations
 }

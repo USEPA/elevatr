@@ -26,7 +26,8 @@ second.  With a Mapzen API key
 (\url{https://mapzen.com/developers/}) requests are limited to
 20,000 per day or 2 per second.  Per day and per second rates
 are not yet enforced by the \code{\link{elevatr}} package, but 
-will be in the future.}
+will be in the future.  The "epqs" source is relatively slow 
+for larger numbers of points (e.g. > 500).}
 
 \item{api_key}{A character for the approriate API key.  Default is to use key
 as defined in \code{\link{options}}.  Acceptable option name 

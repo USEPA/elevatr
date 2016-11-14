@@ -4,12 +4,12 @@
 # elevatr
 An R package for accessing elevation data from various sources
 
-This package currently provides access to elevation data from from Mapzen ([Mapzen Tile Service](https://mapzen.com/documentation/terrain-tiles/) for raster digital elevation models or  [Mapzen Elevation Service](https://mapzen.com/documentation/elevation/elevation-service/) for a point elevation) and USGS (via the [Elevation Point Query Service](http://ned.usgs.gov/epqs/)).  This package provides access to those services and returns elevation data either as a spatial points datafrom (from the Mapzen and USGS Elevation Services) or as a raster object (from the Mapzen Terrain Service).  Additional elevation data sources may be added.
+The `elevatr` package currently provides access to elevation data from from Mapzen ([Mapzen Tile Service](https://mapzen.com/documentation/terrain-tiles/) for raster digital elevation models.  For point elevation data, either the [Mapzen Elevation Service](https://mapzen.com/documentation/elevation/elevation-service/) or the [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/)) may be used. Additional elevation data sources may be added.
 
 Current plan for this package includes just two functions to access elevation web services:
 
-- `get_elev_point()`:  Get point elevations using the Mapzen Elevation Service or (for the US Only) the USGS Elevation Point Query Service.  This will accept a data frame of x (long) and y (lat) or a SpatialPoints/SpatialPointsDataFame as input.  A SpatialPointsDataFrame is returned.
-- `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital Elevation Model) from the Mapzen Terrain GeoTIFF Service.  Other sources may be added later.  This will accepts a data frame of of x (long) and y (lat) or any `sp` or `raster` object as input and will return a `raster` object of the elevation tiles that cover the bounding box of the input spatial data. 
+- `get_elev_point()`:  Get point elevations using the Mapzen Elevation Service or the USGS Elevation Point Query Service (for the US Only) .  This will accept a data frame of x (long) and y (lat) or a SpatialPoints/SpatialPointsDataFame as input.  A SpatialPointsDataFrame is returned.
+- `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital Elevation Model) from the Mapzen Terrain GeoTIFF Service.  Other sources may be added later.  This will accept a data frame of of x (long) and y (lat) or any `sp` or `raster` object as input and will return a `raster` object of the elevation tiles that cover the bounding box of the input spatial data. 
 
 ## Installation
 

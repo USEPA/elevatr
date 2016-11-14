@@ -79,3 +79,14 @@ proj_expand <- function(bbx,prj,expand){
                      sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")))
   bbx
 }
+
+#' function to break up larger requests into smaller ones and not go afoul of
+#' mapzen API limits
+
+#resp <- httr::GET(url)
+#if (httr::http_type(resp) != "application/json") {
+#  stop("API did not return json", call. = FALSE)
+#} 
+#resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+#                           simplifyVector = FALSE)
+#locations$elevation <- unlist(resp$height)

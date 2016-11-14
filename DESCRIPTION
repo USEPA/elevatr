@@ -16,7 +16,8 @@ Imports:
     rgdal,
     raster,
     httr,
-    jsonlite
+    jsonlite,
+    progress
 License: CC0
 Encoding: UTF-8
 LazyData: true
