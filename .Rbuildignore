@@ -1,3 +1,14 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-README.Rmd
+.travis.yml
+^\.travis\.yml$
+^NEWS.md$
+^cran_comments\.md$
+^appveyor\.yml$
+^CONTRIBUTING.md$
+^README\.Rmd$
+^README\.pdf$
+^figure$
+^NEWS\.md$
+^log_check\.R$
+^manuscript$
