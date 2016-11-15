@@ -60,9 +60,9 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
                   sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if(src == "mapzen"){ 
-    locations_dd <- get_mapzen_elev(locations_dd,api_key = api_key,...)
+    locations_dd <- get_mapzen_elev(locations_dd,api_key = api_key, ...)
   } else if (src == "epqs"){
-    locations_dd <- get_epqs(locations_dd,...)
+    locations_dd <- get_epqs(locations_dd, ...)
   }
   # Re-project back to original and return
   locations <- sp::spTransform(locations_dd,sp::CRS(prj))
@@ -92,7 +92,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
 #' @examples 
 #' xdf<-data.frame(runif(10,-75,-72),runif(10,40,45))
 #' get_epqs(xdf)
-get_epqs <- function(locations, units = c("meters","feet"), ...){
+get_epqs <- function(locations, units = c("meters","feet")){
   base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
   if(match.arg(units) == "meters"){
     units <- "Meters"
@@ -124,8 +124,10 @@ get_epqs <- function(locations, units = c("meters","feet"), ...){
 
 #' Get point elevations from Mapzen
 #' 
-#' @param api_key A valid Mapzen API key.  Not required, but higher rate limits
-#'                are allowed with a key. Defaults to 
+#' @param api_key A valid Mapzen API key.  Although not required by the API, the
+#'                rate limits are low without a key.  The \code{elevatr} package
+#'                requires a key.  To get a key, visit 
+#'                \url{https://mapzen.com/developers}. Defaults to 
 #'                \code{getOption("mapzen_key")}.
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
 #'         content courtesy of the U.S. Geological Survey and ETOPO1 content 
@@ -138,24 +140,41 @@ get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)
   coords <- data.frame(sp::coordinates(locations))
-  if(nrow(coords)<201){
   names(coords) <- c("lon","lat")
-  json_coords <- jsonlite::toJSON(list(shape=coords))
-  url <- paste0(base_url,json_coords,key)
-  resp <- httr::GET(url)
-  if (httr::http_type(resp) != "application/json") {
-    stop("API did not return json", call. = FALSE)
-  } 
-  resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
-                             simplifyVector = FALSE)
-  locations$elevation <- unlist(resp$height)
+  if(nrow(coords)<201){
+    json_coords <- jsonlite::toJSON(list(shape=coords))
+    url <- paste0(base_url,json_coords,key)
+    resp <- httr::GET(url)
+    if (httr::http_type(resp) != "application/json") {
+      stop("API did not return json", call. = FALSE)
+    } 
+    resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+                               simplifyVector = FALSE)
+    locations$elevation <- unlist(resp$height)
   } else if(nrow(coords)>200){
-    browser()
+    #Break up becuase larger requests would time out 
     idx_e <- seq(0,nrow(coords),by=200)
-    idx_e <- c(idx[-1],nrow(coords))
+    if(nrow(coords)%%200 == 0){
+      idx_e <- idx_e[-1]
+    } else {
+      idx_e <- c(idx_e[-1],nrow(coords))
+    }
     idx_s <- seq(1,nrow(coords),by=200)
+    pb <- progress::progress_bar$new(format = " Accessing point elevations [:bar] :percent",
+                                     total = length(idx_e), clear = FALSE, 
+                                     width= 60)
     for(i in seq_along(idx_e)){
-      
+      json_coords <- jsonlite::toJSON(list(shape=coords[idx_s[i]:idx_e[i],]))
+      url <- paste0(base_url,json_coords,key)
+      resp <- httr::GET(url)
+      if (httr::http_type(resp) != "application/json") {
+        stop("API did not return json", call. = FALSE)
+      } 
+      resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+                                 simplifyVector = FALSE)
+      locations$elevation[idx_s[i]:idx_e[i]] <- unlist(resp$height)
+      pb$tick()
+      Sys.sleep(0.25) #prevents hitting rate limits
     }
   }
   locations

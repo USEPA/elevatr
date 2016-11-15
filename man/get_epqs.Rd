@@ -4,7 +4,7 @@
 \alias{get_epqs}
 \title{Get point elevation data from the USGS Elevation Point Query Service}
 \usage{
-get_epqs(locations, units = c("meters", "feet"), ...)
+get_epqs(locations, units = c("meters", "feet"))
 }
 \arguments{
 \item{locations}{A SpatialPointsDataFrame of the location(s) for which you 

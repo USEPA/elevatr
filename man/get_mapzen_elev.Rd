@@ -13,8 +13,10 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
 get_mapzen_elev(locations, api_key = getOption("mapzen_key"))
 }
 \arguments{
-\item{api_key}{A valid Mapzen API key.  Not required, but higher rate limits
-are allowed with a key. Defaults to 
+\item{api_key}{A valid Mapzen API key.  Although not required by the API, the
+rate limits are low without a key.  The \code{elevatr} package
+requires a key.  To get a key, visit 
+\url{https://mapzen.com/developers}. Defaults to 
 \code{getOption("mapzen_key")}.}
 }
 \description{
