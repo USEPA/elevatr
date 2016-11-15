@@ -115,10 +115,11 @@ get_epqs <- function(locations, units = c("meters","feet")){
     resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                simplifyVector = FALSE
                                 )
-    locations$elevation[i] <- resp[[1]][[1]]$Elevation
+    locations$elevation[i] <- as.numeric(resp[[1]][[1]]$Elevation)
     pb$tick()
     Sys.sleep(1 / 100)
   }
+  
   locations
 }
 
