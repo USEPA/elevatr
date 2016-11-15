@@ -3,6 +3,7 @@
 [![Appveyor](https://ci.appveyor.com/api/projects/status/github/jhollist/elevatr?svg=true)](https://ci.appveyor.com/project/jhollist/elevatr)
 [![](http://www.r-pkg.org/badges/version/elevatr)](http://www.r-pkg.org/pkg/elevatr)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/elevatr)](http://www.r-pkg.org/pkg/elevatr)
+[![Coverage Status](https://coveralls.io/repos/github/jhollist/elevatr/badge.svg?branch=master)](https://coveralls.io/github/jhollist/elevatr?branch=master)
 
 # elevatr
 An R package for accessing elevation data from various sources
