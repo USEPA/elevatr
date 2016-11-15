@@ -31,7 +31,7 @@ test_that("get_elev_point returns correctly", {
   #proj
   expect_equal(proj4string(sp_sm),proj4string(mz_sp))
   expect_equal(proj4string(sp_sm_proj),proj4string(mz_sp_prj))
-  expect_equal(proj4string(sp_sm),proj4string(epqs_sp_prj))
+  expect_equal(proj4string(sp_sm),proj4string(epqs_sp))
   expect_equal(proj4string(sp_sm_proj),proj4string(epqs_sp_prj))
   
   
