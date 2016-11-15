@@ -143,7 +143,12 @@ get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
   names(coords) <- c("lon","lat")
   if(nrow(coords)<201){
     json_coords <- jsonlite::toJSON(list(shape=coords))
-    url <- paste0(base_url,json_coords,key)
+    if(is.null(api_key)){
+      #really only here for tests
+      url <- paste0(base_url,json_coords)
+    } else {
+      url <- paste0(base_url,json_coords,key)
+    }
     resp <- httr::GET(url)
     if (httr::http_type(resp) != "application/json") {
       stop("API did not return json", call. = FALSE)
@@ -165,7 +170,12 @@ get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
                                      width= 60)
     for(i in seq_along(idx_e)){
       json_coords <- jsonlite::toJSON(list(shape=coords[idx_s[i]:idx_e[i],]))
-      url <- paste0(base_url,json_coords,key)
+      if(is.null(api_key)){
+        #really only here for tests
+        url <- paste0(base_url,json_coords)
+      } else {
+        url <- paste0(base_url,json_coords,key)
+      }
       resp <- httr::GET(url)
       if (httr::http_type(resp) != "application/json") {
         stop("API did not return json", call. = FALSE)

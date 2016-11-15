@@ -1,5 +1,8 @@
 
-
+[![Travis](https://travis-ci.org/jhollist/elevatr.svg?branch=master)](https://travis-ci.org/jhollist/elevatr)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/github/jhollist/elevatr?svg=true)](https://ci.appveyor.com/project/jhollist/elevatr)
+[![](http://www.r-pkg.org/badges/version/elevatr)](http://www.r-pkg.org/pkg/elevatr)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/elevatr)](http://www.r-pkg.org/pkg/elevatr)
 
 # elevatr
 An R package for accessing elevation data from various sources
