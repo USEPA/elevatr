@@ -14,11 +14,15 @@ test_that("get_elev_point returns correctly", {
   #skip_on_cran()
   
   mz_df <- get_elev_point(locations = pt_df,prj = ll_prj, api_key = NULL)
+  Sys.sleep(10)
   mz_sp <- get_elev_point(locations = sp_big, api_key = NULL)
+  Sys.sleep(10)
   mz_sp_prj <- get_elev_point(locations = sp_sm_prj, api_key = NULL)
   epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
   epqs_sp <- get_elev_point(locations = sp_sm, src = "epqs")
   epqs_sp_prj <- get_elev_point(locations = sp_sm_prj, src = "epqs")
+  epqs_ft <- get_elev_point(locations = sp_sm, src = "epqs", units = "feet")
+  epqs_m <- get_elev_point(locations = sp_sm, src = "epqs", units = "meters")
   
   #class
   expect_is(mz_df, "SpatialPointsDataFrame")
@@ -30,9 +34,12 @@ test_that("get_elev_point returns correctly", {
   
   #proj
   expect_equal(proj4string(sp_sm),proj4string(mz_sp))
-  expect_equal(proj4string(sp_sm_proj),proj4string(mz_sp_prj))
+  expect_equal(proj4string(sp_sm_prj),proj4string(mz_sp_prj))
   expect_equal(proj4string(sp_sm),proj4string(epqs_sp))
-  expect_equal(proj4string(sp_sm_proj),proj4string(epqs_sp_prj))
+  expect_equal(proj4string(sp_sm_prj),proj4string(epqs_sp_prj))
   
+  #units
+  expect_equal(epqs_ft$elev_units[1],"feet")
+  expect_equal(epqs_m$elev_units[1],"meters")
   
 })

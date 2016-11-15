@@ -185,7 +185,11 @@ get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
                                  simplifyVector = FALSE)
       locations$elevation[idx_s[i]:idx_e[i]] <- unlist(resp$height)
       pb$tick()
-      Sys.sleep(0.25) #prevents hitting rate limits
+      if(is.null(api_key)){
+        Sys.sleep(1)
+      } else {
+        Sys.sleep(0.25) #prevents hitting rate limits
+      }
     }
   }
   locations
