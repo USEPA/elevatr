@@ -14,7 +14,9 @@ test_that("get_elev_point returns correctly", {
   #skip_on_cran()
   
   mz_df <- get_elev_point(locations = pt_df,prj = ll_prj, api_key = NULL)
+  Sys.sleep(10)
   mz_sp <- get_elev_point(locations = sp_big, api_key = NULL)
+  Sys.sleep(10)
   mz_sp_prj <- get_elev_point(locations = sp_sm_prj, api_key = NULL)
   epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
   epqs_sp <- get_elev_point(locations = sp_sm, src = "epqs")
