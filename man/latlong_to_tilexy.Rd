@@ -11,4 +11,5 @@ latlong_to_tilexy(lon_deg, lat_deg, zoom)
 function to convert lat long to xyz tile with decimals
 rounding to tile occurs in \code{get_tilexy}
 }
+\keyword{internal}
 

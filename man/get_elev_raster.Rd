@@ -40,11 +40,17 @@ accepts a \code{data.frame} of x (long) and y (lat), an
 returned.
 }
 \examples{
+\dontrun{
+loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
+                               max=sp::bbox(lake)[1,2]),
+                     y = runif(6,min=sp::bbox(lake)[2,1], 
+                               max=sp::bbox(lake)[2,2]))
+x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10, 
+                     api_key = NULL)
+
 data(lake)
-loc_df <- data.frame(x = runif(6,min=bbox(lake)[1,1], max=bbox(lake)[1,2]),
-                     y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
-x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10)
 x <- get_elev_raster(lake, z = 12)
+}
 
 }
 

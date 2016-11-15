@@ -9,4 +9,5 @@ proj_expand(bbx, prj, expand)
 \description{
 function to project bounding box and if needed expand it
 }
+\keyword{internal}
 

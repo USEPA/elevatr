@@ -11,4 +11,5 @@ loc_check(locations, prj = NULL)
 function to check input type and projection.  All input types convert to a
 SpatialPointsDataFrame for point elevation and bbx for raster.
 }
+\keyword{internal}
 

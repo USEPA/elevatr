@@ -38,11 +38,5 @@ raster from the geotiff service.  It accepts a \code{sp::bbox} object as
 input and returns a single raster object covering that extent.  You must have
 an api_key from Mapzen.
 }
-\examples{
-data(lake)
-wgs84_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-lake_dd <- sp::spTransform(lake,sp::CRS(wgs84_dd))
-get_mapzen_terrain(sp::bbox(lake_dd),prj = wgs84_dd, z=13)
-}
 \keyword{internal}
 

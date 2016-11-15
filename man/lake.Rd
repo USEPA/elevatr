@@ -3,7 +3,7 @@
 \docType{data}
 \name{lake}
 \alias{lake}
-\title{Lake Data for \code{elevatr}}
+\title{SpatialPolygonsDataFrame of Lake Sunapee}
 \format{SpatialPolygonDataframe with 1 lakes, each with 13 variables}
 \description{
 This example data is a SpatialPolygonsDataFrame 

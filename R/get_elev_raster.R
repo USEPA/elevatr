@@ -24,11 +24,17 @@
 #'         specified by the \code{prj} argument.
 #' @export
 #' @examples 
+#' \dontrun{
+#' loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
+#'                                max=sp::bbox(lake)[1,2]),
+#'                      y = runif(6,min=sp::bbox(lake)[2,1], 
+#'                                max=sp::bbox(lake)[2,2]))
+#' x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10, 
+#'                      api_key = NULL)
+#' 
 #' data(lake)
-#' loc_df <- data.frame(x = runif(6,min=bbox(lake)[1,1], max=bbox(lake)[1,2]),
-#'                      y = runif(6,min=bbox(lake)[2,1], max=bbox(lake)[2,2]))
-#' x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10)
 #' x <- get_elev_raster(lake, z = 12)
+#' }
 #' 
 get_elev_raster <- function(locations,prj = NULL,src = c("mapzen"),
                            api_key = get_api_key(src), expand = NULL, ...){
@@ -73,11 +79,6 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen"),
 #'               additional area around the feature is desired. Default is NULL.                
 #' @export
 #' @keywords internal
-#' @examples 
-#' data(lake)
-#' wgs84_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-#' lake_dd <- sp::spTransform(lake,sp::CRS(wgs84_dd))
-#' get_mapzen_terrain(sp::bbox(lake_dd),prj = wgs84_dd, z=13)
 get_mapzen_terrain <- function(bbx, z=9, prj, api_key = getOption("mapzen_key")
                                ,expand=NULL){
   # Expand (if needed) and re-project bbx to dd
@@ -88,7 +89,11 @@ get_mapzen_terrain <- function(bbx, z=9, prj, api_key = getOption("mapzen_key")
   dem_list<-vector("list",length = nrow(tiles))
   for(i in seq_along(tiles[,1])){
     tmpfile <- tempfile()
-    url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",api_key)
+    if(is.null(api_key)){
+      url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
+    } else {
+      url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",api_key)
+    }
     httr::GET(url,httr::write_disk(tmpfile,overwrite=T))
     dem_list[[i]] <- raster::raster(tmpfile)
     raster::projection(dem_list[[i]]) <- web_merc

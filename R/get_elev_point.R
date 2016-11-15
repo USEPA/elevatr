@@ -46,9 +46,9 @@
 #'                prj = ll_prj)
 #' get_elev_point(locations = mts_sp)
 #' \dontrun{
-#' data(lake)
+#' data(sp_big)
 #' options(mapzen_key = "mapzen-XXXXXXX")
-#' get_elev_point(samples)}
+#' get_elev_point(sp_big)}
 get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
                            api_key = get_api_key(src), ...){
   src <- match.arg(src)

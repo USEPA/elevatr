@@ -3,7 +3,7 @@
 \docType{data}
 \name{sp_big}
 \alias{sp_big}
-\title{SpatialPoints data}
+\title{SpatialPoints of random points}
 \format{A SpatialPoints object}
 \description{
 This SpatialPoints dataset is 250 uniform random points to be used for 

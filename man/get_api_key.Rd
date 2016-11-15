@@ -9,4 +9,5 @@ get_api_key(src)
 \description{
 function to get api key based on source
 }
+\keyword{internal}
 
