@@ -34,6 +34,7 @@
 #'         specified by the \code{prj} argument.
 #' @export
 #' @examples
+#' \dontrun{
 #' mt_wash <- data.frame(x = -71.3036, y = 44.2700)
 #' mt_mans <- data.frame(x = -72.8145, y = 44.5438)
 #' mts <- rbind(mt_wash,mt_mans)
@@ -45,7 +46,6 @@
 #' get_elev_point(locations = mt_wash, src = "epqs", units="meters", 
 #'                prj = ll_prj)
 #' get_elev_point(locations = mts_sp)
-#' \dontrun{
 #' data(sp_big)
 #' options(mapzen_key = "mapzen-XXXXXXX")
 #' get_elev_point(sp_big)}
