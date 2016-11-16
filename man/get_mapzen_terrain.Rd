@@ -10,7 +10,7 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
         \url{https://mapzen.com/documentation/terrain-tiles/}
 }
 \usage{
-get_mapzen_terrain(bbx, z = 9, prj, api_key = getOption("mapzen_key"),
+get_mapzen_terrain(bbx, z = 9, prj, api_key = Sys.getenv("mapzen_key"),
   expand = NULL)
 }
 \arguments{
@@ -25,7 +25,7 @@ details on zoom and resolution see the documentation from Mapzen at
 
 \item{api_key}{An API Key from Mapzen, create at 
 \url{https://mapzen.com/developer} Required. Set in your 
-\code{.Rprofile} file with the option \code{mapzen_key}}
+\code{.Renviron} file with the variable "mapzen_key"}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 

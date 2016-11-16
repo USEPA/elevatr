@@ -30,8 +30,8 @@ will be in the future.  The "epqs" source is relatively slow
 for larger numbers of points (e.g. > 500).}
 
 \item{api_key}{A character for the approriate API key.  Default is to use key
-as defined in \code{\link{options}}.  Acceptable option name 
-is currently only "mapzen_key".}
+as defined in \code{.Renviron}.  Acceptable environment 
+variable name is currently only "mapzen_key".}
 
 \item{...}{Additional arguments passed to get_epqs or get_mapzen_elevation}
 }
@@ -62,7 +62,6 @@ get_elev_point(locations = mt_wash, src = "epqs", units="meters",
                prj = ll_prj)
 get_elev_point(locations = mts_sp)
 data(sp_big)
-options(mapzen_key = "mapzen-XXXXXXX")
 get_elev_point(sp_big)}
 }
 

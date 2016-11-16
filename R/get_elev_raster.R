@@ -73,14 +73,14 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen"),
 #' @param prj Proj.4 string for input bbox 
 #' @param api_key An API Key from Mapzen, create at 
 #'                \url{https://mapzen.com/developer} Required. Set in your 
-#'                \code{.Rprofile} file with the option \code{mapzen_key}
+#'                \code{.Renviron} file with the variable "mapzen_key"
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.                
 #' @export
 #' @keywords internal
-get_mapzen_terrain <- function(bbx, z=9, prj, api_key = getOption("mapzen_key")
+get_mapzen_terrain <- function(bbx, z=9, prj, api_key = Sys.getenv("mapzen_key")
                                ,expand=NULL){
   # Expand (if needed) and re-project bbx to dd
   bbx <- proj_expand(bbx,prj,expand)

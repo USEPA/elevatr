@@ -24,5 +24,17 @@ library(devtools)
 install_github("jhollist/elevatr")
 ```
 
+## API Keys
+
+The `elevatr` packages will look for API keys stored as environment variables.  Currently the only API key required is from Mapzen.  Go to <https://mapzen.com/developers> and create a new key.  Copy this key and add to your `.Renviron` file.  This can be done using the method suggested [here](http://happygitwithr.com/api-tokens.html).  For example:
+
+```
+cat("mapzen_key=mapzen-XXXXXXX\n",
+    file=file.path(normalizePath("~/"), ".Renviron"),
+    append=TRUE)
+```
+
+You will need to restart R, but once the key is there you are good to go on that machine.  `elevatr` will access the key via `Sys.getenv("mapzen_key")`
+
 ## Attribution
 Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 content courtesy of the U.S. Geological Survey and ETOPO1 content courtesy of U.S. National Oceanic and Atmospheric Administration.

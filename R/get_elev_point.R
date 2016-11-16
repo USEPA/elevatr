@@ -27,8 +27,8 @@
 #'               will be in the future.  The "epqs" source is relatively slow 
 #'               for larger numbers of points (e.g. > 500). 
 #' @param api_key A character for the approriate API key.  Default is to use key
-#'                as defined in \code{\link{options}}.  Acceptable option name 
-#'                is currently only "mapzen_key".
+#'                as defined in \code{.Renviron}.  Acceptable environment 
+#'                variable name is currently only "mapzen_key".
 #' @param ... Additional arguments passed to get_epqs or get_mapzen_elevation
 #' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
 #'         specified by the \code{prj} argument.
@@ -47,7 +47,6 @@
 #'                prj = ll_prj)
 #' get_elev_point(locations = mts_sp)
 #' data(sp_big)
-#' options(mapzen_key = "mapzen-XXXXXXX")
 #' get_elev_point(sp_big)}
 get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
                            api_key = get_api_key(src), ...){
@@ -129,14 +128,14 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #'                rate limits are low without a key.  The \code{elevatr} package
 #'                requires a key.  To get a key, visit 
 #'                \url{https://mapzen.com/developers}. Defaults to 
-#'                \code{getOption("mapzen_key")}.
+#'                \code{Sys.getenv("mapzen_key")}.
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
 #'         content courtesy of the U.S. Geological Survey and ETOPO1 content 
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
 #'         \url{https://mapzen.com/documentation/elevation/elevation-service/} 
 #' @export
 #' @keywords internal
-get_mapzen_elev <- function(locations, api_key = getOption("mapzen_key")){
+get_mapzen_elev <- function(locations, api_key = Sys.getenv("mapzen_key")){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)

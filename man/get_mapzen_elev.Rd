@@ -10,14 +10,14 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
         \url{https://mapzen.com/documentation/elevation/elevation-service/}
 }
 \usage{
-get_mapzen_elev(locations, api_key = getOption("mapzen_key"))
+get_mapzen_elev(locations, api_key = Sys.getenv("mapzen_key"))
 }
 \arguments{
 \item{api_key}{A valid Mapzen API key.  Although not required by the API, the
 rate limits are low without a key.  The \code{elevatr} package
 requires a key.  To get a key, visit 
 \url{https://mapzen.com/developers}. Defaults to 
-\code{getOption("mapzen_key")}.}
+\code{Sys.getenv("mapzen_key")}.}
 }
 \description{
 Get point elevations from Mapzen
