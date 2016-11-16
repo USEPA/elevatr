@@ -13,9 +13,12 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 #' function to get a data.frame of all xyz tiles to download
 #' @keywords internal
 get_tilexy <- function(bbx,z){
-  min_tile <- floor(latlong_to_tilexy(bbx[1,1],bbx[2,1],z))
-  max_tile <- ceiling(latlong_to_tilexy(bbx[1,2],bbx[2,2],z))
-  return(expand.grid(min_tile[1]:max_tile[1],min_tile[2]:max_tile[2]))
+  min_tile <- round(latlong_to_tilexy(bbx[1,1],bbx[2,1],z))
+  #min_tile_c <- ceiling(latlong_to_tilexy(bbx[1,1],bbx[2,1],z))
+  max_tile <- round(latlong_to_tilexy(bbx[1,2],bbx[2,2],z))
+  #max_tile_c <- ceiling(latlong_to_tilexy(bbx[1,2],bbx[2,2],z))
+  tile_df <- rbind(min_tile, max_tile)
+  return(expand.grid(unique(tile_df[,1]),unique(tile_df[,2])))
 }
 
 #' function to check input type and projection.  All input types convert to a

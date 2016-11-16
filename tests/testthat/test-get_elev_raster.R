@@ -4,7 +4,7 @@ data("sp_big")
 library(sp)
 
 
-ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
 aea_prj <- "+proj=aea +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
 
 sp_sm <- SpatialPoints(coordinates(pt_df),CRS(ll_prj))
@@ -15,8 +15,10 @@ test_that("get_elev_raster returns correctly", {
   
   mz_df <- get_elev_raster(locations = pt_df,prj = ll_prj, api_key = NULL, 
                            z = 6)
+  Sys.sleep(1)
   mz_sp <- get_elev_raster(locations = sp_sm, api_key = NULL, 
                            z = 6)
+  Sys.sleep(1)
   mz_sp_prj <- get_elev_raster(locations = sp_sm_prj, api_key = NULL, 
                                z = 6)
   #class

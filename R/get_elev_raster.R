@@ -42,6 +42,7 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen"),
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   prj <- sp::proj4string(locations)
+  
   # Pass of locations to apis to get data as raster
   if(src == "mapzen"){
     raster_elev <- get_mapzen_terrain(sp::bbox(locations),prj,api_key = api_key, 
