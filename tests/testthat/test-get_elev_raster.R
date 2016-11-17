@@ -21,14 +21,23 @@ test_that("get_elev_raster returns correctly", {
   Sys.sleep(1)
   mz_sp_prj <- get_elev_raster(locations = sp_sm_prj, api_key = NULL, 
                                z = 6)
+  
+  Sys.sleep(1)
+  onetile <- get_elev_raster(locations = sp_sm_prj, api_key = NULL, 
+                               z = 1)
+  
   #class
   expect_is(mz_df, "RasterLayer")
   expect_is(mz_sp, "RasterLayer")
   expect_is(mz_sp_prj, "RasterLayer")
+  expect_is(onetile,"RasterLayer")
   
   #project
   expect_equal(proj4string(mz_df),ll_prj)
   expect_equal(proj4string(mz_sp),ll_prj)
   expect_equal(proj4string(mz_sp_prj),aea_prj)
+  expect_equal(proj4string(onetile),aea_prj)
+  
+  #numeric
 
 })

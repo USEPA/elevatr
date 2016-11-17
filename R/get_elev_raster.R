@@ -95,7 +95,10 @@ get_mapzen_terrain <- function(bbx, z=9, prj, api_key = Sys.getenv("mapzen_key")
     } else {
       url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",api_key)
     }
-    httr::GET(url,httr::write_disk(tmpfile,overwrite=T))
+    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=T))
+    if (httr::http_type(resp) != "image/tif") {
+      stop("API did not return tif", call. = FALSE)
+    } 
     dem_list[[i]] <- raster::raster(tmpfile)
     raster::projection(dem_list[[i]]) <- web_merc
   }
@@ -110,7 +113,5 @@ get_mapzen_terrain <- function(bbx, z=9, prj, api_key = Sys.getenv("mapzen_key")
     return(dem_list[[1]])
   } else if (length(dem_list) > 1){
     return(do.call(raster::merge, dem_list))
-  } else {
-    stop("Whoa, something is not right")
-  }
+  } 
 }
