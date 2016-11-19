@@ -4,7 +4,7 @@
 \alias{get_elev_raster}
 \title{Get Raster Elevation}
 \usage{
-get_elev_raster(locations, prj = NULL, src = c("mapzen"),
+get_elev_raster(locations, prj = NULL, src = c("mapzen", "aws"),
   api_key = get_api_key(src), expand = NULL, ...)
 }
 \arguments{
@@ -14,10 +14,13 @@ get_elev_raster(locations, prj = NULL, src = c("mapzen"),
 \item{prj}{A PROJ.4 string defining the projection of the locations argument. 
 If a \code{sp} or \code{raster} object is provided, the PROJ.4 
 string will be taken from that.  This argument is required for a 
-\code{data.frame} of locations.}
+\code{data.frame} of locations."}
 
-\item{src}{A character indicating which API to use, currently only 
-"mapzen" is used.}
+\item{src}{A character indicating which API to use, currently either 
+"mapzen" (default), or "aws" is used. Both use the same source
+tiles.  The Amazon Web Services tiles are best if rate limits
+are causing failure of the Mapzen tiles or if you are accessing
+the data via and AWS instance.}
 
 \item{api_key}{A valid API key.}
 
