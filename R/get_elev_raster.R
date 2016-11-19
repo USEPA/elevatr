@@ -143,7 +143,6 @@ get_mapzen_terrain <- function(bbx, z=9, prj, api_key = Sys.getenv("mapzen_key")
 #'          details on zoom and resolution see the documentation from Mapzen at 
 #'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
 #' @param prj Proj.4 string for input bbox 
-#'
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
