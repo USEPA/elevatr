@@ -37,6 +37,7 @@
 #' 
 #' data(lake)
 #' x <- get_elev_raster(lake, z = 12)
+#' x <- get_elev_raster(lake, z = 12, src = "aws")
 #' }
 #' 
 get_elev_raster <- function(locations,prj = NULL,src = c("mapzen", "aws"),
