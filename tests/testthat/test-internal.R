@@ -20,3 +20,14 @@ test_that("proj_expand works",{
   expect_gt(ncell(mans_exp),ncell(mans))
   
 })
+
+test_that("loc_check errors correctly", {
+  proj4string(sp_sm) <- ""
+  spdf_sm <- SpatialPointsDataFrame(sp_sm, data.frame(1:nrow(coordinates(sp_sm))))
+  expect_error(get_elev_point(locations = pt_df), 
+               "Please supply a valid proj.4 string.")
+  expect_error(get_elev_point(locations = sp_sm), 
+               "Please supply a valid proj.4 string.")
+  expect_error(get_elev_point(locations = spdf_sm),
+               "Please supply a valid proj.4 string.")
+})

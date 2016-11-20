@@ -26,17 +26,24 @@ test_that("get_elev_raster returns correctly", {
   onetile <- get_elev_raster(locations = sp_sm_prj, api_key = NULL, 
                                z = 1)
   
+  aws <- get_elev_raster(locations = sp_sm, z = 6, src = "aws")
+  aws_prj <- get_elev_raster(locations = sp_sm_prj, z = 6, src = "aws")
+  
   #class
   expect_is(mz_df, "RasterLayer")
   expect_is(mz_sp, "RasterLayer")
   expect_is(mz_sp_prj, "RasterLayer")
   expect_is(onetile,"RasterLayer")
+  expect_is(aws,"RasterLayer")
+  expect_is(aws_prj,"RasterLayer")
   
   #project
   expect_equal(proj4string(mz_df),ll_prj)
   expect_equal(proj4string(mz_sp),ll_prj)
   expect_equal(proj4string(mz_sp_prj),aea_prj)
   expect_equal(proj4string(onetile),aea_prj)
+  expect_equal(proj4string(aws),ll_prj)
+  expect_equal(proj4string(aws_prj),aea_prj)
   
   #numeric
 
