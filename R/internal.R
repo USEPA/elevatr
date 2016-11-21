@@ -57,8 +57,16 @@ loc_check <- function(locations, prj = NULL){
     if(is.na(sp::proj4string(locations)) & is.null(prj)){
       stop("Please supply a valid proj.4 string.")
     }
+    #browser()
     if(is.na(sp::proj4string(locations))){
-      sp::proj4string(locations)<-prj
+      if(attributes(class(locations)) == "raster"){
+        if(sum(!is.na(raster::getValues(locations))) == 0){
+          stop("No distinct points, all values NA.")
+        } else {
+          locations <- raster::rasterToPoints(locations,spatial = T)
+          sp::proj4string(locations)<-prj
+        }
+      } 
     }
   }
 locations
@@ -86,6 +94,7 @@ proj_expand <- function(bbx,prj,expand){
                      sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")))
   bbx
 }
+
 
 #' function to break up larger requests into smaller ones and not go afoul of
 #' mapzen API limits

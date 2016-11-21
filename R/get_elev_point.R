@@ -55,8 +55,10 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
   locations <- loc_check(locations,prj)
   prj <- sp::proj4string(locations)
   # Re-project locations to dd
+  
   locations_dd <- sp::spTransform(locations,
-                  sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+                    sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+  
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if(src == "mapzen"){ 
     locations_dd <- get_mapzen_elev(locations_dd,api_key = api_key, ...)

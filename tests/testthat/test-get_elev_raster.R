@@ -23,8 +23,8 @@ test_that("get_elev_raster returns correctly", {
                                z = 6)
   
   Sys.sleep(1)
-  onetile <- get_elev_raster(locations = sp_sm_prj, api_key = NULL, 
-                               z = 1)
+  onetile <- get_elev_raster(locations = sp_sm[1,], api_key = NULL, 
+                               z = 6)
   
   aws <- get_elev_raster(locations = sp_sm, z = 6, src = "aws")
   aws_prj <- get_elev_raster(locations = sp_sm_prj, z = 6, src = "aws")
@@ -41,10 +41,9 @@ test_that("get_elev_raster returns correctly", {
   expect_equal(proj4string(mz_df),ll_prj)
   expect_equal(proj4string(mz_sp),ll_prj)
   expect_equal(proj4string(mz_sp_prj),aea_prj)
-  expect_equal(proj4string(onetile),aea_prj)
+  expect_equal(proj4string(onetile),ll_prj)
   expect_equal(proj4string(aws),ll_prj)
   expect_equal(proj4string(aws_prj),aea_prj)
-  
-  #numeric
 
 })
+
