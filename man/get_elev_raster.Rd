@@ -52,9 +52,14 @@ Currently, the \code{get_elev_raster} utilizes two separate APIs,
          (\url{https://aws.amazon.com/public-datasets/terrain/}).  Both 
          services utilize the same underlying data and provide global 
          coverage, but they have different use cases.  The Mapzen service is
-         cached and thus should provide speedier downloads.  It will work '
-         without an API key but is rate limited to does, 
-         however, require an API key.
+         cached and thus should provide speedier downloads.  It will work 
+         without an API key but an API key is suggested. 
+         
+         Both services are provided via x, y, and z tiles (see 
+         \url{http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
+         details.) The x and y are determined from the bounding box of the 
+         object submitted for \code{locations} argument, and the z argument 
+         must be specified by the user.
 }
 \examples{
 \dontrun{
@@ -66,7 +71,7 @@ x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10,
                      api_key = NULL)
 
 data(lake)
-x <- get_elev_raster(lake, z = 12, src = "mapzen")
+x <- get_elev_raster(lake, z = 3, src = "mapzen")
 x <- get_elev_raster(lake, z = 12, src = "aws")
 }
 
