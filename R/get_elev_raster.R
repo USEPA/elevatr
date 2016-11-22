@@ -22,9 +22,26 @@
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.
-#' @param ... Extra parameters to pass to API specific fucntions
+#' @param ... Extra parameters to pass to API specific functions.  See 
+#'            \code{\link{get_mapzen_terrain}} and \code{\link{get_aws_terrain}}
+#'            for more details of the required arguments. 
 #' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
 #'         specified by the \code{prj} argument.
+#' @details Currently, the \code{get_elev_raster} utilizes two separate APIs, 
+#'          the Mapzen Terrain Tile Service 
+#'          (\url{https://mapzen.com/documentation/terrain-tiles/}) or the 
+#'          Amazon Web Services 
+#'          (\url{https://aws.amazon.com/public-datasets/terrain/}).  Both 
+#'          services utilize the same underlying data and provide global 
+#'          coverage, but they have different use cases.  The Mapzen service is
+#'          cached and thus should provide speedier downloads.  It will work 
+#'          without an API key but an API key is suggested. 
+#'          
+#'          Both services are provided via x, y, and z tiles (see 
+#'          \url{http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
+#'          details.) The x and y are determined from the bounding box of the 
+#'          object submitted for \code{locations} argument, and the z argument 
+#'          must be specified by the user.   
 #' @export
 #' @examples 
 #' \dontrun{
@@ -36,7 +53,7 @@
 #'                      api_key = NULL)
 #' 
 #' data(lake)
-#' x <- get_elev_raster(lake, z = 12)
+#' x <- get_elev_raster(lake, z = 3, src = "mapzen")
 #' x <- get_elev_raster(lake, z = 12, src = "aws")
 #' }
 #' 
