@@ -3,6 +3,9 @@ Title: Download Elevation Data From Various APIs
 Version: 0.0.0.9003
 Authors@R: person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"))
+URL: https://www.github.com/usepa/elevatr
+BugReports: https://github.com/usepa/elevatr/issues
+Maintainer: Jeffrey W. Hollister <hollister.jeff@epa.gov>
 Description: Several web services are available that provide access to elevation
              data. This package provides access to several of those services and 
              returns elevation data either as a SpatialPointsDataFrame from 

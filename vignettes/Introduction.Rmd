@@ -9,9 +9,36 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+# Introduction
+
+## Data Sources
+# Get Point Elevation Data
+
+## Mapzen Elevation Service 
+
+<https://mapzen.com/documentation/elevation/elevation-service/>
+
+### API Keys
+
+## USGS Elevation Point Query Service 
+
+
+<http://ned.usgs.gov/epqs/>
+
+# Get Raster Elevation Data
+
+## Mapzen Terrain Tile Service
+<https://mapzen.com/documentation/terrain-tiles/>
+
+
+## Terrain Tiles on Amazon Web Services (AWS)
+
+<https://aws.amazon.com/public-datasets/terrain/>
+
+<!--
 Begining of vignette for elevatr package
 
-```{r}
+```{r, eval=F}
 library(sp)
 library(elevatr)
 library(raster)
@@ -28,3 +55,4 @@ for(i in seq(0,60,10)){
 }
 dim_df
 ```
+--!>
