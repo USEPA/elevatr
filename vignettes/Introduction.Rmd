@@ -12,6 +12,7 @@ vignette: >
 # Introduction
 
 ## Data Sources
+
 # Get Point Elevation Data
 
 ## Mapzen Elevation Service 
@@ -22,14 +23,15 @@ vignette: >
 
 ## USGS Elevation Point Query Service 
 
-
 <http://ned.usgs.gov/epqs/>
 
 # Get Raster Elevation Data
 
 ## Mapzen Terrain Tile Service
+
 <https://mapzen.com/documentation/terrain-tiles/>
 
+### API Keys
 
 ## Terrain Tiles on Amazon Web Services (AWS)
 
