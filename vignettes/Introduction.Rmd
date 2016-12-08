@@ -11,9 +11,13 @@ vignette: >
 
 # Introduction
 
-## Data Sources
+Elevation data is used for a wide array of applications, including, for example, visualization, hydrology, and ecological modelling.  Gaining access to this data in R has not had a single interface and was made available through functions across many packages or required local access to the data.  This is no longer required as a variety of APIs now exist that provide programmatic access to elevation data.  The `elevatr` package was written to standarize access to elevation data from web APIs.  This introductory vignette provides details on how to use `elevatr` to access elevation data and provides a bit of detail on the source data it accesses.
+
+There are currently four endpoints that `elevatr` accesses.  For point elevation data it uses USGS Elevation Point Query Service and Mapzen Elevation Service and to access raster elevation data (e.g. a DEM) it uses Mapzen Terrain Service, and the Amazon Web Services Terrain Tiles.
 
 # Get Point Elevation Data
+
+Point elevation is accesses from `get_elev_point()`.  This function takes either a data.frame of XY locations or a SpatialPoints/SpatialPointsDataFrame as input and then fetches the reported elevation for that location.  As mentioned there are two services that provide this information.  Details and use for those are provided below.
 
 ## Mapzen Elevation Service 
 
