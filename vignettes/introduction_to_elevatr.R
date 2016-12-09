@@ -1,0 +1,22 @@
+## ----api_key, eval=FALSE-------------------------------------------------
+#  cat("mapzen_key=mapzen-XXXXXXX\n",
+#      file=file.path(normalizePath("~/"), ".Renviron"),
+#      append=TRUE)
+
+## ---- eval=F-------------------------------------------------------------
+#  library(sp)
+#  library(elevatr)
+#  library(raster)
+#  dim_df <- data.frame(lat=NA,z=NA,x_res=NA,y_res=NA)
+#  ct <- 1
+#  for(i in seq(0,60,10)){
+#    xdf <- SpatialPoints(coordinates(data.frame(0,i)),CRS("+proj=longlat"))
+#    xdf_alb <- spTransform(xdf,CRS("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"))
+#    for(j in 0:14){
+#      x <- get_elev_raster(xdf_alb,z=j)
+#      dim_df[ct,]<-data.frame(i,j,res(x)[1],res(x)[2])
+#      ct <- ct + 1
+#    }
+#  }
+#  dim_df
+

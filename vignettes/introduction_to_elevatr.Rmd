@@ -4,12 +4,12 @@ author: "Jeffrey W. Hollister"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Accessing elevation data in R with the elevatr package}
+  %\VignetteIndexEntry{Introduction to elevatr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-# Introduction
+# Introduction to `elevatr`
 
 Elevation data is used for a wide array of applications, including, for example, visualization, hydrology, and ecological modelling.  Gaining access to this data in R has not had a single interface and was made available through functions across many packages or required local access to the data.  This is no longer required as a variety of APIs now exist that provide programmatic access to elevation data.  The `elevatr` package was written to standarize access to elevation data from web APIs.  This introductory vignette provides details on how to use `elevatr` to access elevation data and provides a bit of detail on the source data it accesses.
 
@@ -21,9 +21,23 @@ Point elevation is accesses from `get_elev_point()`.  This function takes either
 
 ## Mapzen Elevation Service 
 
-<https://mapzen.com/documentation/elevation/elevation-service/>
+The [Mapzen Elevation Service](https://mapzen.com/documentation/elevation/elevation-service/) provides point elevations that are currently derived from the  [SRTM](http://www2.jpl.nasa.gov/srtm/), [GMTED](http://topotools.cr.usgs.gov/gmted_viewer/) and [GEBCO](http://www.gebco.net/data_and_products/gridded_bathymetry_data/) digital elevation models.  The web API provides a variety of input and output sources, but `elevatr` only uses the shape list and returns only the elevation.  The [range parameter](https://mapzen.com/documentation/elevation/elevation-service/#get-height-and-distance-with-the-range-parameter) may be implemented at some point in the future.
 
 ### API Keys
+
+A Mapzen API Key is not required to use this service, but the rate limit is 1000 requests per day, 6 per minute, and 1 per second which is impractical for typical uses, thus it is suggested that you get and use an API Key.  With the API Key the rate limit is 2 queries per second and 20000 queries per day.
+
+Get an API Key from <https://mapzen.com/developers>.  Since `elevatr` will search the environment for the appropriate key , it is suggested that you store this in your `.Renviron` file.  To do this:
+
+```{r api_key, eval=FALSE}
+cat("mapzen_key=mapzen-XXXXXXX\n",
+    file=file.path(normalizePath("~/"), ".Renviron"),
+    append=TRUE)
+```
+
+Once this is set for a given machine there is no need to include the API key in the functions themselves as the default is to use the `mapzen_key` environment variable.
+
+### Using `get_elev_point()` to Access The Mapzen Elevation Service
 
 ## USGS Elevation Point Query Service 
 
