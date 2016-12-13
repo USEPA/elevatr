@@ -28,11 +28,18 @@ loc_check <- function(locations, prj = NULL){
     if(is.null(prj)){
       stop("Please supply a valid proj.4 string.")
     }
-    locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations),
+    if(ncol(locations) > 2){
+      df <- data.frame(locations[,3:ncol(locations)],
+                       vector("numeric",nrow(locations)))
+      names(df) <- c(names(locations)[3:ncol(locations)],
+                     "elevation")
+    } else {
+      df <- data.frame(vector("numeric",nrow(locations)))
+      names(df) <- "elevation"
+    }
+    locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
                              proj4string = sp::CRS(prj),
-                             data = data.frame(elevation = 
-                                                 vector("numeric",
-                                                        nrow(locations))))
+                             data = df)
   } else if(class(locations) == "SpatialPoints"){
     if(is.na(sp::proj4string(locations))& is.null(prj)){
       stop("Please supply a valid proj.4 string.")

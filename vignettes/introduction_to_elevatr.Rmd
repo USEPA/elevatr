@@ -9,6 +9,16 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+```{r setup, include=FALSE, echo=FALSE}
+################################################################################
+#Load packages
+################################################################################
+library("sp")
+library("raster")
+library("rgdal")
+```
+
 # Introduction to `elevatr`
 
 Elevation data is used for a wide array of applications, including, for example, visualization, hydrology, and ecological modelling.  Gaining access to this data in R has not had a single interface and was made available through functions across many packages or required local access to the data.  This is no longer required as a variety of APIs now exist that provide programmatic access to elevation data.  The `elevatr` package was written to standarize access to elevation data from web APIs.  This introductory vignette provides details on how to use `elevatr` to access elevation data and provides a bit of detail on the source data it accesses.
@@ -39,9 +49,100 @@ Once this is set for a given machine there is no need to include the API key in 
 
 ### Using `get_elev_point()` to Access The Mapzen Elevation Service
 
+Usage of `get_elev_point()` requires an input SpatialPoints, SpatialPointsDataFrame, or a two-column data frame with column one containing the x (e.g. longitude) coordinates and the second column containg the y coordinates (e.g. latitude).  The source data is global and also includes estimates of depth for oceans and major lakes
+
+Example usage of each is included below.  For these examples, we can create a dataset to use.
+
+```{r example_dataframe}
+# Create an example data.frame
+set.seed(65.7)
+examp_df <- data.frame(x = runif(10, min = -73, max = -71), 
+                       y = runif(10, min = 41 , max = 45))
+prj_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+
+# Create and example data.frame with additional columns
+cats <- data.frame(category = c("H", "H", "L", "L", "L", 
+                                "M", "H", "L", "M", "M"))
+
+examp_df2 <- data.frame(examp_df, cats)
+
+# Create an example SpatialPoints
+examp_sp <- SpatialPoints(examp_df, proj4string = CRS(prj_dd))
+
+# Create and example SpatialPointsDataFrame
+
+examp_spdf <- SpatialPointsDataFrame(examp_sp, proj4string = CRS(prj_dd), data = cats )
+```
+
+If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output SpatialPointsDataFrame.  Similarlily, an elevation column is added to the data slot of a SpatialPointsDataFrame.
+
+```{r examples_df1}
+# Example using data.frame with longitude and latitude
+df_elev <- get_elev_point(examp_df, prj = prj_dd, src = "mapzen")
+
+# Compare
+examp_df
+df_elev
+```
+
+```{r examples_df2}
+# Example using data.frame with longitud, latitude and an additional column
+df2_elev <- get_elev_point(examp_df2, prj = prj_dd, src = "mapzen")
+
+# Compare
+examp_df2
+df2_elev
+```
+
+```{r sleep1, echo=F}
+Sys.sleep(1)
+```
+
+The process is the same for a SpatialPoints and a SpatialPointsDataFrame object.
+
+```{r examples_sp, eval=T}
+# Example using SpatialPoints
+# prj is taken from the SpatialPoints object
+# api_key is taken from environment variable mapzen_key
+sp_elev <- get_elev_point(examp_sp)
+
+# Compare
+examp_sp
+sp_elev
+```
+
+```{r examples_sp2, eval=T}
+# Example using SpatialPoints
+# prj is taken from the SpatialPoints object
+# api_key is taken from environment variable mapzen_key
+
+spdf_elev <- get_elev_point(examp_spdf)
+
+# Compare
+examp_spdf
+spdf_elev
+```
+
 ## USGS Elevation Point Query Service 
 
-<http://ned.usgs.gov/epqs/>
+The [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/) is also accessible from `elevatr`.  This service is included as it provides elevation from a single source (as opposed to the [muliple sources from Mapzen](https://mapzen.com/documentation/elevation/elevation-service/#data-sources-and-known-issues)) and provides higher precision elevation.  It is only available for the United States (including Alaska and Hawaii).  Points that fall within the United States but are not on land return a value of zero.  Points outside the United States boundaries return a value of -1000000.
+
+### Using `get_elev_point()` to Access The USGS Elevation Point Query Service
+
+The USGS Elevation Point Query Service returns a single point at a time.  The implemntation in `get_elev_point()` will loop through each point, thus can be slow for large number of requests.  In those instances, the Mapzen source would be preferred.
+
+Accessing data from this service is done by setting the `src` to `"epqs"`.  No API key is required and there are no rate limits.
+
+```{r}
+df_elev_epqs <- get_elev_point(examp_df, prj = prj_dd, src = "epqs")
+df_elev_epqs
+df2_elev_epqs <- get_elev_point(examp_df2, prj = prj_dd, src = "epqs")
+df2_elev_epqs
+sp_elev_epqs <- get_elev_point(examp_sp, src = "epqs")
+sp_elev_epqs
+spdf_elev_epqs <- get_elev_point(examp_spdf, src = "epqs")
+spdf_elev_epqs
+```
 
 # Get Raster Elevation Data
 

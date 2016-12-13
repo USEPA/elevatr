@@ -54,19 +54,15 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   prj <- sp::proj4string(locations)
-  # Re-project locations to dd
-  
-  locations_dd <- sp::spTransform(locations,
-                    sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
   
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if(src == "mapzen"){ 
-    locations_dd <- get_mapzen_elev(locations_dd,api_key = api_key, ...)
+    locations_prj <- get_mapzen_elev(locations,api_key = api_key, ...)
   } else if (src == "epqs"){
-    locations_dd <- get_epqs(locations_dd, ...)
+    locations_prj <- get_epqs(locations, ...)
   }
   # Re-project back to original and return
-  locations <- sp::spTransform(locations_dd,sp::CRS(prj))
+  locations <- sp::spTransform(locations_prj,sp::CRS(prj))
   if(length(list(...)) > 0){ 
     if(names(list(...)) %in% "units" & list(...)$units == "feet"){
       locations$elev_units <- rep("feet", nrow(locations))
@@ -100,6 +96,10 @@ get_epqs <- function(locations, units = c("meters","feet")){
   } else if(match.arg(units) == "feet"){
     units <- "Feet"
   }
+  # Re-project locations to dd
+  
+  locations <- sp::spTransform(locations,
+                                   sp::CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs"))
   units <- paste0("&units=",units)
   pb <- progress::progress_bar$new(format = " Accessing point elevations [:bar] :percent",
                                    total = nrow(locations), clear = FALSE, 
@@ -141,6 +141,8 @@ get_mapzen_elev <- function(locations, api_key = Sys.getenv("mapzen_key")){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)
+  locations <- spTransform(locations,
+                           CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
   coords <- data.frame(sp::coordinates(locations))
   names(coords) <- c("lon","lat")
   if(nrow(coords)<201){
@@ -153,7 +155,11 @@ get_mapzen_elev <- function(locations, api_key = Sys.getenv("mapzen_key")){
     }
     resp <- httr::GET(url)
     if (httr::http_type(resp) != "application/json") {
-      stop("API did not return json", call. = FALSE)
+      if(resp$status_code == 429){
+        stop("Mapzen Rate Limit Exceeded", call. = FALSE)
+      } else {
+        stop("API did not return json", call. = FALSE)
+      }
     } 
     resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                simplifyVector = FALSE)
@@ -180,7 +186,11 @@ get_mapzen_elev <- function(locations, api_key = Sys.getenv("mapzen_key")){
       }
       resp <- httr::GET(url)
       if (httr::http_type(resp) != "application/json") {
-        stop("API did not return json", call. = FALSE)
+        if(resp$status_code == 429){
+          stop("Mapzen Rate Limit Exceeded", call. = FALSE)
+        } else {
+          stop("API did not return json", call. = FALSE)
+        }
       } 
       resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                  simplifyVector = FALSE)
