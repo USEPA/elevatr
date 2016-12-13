@@ -19,9 +19,5 @@ a SpatialPointsDataFrame with elevation added to the data slot
 \description{
 Function for accessing elevation data from the USGS epqs
 }
-\examples{
-xdf<-data.frame(runif(10,-75,-72),runif(10,40,45))
-get_epqs(xdf)
-}
 \keyword{internal}
 

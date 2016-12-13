@@ -86,9 +86,6 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
 #' @return a SpatialPointsDataFrame with elevation added to the data slot
 #' @export
 #' @keywords internal
-#' @examples 
-#' xdf<-data.frame(runif(10,-75,-72),runif(10,40,45))
-#' get_epqs(xdf)
 get_epqs <- function(locations, units = c("meters","feet")){
   base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
   if(match.arg(units) == "meters"){
@@ -141,7 +138,7 @@ get_mapzen_elev <- function(locations, api_key = Sys.getenv("mapzen_key")){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)
-  locations <- spTransform(locations,
+  locations <- sp::spTransform(locations,
                            CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
   coords <- data.frame(sp::coordinates(locations))
   names(coords) <- c("lon","lat")

@@ -17,6 +17,8 @@ vignette: >
 library("sp")
 library("raster")
 library("rgdal")
+library("knitr")
+library("elevatr")
 ```
 
 # Introduction to `elevatr`
