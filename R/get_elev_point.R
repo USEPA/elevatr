@@ -139,7 +139,7 @@ get_mapzen_elev <- function(locations, api_key = Sys.getenv("mapzen_key")){
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)
   locations <- sp::spTransform(locations,
-                           CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+                           sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
   coords <- data.frame(sp::coordinates(locations))
   names(coords) <- c("lon","lat")
   if(nrow(coords)<201){

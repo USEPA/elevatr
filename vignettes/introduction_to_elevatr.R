@@ -5,6 +5,8 @@
 library("sp")
 library("raster")
 library("rgdal")
+library("knitr")
+library("elevatr")
 
 ## ----api_key, eval=FALSE-------------------------------------------------
 #  cat("mapzen_key=mapzen-XXXXXXX\n",
