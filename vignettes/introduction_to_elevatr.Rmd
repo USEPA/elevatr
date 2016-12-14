@@ -51,7 +51,7 @@ Once this is set for a given machine there is no need to include the API key in 
 
 ### Using `get_elev_point()` to Access The Mapzen Elevation Service
 
-Usage of `get_elev_point()` requires an input SpatialPoints, SpatialPointsDataFrame, or a two-column data frame with column one containing the x (e.g. longitude) coordinates and the second column containg the y coordinates (e.g. latitude).  The source data is global and also includes estimates of depth for oceans and major lakes
+Usage of `get_elev_point()` requires an input SpatialPoints, SpatialPointsDataFrame, or a two-column data frame with column one containing the x (e.g. longitude) coordinates and the second column containg the y coordinates (e.g. latitude).  The source data is global and also includes estimates of depth for oceans.
 
 Example usage of each is included below.  For these examples, we can create a dataset to use.
 
@@ -148,11 +148,18 @@ spdf_elev_epqs
 
 # Get Raster Elevation Data
 
+While point elevations are useful, they will not provide the information required for most elevation based analysis such as hydrologic modeling, viewsheds, etc.  To do that requires a raster digital elevation model (DEM).  There are several sources for digital elevation models such as the Shuttle Radar Topography Mission (SRTM), the USGS National Elevation Dataset (NED), Global DEM (GDEM), and others.  Each of these DEMs has pros and cons for their use.  Recently, Mapzen has combined [several of these sources](https://mapzen.com/documentation/terrain-tiles/data-sources/) to create a synthesis elevation product that utilizes the best available elevation data for a give region at given zoom level.  Additionally, the elevation data is enhanced with the inclusion of batyhmetry in oceans from ETOPO1.  This data is made available through two separate APIs: the [Mapzen Terrain Tile Service](https://mapzen.com/documentation/terrain-tiles/) and the [Terrain Tiles on Amazon Web Services](https://aws.amazon.com/public-datasets/terrain/).  
+
+The input for `get_elev_raster()` is XX and it returns a RasterLayer of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged Raster Layer.  Details for each service and their usage via `get_elev_raster()` is provided below.
+
 ## Mapzen Terrain Tile Service
 
-<https://mapzen.com/documentation/terrain-tiles/>
+The [Mapzen Terrain Tile Service](https://mapzen.com/documentation/terrain-tiles/) provides access to global terrain tiles in 4 separate formats: terrarium, normal, geotiff, and skadi.  Details on each is provided in the [API documentation](https://mapzen.com/documentation/terrain-tiles/formats/).  The only format accessed via `elevatr` is the geotiff format.  
 
-### API Keys
+### Caching, API Keys, and rate limits
+The Mapzen Terrain Tile Service is cached and as such it will provide quickest access to the data in most cases.  Additionally, you can access the 
+
+
 
 ## Terrain Tiles on Amazon Web Services (AWS)
 
