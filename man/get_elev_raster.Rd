@@ -29,7 +29,9 @@ bounding box that is used to fetch the terrain tiles. This can
 be used for features that fall close to the edge of a tile and 
 additional area around the feature is desired. Default is NULL.}
 
-\item{...}{Extra parameters to pass to API specific functions.  See 
+\item{...}{Extra parameters to pass to API specific functions.  Common usage 
+is for zoom parameter (\code{z}) or for \code{httr::GET} 
+parameters passed to \code{config}.   See 
 \code{\link{get_mapzen_terrain}} and \code{\link{get_aws_terrain}}
 for more details of the required arguments.}
 }

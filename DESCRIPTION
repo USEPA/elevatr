@@ -13,6 +13,11 @@ Description: Several web services are available that provide access to elevation
              elevation services.  Currently, the package supports access to the
              Mapzen Elevation Service, Mapezen Terrain Service, and the USGS
              Elevation Point Query Service.
+Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 content 
+             courtesy of the U.S. Geological Survey and ETOPO1 content courtesy 
+             of U.S. National Oceanic and Atmospheric Administration.  USGS 
+             elevation point query service is provided courtesy of the U.S. 
+             Geological Survey.
 Depends: R (>= 3.0.0)
 Imports:
     sp,

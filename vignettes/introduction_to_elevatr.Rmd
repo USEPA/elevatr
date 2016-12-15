@@ -29,7 +29,7 @@ There are currently four endpoints that `elevatr` accesses.  For point elevation
 
 # Get Point Elevation Data
 
-Point elevation is accesses from `get_elev_point()`.  This function takes either a data.frame of XY locations or a SpatialPoints/SpatialPointsDataFrame as input and then fetches the reported elevation for that location.  As mentioned there are two services that provide this information.  Details and use for those are provided below.
+Point elevation is accesses from `get_elev_point()`.  This function takes either a data.frame with  x (longitude) and y (latitude) locations as the first two columns  or a SpatialPoints/SpatialPointsDataFrame as input and then fetches the reported elevation for that location.  As mentioned there are two services that provide this information.  Details and use for those are provided below.
 
 ## Mapzen Elevation Service 
 
@@ -150,15 +150,38 @@ spdf_elev_epqs
 
 While point elevations are useful, they will not provide the information required for most elevation based analysis such as hydrologic modeling, viewsheds, etc.  To do that requires a raster digital elevation model (DEM).  There are several sources for digital elevation models such as the Shuttle Radar Topography Mission (SRTM), the USGS National Elevation Dataset (NED), Global DEM (GDEM), and others.  Each of these DEMs has pros and cons for their use.  Recently, Mapzen has combined [several of these sources](https://mapzen.com/documentation/terrain-tiles/data-sources/) to create a synthesis elevation product that utilizes the best available elevation data for a give region at given zoom level.  Additionally, the elevation data is enhanced with the inclusion of batyhmetry in oceans from ETOPO1.  This data is made available through two separate APIs: the [Mapzen Terrain Tile Service](https://mapzen.com/documentation/terrain-tiles/) and the [Terrain Tiles on Amazon Web Services](https://aws.amazon.com/public-datasets/terrain/).  
 
-The input for `get_elev_raster()` is XX and it returns a RasterLayer of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged Raster Layer.  Details for each service and their usage via `get_elev_raster()` is provided below.
+The input for `get_elev_raster()` is a data.frame with  x (longitude) and y (latitude) locations as the first two columns, any `sp` object, or any `raster` object and it returns a RasterLayer of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged Raster Layer.  Details for each service and their usage via `get_elev_raster()` is provided below.
 
 ## Mapzen Terrain Tile Service
 
 The [Mapzen Terrain Tile Service](https://mapzen.com/documentation/terrain-tiles/) provides access to global terrain tiles in 4 separate formats: terrarium, normal, geotiff, and skadi.  Details on each is provided in the [API documentation](https://mapzen.com/documentation/terrain-tiles/formats/).  The only format accessed via `elevatr` is the geotiff format.  
 
 ### Caching, API Keys, and rate limits
-The Mapzen Terrain Tile Service is cached and as such it will provide quickest access to the data in most cases.  Additionally, you can access the 
 
+The Mapzen Terrain Tile Service is cached and as such it will provide quickest access to the data in most cases.  Additionally, you can access the service with or without the use of a key, but using a key is preferred and will allow you to view your usage of the service via <https://mapzen.com/developers>.   Additionally, the key will allow Mapzen to better understand and support use of this service.  There are no rate limits.
+
+### Using `get_elev_raster()` to access the Mapzen Terrain Tile Service
+
+As mentioned a data frame with x and y columns, a `sp` object, or a `raster` object needs be the input and the `src` needs to be set to "mapzen" (this is the default).  As with the Elevation service, the `api_key` will be taken from the `mapzen_key` environment variable and if that is not availble it will be set to `NULL`.  
+
+There is no difference in using the `sp` and `raster` input data types.  The data frame requires a `prj`.   We show examples using a `SpatialPolygonsDataFrame` and a data frame.  The zoom level (`z`) defaults to 9 (a trade off between resolution and time for download), but different zoom levels are often desired.  For example:  
+
+```{r}
+# SpatialPolygonsDataFrame example
+data(lake)
+elevation <- get_elev_raster(lake,z = 11)
+plot(elevation)
+plot(lake, add=TRUE)
+
+# data.frame example
+elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5)
+plot(elevation_df)
+plot(examp_sp, add = T)
+```
+
+The zoom level determines the resolution of the output raster.  More details on resolution and zoom level is available in the [Mapzen Documentation on ground resolution](https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution).
+
+Additional parmeters...
 
 
 ## Terrain Tiles on Amazon Web Services (AWS)

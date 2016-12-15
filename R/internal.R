@@ -84,7 +84,11 @@ locations
 #' @keywords internal
 get_api_key<-function(src){
   if(src == "mapzen"){
-    return(Sys.getenv("mapzen_key"))
+    key <- Sys.getenv("mapzen_key")
+    if(nchar(key) == 0) {
+      key <- NULL
+    }
+    return(key)
   }
 }
 

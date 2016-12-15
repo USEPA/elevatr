@@ -22,7 +22,9 @@
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.
-#' @param ... Extra parameters to pass to API specific functions.  See 
+#' @param ... Extra parameters to pass to API specific functions.  Common usage 
+#'            is for zoom parameter (\code{z}) or for \code{httr::GET} 
+#'            parameters passed to \code{config}.   See 
 #'            \code{\link{get_mapzen_terrain}} and \code{\link{get_aws_terrain}}
 #'            for more details of the required arguments. 
 #' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
@@ -66,10 +68,10 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen", "aws"),
   
   # Pass of locations to apis to get data as raster
   if(src == "mapzen"){
-    raster_elev <- get_mapzen_terrain(sp::bbox(locations),prj,api_key = api_key, 
-                                      expand, ...)
+    raster_elev <- get_mapzen_terrain(sp::bbox(locations), prj = prj, api_key = api_key, 
+                                      expand = expand, ...)
   } else if(src == "aws") {
-    raster_elev <- get_aws_terrain(sp::bbox(locations),prj, expand, ...)
+    raster_elev <- get_aws_terrain(sp::bbox(locations), prj = prj, expand = expand, ...)
   }
   # Re-project from webmerc back to original and return
   raster_elev <- raster::projectRaster(raster_elev, crs = sp::CRS(prj))
@@ -80,7 +82,7 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen", "aws"),
 #' 
 #' This function uses the Mapzen Terrain Tile service to retrieve an elevation
 #' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
-#' input and returns a single raster object covering that extent.  You must have
+#' input and returns a single raster object covering that extent.  You should have
 #' an api_key from Mapzen.
 #' 
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
@@ -100,11 +102,13 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen", "aws"),
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
-#'               additional area around the feature is desired. Default is NULL.                
+#'               additional area around the feature is desired. Default is NULL.  
+#' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
+#'            usage is for timeout().              
 #' @export
 #' @keywords internal
-get_mapzen_terrain <- function(bbx, z=9, prj, api_key = Sys.getenv("mapzen_key")
-                               ,expand=NULL){
+get_mapzen_terrain <- function(bbx, z=9, prj, api_key = NULL ,expand=NULL, ...){
+
   # Expand (if needed) and re-project bbx to dd
   bbx <- proj_expand(bbx,prj,expand)
   web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
@@ -118,7 +122,7 @@ get_mapzen_terrain <- function(bbx, z=9, prj, api_key = Sys.getenv("mapzen_key")
     } else {
       url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",api_key)
     }
-    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=T))
+    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=T), ...)
     if (httr::http_type(resp) != "image/tif") {
       stop("API did not return tif", call. = FALSE)
     } 
@@ -164,10 +168,13 @@ get_mapzen_terrain <- function(bbx, z=9, prj, api_key = Sys.getenv("mapzen_key")
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
-#'               additional area around the feature is desired. Default is NULL.                
+#'               additional area around the feature is desired. Default is NULL.
+#' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
+#'            usage is to adjust timeout (via httr::timeout()) or add a progress bar 
+#'            to the download (httr::progress()) .                 
 #' @export
 #' @keywords internal
-get_aws_terrain <- function(bbx, z=9, prj,expand=NULL){
+get_aws_terrain <- function(bbx, z=9, prj,expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
   bbx <- proj_expand(bbx,prj,expand)
   web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
@@ -177,7 +184,7 @@ get_aws_terrain <- function(bbx, z=9, prj,expand=NULL){
   for(i in seq_along(tiles[,1])){
     tmpfile <- tempfile()
     url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
-    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=T))
+    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=T), ...)
     if (httr::http_type(resp) != "image/tif") {
       stop("API did not return tif", call. = FALSE)
     } 

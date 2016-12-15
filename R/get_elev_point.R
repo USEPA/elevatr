@@ -134,7 +134,7 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #'         \url{https://mapzen.com/documentation/elevation/elevation-service/} 
 #' @export
 #' @keywords internal
-get_mapzen_elev <- function(locations, api_key = Sys.getenv("mapzen_key")){
+get_mapzen_elev <- function(locations, api_key = NULL){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)

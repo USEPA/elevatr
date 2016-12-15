@@ -10,7 +10,7 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
         \url{https://mapzen.com/documentation/terrain-tiles/}
 }
 \usage{
-get_aws_terrain(bbx, z = 9, prj, expand = NULL)
+get_aws_terrain(bbx, z = 9, prj, expand = NULL, ...)
 }
 \arguments{
 \item{bbx}{a \code{sp::bbox} object that is used to select x,y,z tiles.}
@@ -26,6 +26,10 @@ details on zoom and resolution see the documentation from Mapzen at
 bounding box that is used to fetch the terrain tiles. This can 
 be used for features that fall close to the edge of a tile and 
 additional area around the feature is desired. Default is NULL.}
+
+\item{...}{Extra configuration parameters to be passed to httr::GET.  Common 
+usage is to adjust timeout (via httr::timeout()) or add a progress bar 
+to the download (httr::progress()) .}
 }
 \description{
 This function uses the AWS Terrain Tile service to retrieve an elevation
