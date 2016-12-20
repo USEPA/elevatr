@@ -10,12 +10,12 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
         \url{https://mapzen.com/documentation/terrain-tiles/}
 }
 \usage{
-get_mapzen_terrain(bbx, z = 9, prj, api_key = NULL, expand = NULL, ...)
+get_mapzen_terrain(bbx, z, prj, api_key = NULL, expand = NULL, ...)
 }
 \arguments{
 \item{bbx}{a \code{sp::bbox} object that is used to select x,y,z tiles.}
 
-\item{z}{The zoom level to return.  The zoom ranges from 1 to 15.  Resolution
+\item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 of the resultant raster is determined by the zoom and latitude.  For 
 details on zoom and resolution see the documentation from Mapzen at 
 \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}}
@@ -32,7 +32,10 @@ be used for features that fall close to the edge of a tile and
 additional area around the feature is desired. Default is NULL.}
 
 \item{...}{Extra configuration parameters to be passed to httr::GET.  Common 
-usage is for timeout().}
+usage is to adjust timeout.  This is done as 
+\code{config=timeout(x)} where \code{x} is a numeric value in 
+seconds.  Multiple configuration functions may be passed as a 
+vector.}
 }
 \description{
 This function uses the Mapzen Terrain Tile service to retrieve an elevation

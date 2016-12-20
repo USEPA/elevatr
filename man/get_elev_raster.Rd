@@ -4,12 +4,17 @@
 \alias{get_elev_raster}
 \title{Get Raster Elevation}
 \usage{
-get_elev_raster(locations, prj = NULL, src = c("mapzen", "aws"),
+get_elev_raster(locations, z, prj = NULL, src = c("mapzen", "aws"),
   api_key = get_api_key(src), expand = NULL, ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
 \code{sp}, or \code{raster} object as input.}
+
+\item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
+of the resultant raster is determined by the zoom and latitude.  For 
+details on zoom and resolution see the documentation from Mapzen at 
+\url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}}
 
 \item{prj}{A PROJ.4 string defining the projection of the locations argument. 
 If a \code{sp} or \code{raster} object is provided, the PROJ.4 
@@ -29,11 +34,9 @@ bounding box that is used to fetch the terrain tiles. This can
 be used for features that fall close to the edge of a tile and 
 additional area around the feature is desired. Default is NULL.}
 
-\item{...}{Extra parameters to pass to API specific functions.  Common usage 
-is for zoom parameter (\code{z}) or for \code{httr::GET} 
-parameters passed to \code{config}.   See 
-\code{\link{get_mapzen_terrain}} and \code{\link{get_aws_terrain}}
-for more details of the required arguments.}
+\item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
+\code{config}.   See \code{\link{get_mapzen_terrain}} and 
+\code{\link{get_aws_terrain}} for more details.}
 }
 \value{
 Function returns a \code{SpatialPointsDataFrame} in the projection 

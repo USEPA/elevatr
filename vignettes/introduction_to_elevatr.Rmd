@@ -19,6 +19,8 @@ library("raster")
 library("rgdal")
 library("knitr")
 library("elevatr")
+library("httr")
+opts_chunk$set(fig.width = 5, fig.height = 5, tidy = TRUE)
 ```
 
 # Introduction to `elevatr`
@@ -166,10 +168,10 @@ As mentioned a data frame with x and y columns, a `sp` object, or a `raster` obj
 
 There is no difference in using the `sp` and `raster` input data types.  The data frame requires a `prj`.   We show examples using a `SpatialPolygonsDataFrame` and a data frame.  The zoom level (`z`) defaults to 9 (a trade off between resolution and time for download), but different zoom levels are often desired.  For example:  
 
-```{r}
+```{r get_raster}
 # SpatialPolygonsDataFrame example
 data(lake)
-elevation <- get_elev_raster(lake,z = 11)
+elevation <- get_elev_raster(lake,z = 9)
 plot(elevation)
 plot(lake, add=TRUE)
 
@@ -181,31 +183,36 @@ plot(examp_sp, add = T)
 
 The zoom level determines the resolution of the output raster.  More details on resolution and zoom level is available in the [Mapzen Documentation on ground resolution](https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution).
 
-Additional parmeters...
+In addition the the required arguments (`locations`, `z`, and  `prj` for data frames), and arguments with default values (`api_key`), several additional arguments may be passsed to `get_elev_raster()`.  First, the `expand` argument is provided to expand the size of the bounding box by a given value in map units.  This is useful when bounding box coordinates are near the edge of an xyz tile. For example:
 
+```{r expand}
+# Bounding box on edge
+elev_edge<-get_elev_raster(lake, z = 10)
+plot(elev_edge)
+plot(lake, add = TRUE)
+
+# Use expand to grab additional tiles
+elev_expand<-get_elev_raster(lake, z = 10, expand = 1500)
+plot(elev_expand)
+plot(lake, add = TRUE)
+```
+
+Lastly, `...` provides the ability to pass additional arguments to `httr::GET` which is used to access the API endpoints.  While any `httr::GET` arguments may be used, this will most likely be used to pass on configuration arguments such as `httr::timeout()` or `httr::verbose()` via a named argument, `config` to `httr::GET`.  The `httr::timeout()` can be used to increase the timeout if downloads are timing out.  For instance:
+
+```{r timeout}
+# Increase timeout:
+get_elev_raster(lake, z = 5, config = timeout(5))
+```
+
+Lastly, multiple configurations may be passed.  Below is an example combining `httr::timeout()` with `httr::verbose()`.
+
+```{r timeout_verbose}
+# Increase timeout:
+get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
+```
 
 ## Terrain Tiles on Amazon Web Services (AWS)
 
+
 <https://aws.amazon.com/public-datasets/terrain/>
 
-<!--
-Begining of vignette for elevatr package
-
-```{r, eval=F}
-library(sp)
-library(elevatr)
-library(raster)
-dim_df <- data.frame(lat=NA,z=NA,x_res=NA,y_res=NA)
-ct <- 1
-for(i in seq(0,60,10)){
-  xdf <- SpatialPoints(coordinates(data.frame(0,i)),CRS("+proj=longlat"))
-  xdf_alb <- spTransform(xdf,CRS("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"))
-  for(j in 0:14){
-    x <- get_elev_raster(xdf_alb,z=j)
-    dim_df[ct,]<-data.frame(i,j,res(x)[1],res(x)[2])
-    ct <- ct + 1
-  }
-}
-dim_df
-```
---!>

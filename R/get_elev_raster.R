@@ -8,6 +8,10 @@
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
 #'                  \code{sp}, or \code{raster} object as input. 
+#' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
+#'           of the resultant raster is determined by the zoom and latitude.  For 
+#'           details on zoom and resolution see the documentation from Mapzen at 
+#'           \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}                 
 #' @param prj A PROJ.4 string defining the projection of the locations argument. 
 #'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 
 #'            string will be taken from that.  This argument is required for a 
@@ -22,11 +26,9 @@
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.
-#' @param ... Extra parameters to pass to API specific functions.  Common usage 
-#'            is for zoom parameter (\code{z}) or for \code{httr::GET} 
-#'            parameters passed to \code{config}.   See 
-#'            \code{\link{get_mapzen_terrain}} and \code{\link{get_aws_terrain}}
-#'            for more details of the required arguments. 
+#' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
+#'            \code{config}.   See \code{\link{get_mapzen_terrain}} and 
+#'            \code{\link{get_aws_terrain}} for more details. 
 #' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
 #'         specified by the \code{prj} argument.
 #' @details Currently, the \code{get_elev_raster} utilizes two separate APIs, 
@@ -59,7 +61,7 @@
 #' x <- get_elev_raster(lake, z = 12, src = "aws")
 #' }
 #' 
-get_elev_raster <- function(locations,prj = NULL,src = c("mapzen", "aws"),
+get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
                            api_key = get_api_key(src), expand = NULL, ...){
   src <- match.arg(src)
   # Check location type and if sp, set prj.  If no prj (for either) then error
@@ -68,10 +70,10 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen", "aws"),
   
   # Pass of locations to apis to get data as raster
   if(src == "mapzen"){
-    raster_elev <- get_mapzen_terrain(sp::bbox(locations), prj = prj, api_key = api_key, 
+    raster_elev <- get_mapzen_terrain(sp::bbox(locations), z, prj = prj, api_key = api_key, 
                                       expand = expand, ...)
   } else if(src == "aws") {
-    raster_elev <- get_aws_terrain(sp::bbox(locations), prj = prj, expand = expand, ...)
+    raster_elev <- get_aws_terrain(sp::bbox(locations), z, prj = prj, expand = expand, ...)
   }
   # Re-project from webmerc back to original and return
   raster_elev <- raster::projectRaster(raster_elev, crs = sp::CRS(prj))
@@ -91,7 +93,7 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen", "aws"),
 #'         \url{https://mapzen.com/documentation/terrain-tiles/} 
 #' 
 #' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
-#' @param z The zoom level to return.  The zoom ranges from 1 to 15.  Resolution
+#' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
 #'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
@@ -104,10 +106,13 @@ get_elev_raster <- function(locations,prj = NULL,src = c("mapzen", "aws"),
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.  
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
-#'            usage is for timeout().              
+#'            usage is to adjust timeout.  This is done as 
+#'            \code{config=timeout(x)} where \code{x} is a numeric value in 
+#'            seconds.  Multiple configuration functions may be passed as a 
+#'            vector.              
 #' @export
 #' @keywords internal
-get_mapzen_terrain <- function(bbx, z=9, prj, api_key = NULL ,expand=NULL, ...){
+get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
 
   # Expand (if needed) and re-project bbx to dd
   bbx <- proj_expand(bbx,prj,expand)
@@ -160,7 +165,7 @@ get_mapzen_terrain <- function(bbx, z=9, prj, api_key = NULL ,expand=NULL, ...){
 #'         \url{https://mapzen.com/documentation/terrain-tiles/} 
 #' 
 #' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
-#' @param z The zoom level to return.  The zoom ranges from 1 to 15.  Resolution
+#' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
 #'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
@@ -170,11 +175,13 @@ get_mapzen_terrain <- function(bbx, z=9, prj, api_key = NULL ,expand=NULL, ...){
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
-#'            usage is to adjust timeout (via httr::timeout()) or add a progress bar 
-#'            to the download (httr::progress()) .                 
+#'            usage is to adjust timeout.  This is done as 
+#'            \code{config=timeout(x)} where \code{x} is a numeric value in 
+#'            seconds.  Multiple configuration functions may be passed as a 
+#'            vector.              
 #' @export
 #' @keywords internal
-get_aws_terrain <- function(bbx, z=9, prj,expand=NULL, ...){
+get_aws_terrain <- function(bbx, z, prj,expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
   bbx <- proj_expand(bbx,prj,expand)
   web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
