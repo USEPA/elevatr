@@ -12,6 +12,9 @@ r_binary_packages:
   - sp
   - rgeos
 
+r_packages:
+  - formatR
+  
 notifications:
   email:
     on_success: change
