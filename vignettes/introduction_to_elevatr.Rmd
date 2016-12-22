@@ -2,7 +2,11 @@
 title: "Accessing elevation data in R with the elevatr package"
 author: "Jeffrey W. Hollister"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: readable
 vignette: >
   %\VignetteIndexEntry{Introduction to elevatr}
   %\VignetteEngine{knitr::rmarkdown}
