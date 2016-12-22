@@ -220,3 +220,13 @@ get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
 
 The data behind [Terrain Tiles on Amazon Web Services (AWS)](https://aws.amazon.com/public-datasets/terrain/) is the same as that available through Mapzen; however, the two services were built with difference use cases in mind and thus have a few differences.  First, the AWS Terrain Tiles are not cached and in most cases can take a longer to access than the Mapzen tiles.  Although, if you are accessing the data from AWS it will be faster as the data are served up through [S3](https://aws.amazon.com/s3/). There are also no API keys required for using the AWS Terrain Tiles. 
 
+### Using `get_elev_raster()` to access the Terrain Tiles on AWS
+
+The only difference between using the AWS Terrain Tiles and Mapzen is in specifying the source.  All other functionality and optional arguments are the same as with Mapzen.  So to use the AWS service:
+
+```{r aws}
+elevation <- get_elev_raster(lake,z = 9, src = "aws")
+plot(elevation)
+plot(lake, add=TRUE)
+```
+
