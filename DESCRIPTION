@@ -25,7 +25,8 @@ Imports:
     raster,
     httr,
     jsonlite,
-    progress
+    progress,
+    ratelimitr
 License: CC0
 Encoding: UTF-8
 LazyData: true
