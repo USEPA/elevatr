@@ -59,12 +59,7 @@ Once this is set for a given machine there is no need to include the API key in 
 
 Usage of `get_elev_point()` requires an input SpatialPoints, SpatialPointsDataFrame, or a two-column data frame with column one containing the x (e.g. longitude) coordinates and the second column containg the y coordinates (e.g. latitude).  The source data is global and also includes estimates of depth for oceans.
 
-Example usage of each is included below.  For these examples, we can creEstimate below:
-
-Flight: $525.20 (contract fare)
-Car: $211.20 (need to figure out extra day that I'd be on AL)
-Per diem: $224.00 (Two travel days, two full days) 
-Total: $960.40ate a dataset to use.
+Example usage of each is included below.  For these examples, we can create a dataset to use.
 
 ```{r example_dataframe}
 # Create an example data.frame
