@@ -15,14 +15,11 @@ test_that("get_elev_raster returns correctly", {
   
   mz_df <- get_elev_raster(locations = pt_df,prj = ll_prj, api_key = NULL, 
                            z = 6)
-  Sys.sleep(1)
   mz_sp <- get_elev_raster(locations = sp_sm, api_key = NULL, 
                            z = 6)
-  Sys.sleep(1)
   mz_sp_prj <- get_elev_raster(locations = sp_sm_prj, api_key = NULL, 
                                z = 6)
   
-  Sys.sleep(1)
   onetile <- get_elev_raster(locations = sp_sm[1,], api_key = NULL, 
                                z = 6)
   

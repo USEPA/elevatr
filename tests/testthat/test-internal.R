@@ -47,4 +47,5 @@ test_that("loc_check assigns prj correctly",{
   Sys.sleep(10)
   expect_equal(proj4string(get_elev_point(locations = rast, prj = ll_prj)),
                ll_prj)
+  Sys.sleep(10)
 })

@@ -136,6 +136,11 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #' @keywords internal
 get_mapzen_elev <- function(locations, api_key = NULL){
   #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
+  if(is.null(api_key)){
+    get_slowly <- mapzen_elev_GET_nokey
+  } else {
+    get_slowly <- mapzen_elev_GET_withkey
+  }  
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)
   locations <- sp::spTransform(locations,
@@ -150,7 +155,7 @@ get_mapzen_elev <- function(locations, api_key = NULL){
     } else {
       url <- paste0(base_url,json_coords,key)
     }
-    resp <- httr::GET(url)
+    resp <- get_slowly(url)
     if (httr::http_type(resp) != "application/json") {
       if(resp$status_code == 429){
         stop("Mapzen Rate Limit Exceeded", call. = FALSE)
@@ -181,7 +186,7 @@ get_mapzen_elev <- function(locations, api_key = NULL){
       } else {
         url <- paste0(base_url,json_coords,key)
       }
-      resp <- httr::GET(url)
+      resp <- get_slowly(url)
       if (httr::http_type(resp) != "application/json") {
         if(resp$status_code == 429){
           stop("Mapzen Rate Limit Exceeded", call. = FALSE)
@@ -193,11 +198,6 @@ get_mapzen_elev <- function(locations, api_key = NULL){
                                  simplifyVector = FALSE)
       locations$elevation[idx_s[i]:idx_e[i]] <- unlist(resp$height)
       pb$tick()
-      if(is.null(api_key)){
-        Sys.sleep(1)
-      } else {
-        Sys.sleep(0.25) #prevents hitting rate limits
-      }
     }
   }
   locations
