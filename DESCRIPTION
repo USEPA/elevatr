@@ -1,8 +1,9 @@
 Package: elevatr
 Title: Download Elevation Data From Various APIs
 Version: 0.0.0.9003
-Authors@R: person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
-                  role = c("aut", "cre"))
+Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
+                  role = c("aut", "cre")),
+             person("Tarak Shah", role = "ctb"))    
 URL: https://www.github.com/usepa/elevatr
 BugReports: https://github.com/usepa/elevatr/issues
 Maintainer: Jeffrey W. Hollister <hollister.jeff@epa.gov>

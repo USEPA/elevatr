@@ -5,7 +5,6 @@ sudo: true
 r:
   - oldrel
   - release
-  - devel
 
 r_binary_packages:
   - rgdal

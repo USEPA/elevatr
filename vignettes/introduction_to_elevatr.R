@@ -43,6 +43,9 @@ df_elev <- get_elev_point(examp_df, prj = prj_dd, src = "mapzen")
 examp_df
 df_elev
 
+## ----sleep1, echo=F------------------------------------------------------
+Sys.sleep(1)
+
 ## ----examples_df2--------------------------------------------------------
 # Example using data.frame with longitud, latitude and an additional column
 df2_elev <- get_elev_point(examp_df2, prj = prj_dd, src = "mapzen")
@@ -51,7 +54,7 @@ df2_elev <- get_elev_point(examp_df2, prj = prj_dd, src = "mapzen")
 examp_df2
 df2_elev
 
-## ----sleep1, echo=F------------------------------------------------------
+## ----sleep2, echo=F------------------------------------------------------
 Sys.sleep(1)
 
 ## ----examples_sp, eval=T-------------------------------------------------
