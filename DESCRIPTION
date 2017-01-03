@@ -21,6 +21,7 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 content
              Geological Survey.
 Depends: R (>= 3.0.0)
 Imports:
+    prettyunits,
     sp,
     rgdal,
     raster,
@@ -34,6 +35,5 @@ LazyData: true
 RoxygenNote: 5.0.1
 Suggests: testthat,
     knitr,
-    rmarkdown,
-    prettyunits
+    rmarkdown
 VignetteBuilder: knitr
