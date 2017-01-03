@@ -29,7 +29,7 @@ opts_chunk$set(fig.width = 5, fig.height = 5, tidy = TRUE)
 
 # Introduction to `elevatr`
 
-Elevation data is used for a wide array of applications, including, for example, visualization, hydrology, and ecological modelling.  Gaining access to this data in R has not had a single interface and was made available through functions across many packages or required local access to the data.  This is no longer required as a variety of APIs now exist that provide programmatic access to elevation data.  The `elevatr` package was written to standarize access to elevation data from web APIs.  This introductory vignette provides details on how to use `elevatr` to access elevation data and provides a bit of detail on the source data it accesses.
+Elevation data is used for a wide array of applications, including, for example, visualization, hydrology, and ecological modelling.  Gaining access to these data in R has not had a single interface and was made available through functions across many packages or required local access to the data.  This is no longer required as a variety of APIs now exist that provide programmatic access to elevation data.  The `elevatr` package was written to standarize access to elevation data from web APIs.  This introductory vignette provides details on how to use `elevatr` to access elevation data and provides a bit of detail on the source data it accesses.
 
 There are currently four endpoints that `elevatr` accesses.  For point elevation data it uses USGS Elevation Point Query Service and Mapzen Elevation Service and to access raster elevation data (e.g. a DEM) it uses Mapzen Terrain Service, and the Amazon Web Services Terrain Tiles.
 
@@ -45,7 +45,7 @@ The [Mapzen Elevation Service](https://mapzen.com/documentation/elevation/elevat
 
 A Mapzen API Key is not required to use this service, but the rate limit is 1000 requests per day, 6 per minute, and 1 per second which is impractical for typical uses, thus it is suggested that you get and use an API Key.  With the API Key the rate limit is 2 queries per second and 20000 queries per day.
 
-Get an API Key from <https://mapzen.com/developers>.  Since `elevatr` will search the environment for the appropriate key , it is suggested that you store this in your `.Renviron` file.  To do this:
+Get an API Key from <https://mapzen.com/developers>.  Since `elevatr` will search the environment for the appropriate key, it is suggested that you store this in your `.Renviron` file.  To do this:
 
 ```{r api_key, eval=FALSE}
 cat("mapzen_key=mapzen-XXXXXXX\n",
@@ -57,7 +57,7 @@ Once this is set for a given machine there is no need to include the API key in 
 
 ### Using `get_elev_point()` to Access The Mapzen Elevation Service
 
-Usage of `get_elev_point()` requires an input SpatialPoints, SpatialPointsDataFrame, or a two-column data frame with column one containing the x (e.g. longitude) coordinates and the second column containg the y coordinates (e.g. latitude).  The source data is global and also includes estimates of depth for oceans.
+Usage of `get_elev_point()` requires an input SpatialPoints, SpatialPointsDataFrame, or a two-column data frame with column one containing the x (e.g. longitude) coordinates and the second column containing the y coordinates (e.g. latitude).  The source data are global and also include estimates of depth for oceans.
 
 Example usage of each is included below.  For these examples, we can create a dataset to use.
 
@@ -77,12 +77,11 @@ examp_df2 <- data.frame(examp_df, cats)
 # Create an example SpatialPoints
 examp_sp <- SpatialPoints(examp_df, proj4string = CRS(prj_dd))
 
-# Create and example SpatialPointsDataFrame
-
+# Create an example SpatialPointsDataFrame
 examp_spdf <- SpatialPointsDataFrame(examp_sp, proj4string = CRS(prj_dd), data = cats )
 ```
 
-If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output SpatialPointsDataFrame.  Similarlily, an elevation column is added to the data slot of a SpatialPointsDataFrame.
+If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output SpatialPointsDataFrame.  Similarly, an elevation column is added to the data slot of a SpatialPointsDataFrame.
 
 ```{r examples_df1}
 # Example using data.frame with longitude and latitude
@@ -98,7 +97,7 @@ Sys.sleep(1)
 ```
 
 ```{r examples_df2}
-# Example using data.frame with longitud, latitude and an additional column
+# Example using data.frame with longitude, latitude and an additional column
 df2_elev <- get_elev_point(examp_df2, prj = prj_dd, src = "mapzen")
 
 # Compare
@@ -127,7 +126,6 @@ sp_elev
 # Example using SpatialPoints
 # prj is taken from the SpatialPoints object
 # api_key is taken from environment variable mapzen_key
-
 spdf_elev <- get_elev_point(examp_spdf)
 
 # Compare
@@ -158,9 +156,9 @@ spdf_elev_epqs
 
 # Get Raster Elevation Data
 
-While point elevations are useful, they will not provide the information required for most elevation based analysis such as hydrologic modeling, viewsheds, etc.  To do that requires a raster digital elevation model (DEM).  There are several sources for digital elevation models such as the Shuttle Radar Topography Mission (SRTM), the USGS National Elevation Dataset (NED), Global DEM (GDEM), and others.  Each of these DEMs has pros and cons for their use.  Recently, Mapzen has combined [several of these sources](https://mapzen.com/documentation/terrain-tiles/data-sources/) to create a synthesis elevation product that utilizes the best available elevation data for a give region at given zoom level.  Additionally, the elevation data is enhanced with the inclusion of batyhmetry in oceans from ETOPO1.  This data is made available through two separate APIs: the [Mapzen Terrain Tile Service](https://mapzen.com/documentation/terrain-tiles/) and the [Terrain Tiles on Amazon Web Services](https://aws.amazon.com/public-datasets/terrain/).  
+While point elevations are useful, they will not provide the information required for most elevation based analysis such as hydrologic modeling, viewsheds, etc.  To do that requires a raster digital elevation model (DEM).  There are several sources for digital elevation models such as the Shuttle Radar Topography Mission (SRTM), the USGS National Elevation Dataset (NED), Global DEM (GDEM), and others.  Each of these DEMs has pros and cons for their use.  Recently, Mapzen has combined [several of these sources](https://mapzen.com/documentation/terrain-tiles/data-sources/) to create a synthesis elevation product that utilizes the best available elevation data for a given region at given zoom level.  Additionally, the elevation data are enhanced with the inclusion of bathymetry in oceans from ETOPO1.  These data are made available through two separate APIs: the [Mapzen Terrain Tile Service](https://mapzen.com/documentation/terrain-tiles/) and the [Terrain Tiles on Amazon Web Services](https://aws.amazon.com/public-datasets/terrain/).  
 
-The input for `get_elev_raster()` is a data.frame with  x (longitude) and y (latitude) locations as the first two columns, any `sp` object, or any `raster` object and it returns a RasterLayer of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged Raster Layer.  Details for each service and their usage via `get_elev_raster()` is provided below.
+The input for `get_elev_raster()` is a data.frame with  x (longitude) and y (latitude) locations as the first two columns, any `sp` object, or any `raster` object and it returns a RasterLayer of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged Raster Layer.  Details for each service and their usage via `get_elev_raster()` are provided below.
 
 ## Mapzen Terrain Tile Service
 
@@ -172,7 +170,7 @@ The Mapzen Terrain Tile Service is cached and as such it will provide quickest a
 
 ### Using `get_elev_raster()` to access the Mapzen Terrain Tile Service
 
-As mentioned a data frame with x and y columns, a `sp` object, or a `raster` object needs be the input and the `src` needs to be set to "mapzen" (this is the default).  As with the Elevation service, the `api_key` will be taken from the `mapzen_key` environment variable and if that is not availble it will be set to `NULL`.  
+As mentioned a data frame with x and y columns, a `sp` object, or a `raster` object needs be the input and the `src` needs to be set to "mapzen" (this is the default).  As with the Elevation service, the `api_key` will be taken from the `mapzen_key` environment variable and if that is not available it will be set to `NULL`.  
 
 There is no difference in using the `sp` and `raster` input data types.  The data frame requires a `prj`.   We show examples using a `SpatialPolygonsDataFrame` and a data frame.  The zoom level (`z`) defaults to 9 (a trade off between resolution and time for download), but different zoom levels are often desired.  For example:  
 
@@ -221,7 +219,7 @@ get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
 
 ## Terrain Tiles on Amazon Web Services (AWS)
 
-The data behind [Terrain Tiles on Amazon Web Services (AWS)](https://aws.amazon.com/public-datasets/terrain/) is the same as that available through Mapzen; however, the two services were built with difference use cases in mind and thus have a few differences.  First, the AWS Terrain Tiles are not cached and in most cases can take a longer to access than the Mapzen tiles.  Although, if you are accessing the data from AWS it will be faster as the data are served up through [S3](https://aws.amazon.com/s3/). There are also no API keys required for using the AWS Terrain Tiles. 
+The data behind [Terrain Tiles on Amazon Web Services (AWS)](https://aws.amazon.com/public-datasets/terrain/) is the same as that available through Mapzen; however, the two services were built with different use cases in mind and thus have a few differences.  First, the AWS Terrain Tiles are not cached and in most cases can take longer to access than the Mapzen tiles.  Although, if you are accessing the data from AWS it will be faster as the data are served up through [S3](https://aws.amazon.com/s3/). There are also no API keys required for using the AWS Terrain Tiles. 
 
 ### Using `get_elev_raster()` to access the Terrain Tiles on AWS
 

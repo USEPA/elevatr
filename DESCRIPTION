@@ -12,7 +12,7 @@ Description: Several web services are available that provide access to elevation
              returns elevation data either as a SpatialPointsDataFrame from 
              point elevation services or as a raster object from raster 
              elevation services.  Currently, the package supports access to the
-             Mapzen Elevation Service, Mapezen Terrain Service, and the USGS
+             Mapzen Elevation Service, Mapzen Terrain Service, and the USGS
              Elevation Point Query Service.
 Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 content 
              courtesy of the U.S. Geological Survey and ETOPO1 content courtesy 
