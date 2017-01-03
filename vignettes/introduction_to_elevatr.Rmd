@@ -24,6 +24,7 @@ library("rgdal")
 library("knitr")
 library("elevatr")
 library("httr")
+library("prettyunits")
 opts_chunk$set(fig.width = 5, fig.height = 5, tidy = TRUE)
 ```
 
@@ -90,7 +91,7 @@ df_elev <- get_elev_point(examp_df, prj = prj_dd, src = "mapzen")
 
 # Compare
 examp_df
-df_elev
+df_elev@data
 ```
 
 ```{r sleep1, echo=F}
@@ -103,7 +104,7 @@ df2_elev <- get_elev_point(examp_df2, prj = prj_dd, src = "mapzen")
 
 # Compare
 examp_df2
-df2_elev
+df2_elev@data
 ```
 
 ```{r sleep2, echo=F}
