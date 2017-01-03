@@ -1,7 +1,6 @@
 # History files
 .Rhistory
 .Rapp.history
-
 # Session Data files
 .RData
 # Example code in package build process
@@ -25,3 +24,5 @@ vignettes/*.pdf
 *.knit.md
 .Rproj.user
 inst/doc
+elevatr_tech_review_beck.pdf
+elevatr_tech_review_weber.pdf
