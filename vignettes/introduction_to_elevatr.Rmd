@@ -123,6 +123,10 @@ examp_sp
 sp_elev
 ```
 
+```{r sleep2, echo=F}
+Sys.sleep(1)
+```
+
 ```{r examples_sp2, eval=T}
 # Example using SpatialPoints
 # prj is taken from the SpatialPoints object
