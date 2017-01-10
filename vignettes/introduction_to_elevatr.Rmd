@@ -90,7 +90,7 @@ df_elev <- get_elev_point(examp_df, prj = prj_dd, src = "mapzen")
 
 # Compare
 examp_df
-df_elev@data
+data.frame(df_elev)
 ```
 
 ```{r sleep1, echo=F}
@@ -103,7 +103,7 @@ df2_elev <- get_elev_point(examp_df2, prj = prj_dd, src = "mapzen")
 
 # Compare
 examp_df2
-df2_elev@data
+data.frame(df2_elev)
 ```
 
 ```{r sleep2, echo=F}
@@ -150,9 +150,9 @@ Accessing data from this service is done by setting the `src` to `"epqs"`.  No A
 
 ```{r}
 df_elev_epqs <- get_elev_point(examp_df, prj = prj_dd, src = "epqs")
-df_elev_epqs
+data.frame(df_elev_epqs)
 df2_elev_epqs <- get_elev_point(examp_df2, prj = prj_dd, src = "epqs")
-df2_elev_epqs
+data.frame(df2_elev_epqs)
 sp_elev_epqs <- get_elev_point(examp_sp, src = "epqs")
 sp_elev_epqs
 spdf_elev_epqs <- get_elev_point(examp_spdf, src = "epqs")
