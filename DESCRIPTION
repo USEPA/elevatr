@@ -1,6 +1,6 @@
 Package: elevatr
-Title: Download Elevation Data From Various APIs
-Version: 0.0.0.9003
+Title: Access Elevation Data From Various APIs
+Version: 0.1.0
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre")),
              person("Tarak Shah", role = "ctb"))    

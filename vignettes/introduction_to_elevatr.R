@@ -8,6 +8,7 @@ library("rgdal")
 library("knitr")
 library("elevatr")
 library("httr")
+library("prettyunits")
 opts_chunk$set(fig.width = 5, fig.height = 5, tidy = TRUE)
 
 ## ----api_key, eval=FALSE-------------------------------------------------
