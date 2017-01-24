@@ -9,8 +9,10 @@ output:
     theme: readable
     toc: yes
     toc_float: yes
-vignette: |
-  %\VignetteIndexEntry{Introduction to elevatr} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+vignette: >
+  %\VignetteIndexEntry{Introduction to elevatr} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
 ---
 
 
