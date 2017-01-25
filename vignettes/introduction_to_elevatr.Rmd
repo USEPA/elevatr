@@ -124,7 +124,7 @@ sp_elev
 ```
 
 ```{r sleep3, echo=F}
-Sys.sleep(1)
+Sys.sleep(2)
 ```
 
 ```{r examples_sp2, eval=T}
