@@ -106,15 +106,20 @@ proj_expand <- function(bbx,prj,expand){
   bbx
 }
 
-
-#' function to break up larger requests into smaller ones and not go afoul of
-#' mapzen API limits
+#' based on https://mapzen.com/documentation/overview/#rate-limits
+#' limits for keyless access are 1/second and 6/minute
+#' see issue #4
 #' @keywords internal
+mapzen_elev_GET_nokey <- ratelimitr::limit_rate(
+  httr::GET, 
+  ratelimitr::rate(n = 1, period = 2), ratelimitr::rate(n = 5, period = 100))
 
-#resp <- httr::GET(url)
-#if (httr::http_type(resp) != "application/json") {
-#  stop("API did not return json", call. = FALSE)
-#} 
-#resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
-#                           simplifyVector = FALSE)
-#locations$elevation <- unlist(resp$height)
+#' based on https://mapzen.com/documentation/overview/#rate-limits
+#' limits for valid keyholders are 2/second and 20K/day
+#' this function will only enforce the 2/second limit
+#' see issue #4
+#' @keywords internal
+mapzen_elev_GET_withkey <- ratelimitr::limit_rate(
+  httr::GET,
+  ratelimitr::rate(n = 2, period = 1)
+)

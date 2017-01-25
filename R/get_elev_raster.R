@@ -99,7 +99,7 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
 #'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
 #' @param prj Proj.4 string for input bbox 
 #' @param api_key An API Key from Mapzen, create at 
-#'                \url{https://mapzen.com/developer} Required. Set in your 
+#'                \url{https://mapzen.com/developers} Required. Set in your 
 #'                \code{.Renviron} file with the variable "mapzen_key"
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 

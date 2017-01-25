@@ -23,7 +23,7 @@ details on zoom and resolution see the documentation from Mapzen at
 \item{prj}{Proj.4 string for input bbox}
 
 \item{api_key}{An API Key from Mapzen, create at 
-\url{https://mapzen.com/developer} Required. Set in your 
+\url{https://mapzen.com/developers} Required. Set in your 
 \code{.Renviron} file with the variable "mapzen_key"}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
