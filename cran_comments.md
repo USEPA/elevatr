@@ -2,8 +2,9 @@
 First submisison for new package
 
 ## Test Environments
-- Ubuntu 12.04, travis-ci, R version 3.3.1 (2016-06-21)
-- Windows Server 2012 R2 x64, Appveyor, R version 3.3.2 Patched (2016-12-21 r71840)
+- Ubuntu 12.04, travis-ci, R version 3.3.2 (2016-10-31)
+- Ubuntu 12.04, travis-ci, R
+- Windows Server 2012 R2 x64 (build 9600), Appveyor, R version 3.3.2 Patched (2017-01-23 r72020)
 - Red Hat 6.8, local, R version 3.3.2 (2016-10-31)
 
 ## R CMD check results
