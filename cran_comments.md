@@ -1,5 +1,5 @@
 ## Comments
-First submisison for new package
+Second submisison for new package.  Corrected issues identified in Jan 25 email: Consistency of name for maintainer and author, and added <https:...> formatted links into DESCRPTION.
 
 ## Test Environments
 - Ubuntu 12.04, travis-ci, R version 3.3.2 (2016-10-31)
