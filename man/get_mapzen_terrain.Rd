@@ -20,7 +20,7 @@ of the resultant raster is determined by the zoom and latitude.  For
 details on zoom and resolution see the documentation from Mapzen at 
 \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}}
 
-\item{prj}{Proj.4 string for input bbox}
+\item{prj}{PROJ.4 string for input bbox}
 
 \item{api_key}{An API Key from Mapzen, create at 
 \url{https://mapzen.com/developers} Required. Set in your 

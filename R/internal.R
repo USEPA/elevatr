@@ -70,7 +70,7 @@ loc_check <- function(locations, prj = NULL){
         if(sum(!is.na(raster::getValues(locations))) == 0){
           stop("No distinct points, all values NA.")
         } else {
-          locations <- raster::rasterToPoints(locations,spatial = T)
+          locations <- raster::rasterToPoints(locations,spatial = TRUE)
           sp::proj4string(locations)<-prj
         }
       } 
@@ -80,7 +80,7 @@ locations
 } 
   
 
-#' function to get api key based on source
+#' function to get API key based on source
 #' @keywords internal
 get_api_key<-function(src){
   if(src == "mapzen"){
@@ -100,8 +100,8 @@ proj_expand <- function(bbx,prj,expand){
     bbx[,1] <- bbx[,1] - expand
     bbx[,2] <- bbx[,2] + expand
   }
-  bbx <- sp::bbox(sp::spTransform(sp::SpatialPoints(t(sp::coordinates(bbx)),bbox=bbx,
-                                   proj4string = sp::CRS(prj)),
+  bbx <- sp::bbox(sp::spTransform(sp::SpatialPoints(t(sp::coordinates(bbx)),
+                                                    bbox=bbx, proj4string = sp::CRS(prj)),
                      sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")))
   bbx
 }

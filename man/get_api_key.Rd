@@ -2,12 +2,12 @@
 % Please edit documentation in R/internal.R
 \name{get_api_key}
 \alias{get_api_key}
-\title{function to get api key based on source}
+\title{function to get API key based on source}
 \usage{
 get_api_key(src)
 }
 \description{
-function to get api key based on source
+function to get API key based on source
 }
 \keyword{internal}
 

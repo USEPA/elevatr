@@ -8,7 +8,7 @@ get_epqs(locations, units = c("meters", "feet"))
 }
 \arguments{
 \item{locations}{A SpatialPointsDataFrame of the location(s) for which you 
-wish to return elevation. The first colum is Longitude and 
+wish to return elevation. The first column is Longitude and 
 the second column is Latitude.}
 
 \item{units}{Character string of either meters or feet. Only works for 'epqs'}

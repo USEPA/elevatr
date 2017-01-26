@@ -20,7 +20,7 @@ of the resultant raster is determined by the zoom and latitude.  For
 details on zoom and resolution see the documentation from Mapzen at 
 \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}}
 
-\item{prj}{Proj.4 string for input bbox}
+\item{prj}{PROJ.4 string for input bbox}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 
@@ -37,7 +37,7 @@ vector.}
 This function uses the AWS Terrain Tile service to retrieve an elevation
 raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
 input and returns a single raster object covering that extent.  The data is
-the same as that availble via the Mapzen tiles but does not require a key.  
+the same as that available via the Mapzen tiles but does not require a key.  
 It is best used if rate limits are causing failures on the Mapzen service or 
 if you are needing to access the terrain tiles via an AWS instance.  These 
 tiles are not cached so accessing them via a local/non-AWS machine will be 

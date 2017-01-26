@@ -68,12 +68,13 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
   locations <- loc_check(locations,prj)
   prj <- sp::proj4string(locations)
   
-  # Pass of locations to apis to get data as raster
+  # Pass of locations to APIs to get data as raster
   if(src == "mapzen"){
-    raster_elev <- get_mapzen_terrain(sp::bbox(locations), z, prj = prj, api_key = api_key, 
-                                      expand = expand, ...)
+    raster_elev <- get_mapzen_terrain(sp::bbox(locations), z, prj = prj, 
+                                      api_key = api_key, expand = expand, ...)
   } else if(src == "aws") {
-    raster_elev <- get_aws_terrain(sp::bbox(locations), z, prj = prj, expand = expand, ...)
+    raster_elev <- get_aws_terrain(sp::bbox(locations), z, prj = prj, 
+                                   expand = expand, ...)
   }
   # Re-project from webmerc back to original and return
   raster_elev <- raster::projectRaster(raster_elev, crs = sp::CRS(prj))
@@ -97,7 +98,7 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
 #'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
-#' @param prj Proj.4 string for input bbox 
+#' @param prj PROJ.4 string for input bbox 
 #' @param api_key An API Key from Mapzen, create at 
 #'                \url{https://mapzen.com/developers} Required. Set in your 
 #'                \code{.Renviron} file with the variable "mapzen_key"
@@ -125,9 +126,10 @@ get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
     if(is.null(api_key)){
       url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
     } else {
-      url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",api_key)
+      url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif?api=key",
+                    api_key)
     }
-    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=T), ...)
+    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite = TRUE), ...)
     if (httr::http_type(resp) != "image/tif") {
       stop("API did not return tif", call. = FALSE)
     } 
@@ -153,7 +155,7 @@ get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
 #' This function uses the AWS Terrain Tile service to retrieve an elevation
 #' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
 #' input and returns a single raster object covering that extent.  The data is
-#' the same as that availble via the Mapzen tiles but does not require a key.  
+#' the same as that available via the Mapzen tiles but does not require a key.  
 #' It is best used if rate limits are causing failures on the Mapzen service or 
 #' if you are needing to access the terrain tiles via an AWS instance.  These 
 #' tiles are not cached so accessing them via a local/non-AWS machine will be 
@@ -169,7 +171,7 @@ get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
 #'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
-#' @param prj Proj.4 string for input bbox 
+#' @param prj PROJ.4 string for input bbox 
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
@@ -191,7 +193,7 @@ get_aws_terrain <- function(bbx, z, prj,expand=NULL, ...){
   for(i in seq_along(tiles[,1])){
     tmpfile <- tempfile()
     url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
-    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=T), ...)
+    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), ...)
     if (httr::http_type(resp) != "image/tif") {
       stop("API did not return tif", call. = FALSE)
     } 

@@ -26,7 +26,7 @@
 #'               are not yet enforced by the \code{\link{elevatr}} package, but 
 #'               will be in the future.  The "epqs" source is relatively slow 
 #'               for larger numbers of points (e.g. > 500). 
-#' @param api_key A character for the approriate API key.  Default is to use key
+#' @param api_key A character for the appropriate API key.  Default is to use key
 #'                as defined in \code{.Renviron}.  Acceptable environment 
 #'                variable name is currently only "mapzen_key".
 #' @param ... Additional arguments passed to get_epqs or get_mapzen_elevation
@@ -80,7 +80,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
 #' Function for accessing elevation data from the USGS epqs
 #' 
 #' @param locations A SpatialPointsDataFrame of the location(s) for which you 
-#'                  wish to return elevation. The first colum is Longitude and 
+#'                  wish to return elevation. The first column is Longitude and 
 #'                  the second column is Latitude.  
 #' @param units Character string of either meters or feet. Only works for 'epqs'
 #' @return a SpatialPointsDataFrame with elevation added to the data slot
@@ -135,7 +135,6 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #' @export
 #' @keywords internal
 get_mapzen_elev <- function(locations, api_key = NULL){
-  #elevation.mapzen.com/height?json={"shape":[{"lat":40.712431,"lon":-76.504916},{"lat":40.712275,"lon":-76.605259}]}&api_key=mapzen-RVEVhbW
   if(is.null(api_key)){
     get_slowly <- mapzen_elev_GET_nokey
   } else {

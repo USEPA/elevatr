@@ -94,7 +94,7 @@ data.frame(df_elev)
 ```
 
 ```{r sleep1, echo=F}
-Sys.sleep(1)
+Sys.sleep(2)
 ```
 
 ```{r examples_df2}
@@ -107,29 +107,14 @@ data.frame(df2_elev)
 ```
 
 ```{r sleep2, echo=F}
-Sys.sleep(1)
-```
-
-The process is the same for a SpatialPoints and a SpatialPointsDataFrame object.
-
-```{r examples_sp, eval=T}
-# Example using SpatialPoints
-# prj is taken from the SpatialPoints object
-# api_key is taken from environment variable mapzen_key
-sp_elev <- get_elev_point(examp_sp)
-
-# Compare
-examp_sp
-sp_elev
-```
-
-```{r sleep3, echo=F}
 Sys.sleep(2)
 ```
 
+The process is the same for a SpatialPoints and a SpatialPointsDataFrame object.  The SpatialPointsDataFrame example is shown below.
+
 ```{r examples_sp2, eval=T}
-# Example using SpatialPoints
-# prj is taken from the SpatialPoints object
+# Example using SpatialPointsDataFrame
+# prj is taken from the SpatialPointsDataFrame object
 # api_key is taken from environment variable mapzen_key
 spdf_elev <- get_elev_point(examp_spdf)
 

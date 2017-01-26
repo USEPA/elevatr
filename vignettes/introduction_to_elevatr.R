@@ -44,7 +44,7 @@ examp_df
 data.frame(df_elev)
 
 ## ----sleep1, echo=F------------------------------------------------------
-Sys.sleep(1)
+Sys.sleep(2)
 
 ## ----examples_df2--------------------------------------------------------
 # Example using data.frame with longitude, latitude and an additional column
@@ -55,7 +55,7 @@ examp_df2
 data.frame(df2_elev)
 
 ## ----sleep2, echo=F------------------------------------------------------
-Sys.sleep(1)
+Sys.sleep(2)
 
 ## ----examples_sp, eval=T-------------------------------------------------
 # Example using SpatialPoints
@@ -68,11 +68,11 @@ examp_sp
 sp_elev
 
 ## ----sleep3, echo=F------------------------------------------------------
-Sys.sleep(1)
+Sys.sleep(5)
 
 ## ----examples_sp2, eval=T------------------------------------------------
-# Example using SpatialPoints
-# prj is taken from the SpatialPoints object
+# Example using SpatialPointsDataFrame
+# prj is taken from the SpatialPointsDataFrame object
 # api_key is taken from environment variable mapzen_key
 spdf_elev <- get_elev_point(examp_spdf)
 
