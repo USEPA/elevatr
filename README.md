@@ -17,7 +17,14 @@ Current plan for this package includes just two functions to access elevation we
 
 ## Installation
 
-This package is currently in development and should not be considered stable.  The functions and API may change drastically and rapidly and it may not work at any given moment...  That being said, install with `devtools`
+Version 0.1.1 of this package is currently available from CRAN and may be installed by:
+
+
+```r
+install.packages("elevatr")
+```
+
+The development version (this repo) may installed with `devtools`:
 
 
 ```r
