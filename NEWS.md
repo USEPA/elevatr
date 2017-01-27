@@ -1,3 +1,10 @@
+elevatr 0.1.1 (2017-01-27)
+==========================
+
+## Minor Changes
+inst/doc was inadvertently included in package.  This verisons removes that and includes only vignettes.
+
+
 elevatr 0.1.0 (2017-01-25)
 ==========================
 
