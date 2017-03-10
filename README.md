@@ -47,5 +47,8 @@ You will need to restart R, but once the key is there you are good to go on that
 ## Attribution
 Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 content courtesy of the U.S. Geological Survey and ETOPO1 content courtesy of U.S. National Oceanic and Atmospheric Administration.
 
+## Repositories
+The source code for this repository is maintained at https://github.com/jhollist/elevatr which is also mirrored at https://github.com/usepa/elevatr
+
 ## EPA Disclaimer
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use. EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA. The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.
