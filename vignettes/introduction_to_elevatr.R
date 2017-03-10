@@ -57,19 +57,6 @@ data.frame(df2_elev)
 ## ----sleep2, echo=F------------------------------------------------------
 Sys.sleep(2)
 
-## ----examples_sp, eval=T-------------------------------------------------
-# Example using SpatialPoints
-# prj is taken from the SpatialPoints object
-# api_key is taken from environment variable mapzen_key
-sp_elev <- get_elev_point(examp_sp)
-
-# Compare
-examp_sp
-sp_elev
-
-## ----sleep3, echo=F------------------------------------------------------
-Sys.sleep(5)
-
 ## ----examples_sp2, eval=T------------------------------------------------
 # Example using SpatialPointsDataFrame
 # prj is taken from the SpatialPointsDataFrame object
@@ -89,40 +76,4 @@ sp_elev_epqs <- get_elev_point(examp_sp, src = "epqs")
 sp_elev_epqs
 spdf_elev_epqs <- get_elev_point(examp_spdf, src = "epqs")
 spdf_elev_epqs
-
-## ----get_raster----------------------------------------------------------
-# SpatialPolygonsDataFrame example
-data(lake)
-elevation <- get_elev_raster(lake,z = 9)
-plot(elevation)
-plot(lake, add=TRUE)
-
-# data.frame example
-elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5)
-plot(elevation_df)
-plot(examp_sp, add = T)
-
-## ----expand--------------------------------------------------------------
-# Bounding box on edge
-elev_edge<-get_elev_raster(lake, z = 10)
-plot(elev_edge)
-plot(lake, add = TRUE)
-
-# Use expand to grab additional tiles
-elev_expand<-get_elev_raster(lake, z = 10, expand = 1500)
-plot(elev_expand)
-plot(lake, add = TRUE)
-
-## ----timeout-------------------------------------------------------------
-# Increase timeout:
-get_elev_raster(lake, z = 5, config = timeout(5))
-
-## ----timeout_verbose-----------------------------------------------------
-# Increase timeout:
-get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
-
-## ----aws-----------------------------------------------------------------
-elevation <- get_elev_raster(lake,z = 9, src = "aws")
-plot(elevation)
-plot(lake, add=TRUE)
 
