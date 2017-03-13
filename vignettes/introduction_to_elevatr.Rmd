@@ -26,7 +26,7 @@ library("elevatr")
 library("httr")
 library("prettyunits")
 opts_chunk$set(fig.width = 5, fig.height = 5, tidy = TRUE)
-key <- readRDS("../tests/testthat/key_file.rds")
+
 ```
 
 # Introduction to `elevatr`
@@ -166,6 +166,10 @@ As mentioned a data frame with x and y columns, a `sp` object, or a `raster` obj
 There is no difference in using the `sp` and `raster` input data types.  The data frame requires a `prj`.   We show examples using a `SpatialPolygonsDataFrame` and a data frame.  The zoom level (`z`) defaults to 9 (a trade off between resolution and time for download), but different zoom levels are often desired.  For example:  
 
 ```{r get_raster}
+# Key is required here for vignette build.
+# If following advice above in the API Keys section this is not required.
+key <- readRDS("../tests/testthat/key_file.rds")
+
 # SpatialPolygonsDataFrame example
 data(lake)
 elevation <- get_elev_raster(lake,z = 9, api_key = key)
@@ -184,12 +188,12 @@ In addition the the required arguments (`locations`, `z`, and  `prj` for data fr
 
 ```{r expand}
 # Bounding box on edge
-elev_edge<-get_elev_raster(lake, z = 10)
+elev_edge<-get_elev_raster(lake, z = 10, api_key = key)
 plot(elev_edge)
 plot(lake, add = TRUE)
 
 # Use expand to grab additional tiles
-elev_expand<-get_elev_raster(lake, z = 10, expand = 1500)
+elev_expand<-get_elev_raster(lake, z = 10, expand = 1500, api_key = key)
 plot(elev_expand)
 plot(lake, add = TRUE)
 ```
@@ -198,14 +202,14 @@ Lastly, `...` provides the ability to pass additional arguments to `httr::GET` w
 
 ```{r timeout}
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = timeout(5))
+get_elev_raster(lake, z = 5, config = timeout(5), api_key = key)
 ```
 
 Lastly, multiple configurations may be passed.  Below is an example combining `httr::timeout()` with `httr::verbose()`.
 
 ```{r timeout_verbose}
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
+get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)), api_key = key)
 ```
 
 ## Terrain Tiles on Amazon Web Services (AWS)
