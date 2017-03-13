@@ -2,11 +2,7 @@ context("get_elev_raster")
 data("pt_df")
 data("sp_big")
 library(sp)
-
-#Skipping until I get stuff figured out
-skip_on_cran()
-skip_on_travis()
-
+key <- readRDS("key_file.rds")
 ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
 aea_prj <- "+proj=aea +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
 
@@ -14,16 +10,16 @@ sp_sm <- SpatialPoints(coordinates(pt_df),CRS(ll_prj))
 sp_sm_prj <- spTransform(sp_sm,CRS(aea_prj))
 
 test_that("get_elev_raster returns correctly", {
-  #skip_on_cran()
-  
-  mz_df <- get_elev_raster(locations = pt_df,prj = ll_prj, api_key = NULL, 
+  skip_on_cran()
+  skip_on_appveyor()
+  mz_df <- get_elev_raster(locations = pt_df,prj = ll_prj, api_key = key, 
                            z = 6)
-  mz_sp <- get_elev_raster(locations = sp_sm, api_key = NULL, 
+  mz_sp <- get_elev_raster(locations = sp_sm, api_key = key, 
                            z = 6)
-  mz_sp_prj <- get_elev_raster(locations = sp_sm_prj, api_key = NULL, 
+  mz_sp_prj <- get_elev_raster(locations = sp_sm_prj, api_key = key, 
                                z = 6)
   
-  onetile <- get_elev_raster(locations = sp_sm[1,], api_key = NULL, 
+  onetile <- get_elev_raster(locations = sp_sm[1,], api_key = key, 
                                z = 6)
   
   aws <- get_elev_raster(locations = sp_sm, z = 6, src = "aws")

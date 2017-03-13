@@ -3,26 +3,23 @@ data("pt_df")
 data("sp_big")
 library(sp)
 
-#Skipping until I get stuff figured out
-skip_on_cran()
-skip_on_travis()
-
 ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
 aea_prj <- "+proj=aea +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
+key <- readRDS("key_file.rds")
 
 sp_sm <- SpatialPoints(coordinates(pt_df),CRS(ll_prj))
 sp_sm_prj <- spTransform(sp_sm,CRS(aea_prj))
 
 test_that("get_elev_point returns correctly", {
-  #skip_on_cran()
-  
-  mz_df <- get_elev_point(locations = pt_df,prj = ll_prj, api_key = NULL)
+  skip_on_cran()
+  skip_on_appveyor()
+  mz_df <- get_elev_point(locations = pt_df,prj = ll_prj, api_key = key)
   Sys.sleep(10)
-  mz_sp <- get_elev_point(locations = sp_big, api_key = NULL)
+  mz_sp <- get_elev_point(locations = sp_big, api_key = key)
   Sys.sleep(10)
-  mz_sp_prj <- get_elev_point(locations = sp_sm_prj, api_key = NULL)
+  mz_sp_prj <- get_elev_point(locations = sp_sm_prj, api_key = key)
   Sys.sleep(10)
-  mz_sp_200 <- get_elev_point(locations = sp_big[1:200,], api_key = NULL)
+  mz_sp_200 <- get_elev_point(locations = sp_big[1:200,], api_key = key)
   epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
   epqs_sp <- get_elev_point(locations = sp_sm, src = "epqs")
   epqs_sp_prj <- get_elev_point(locations = sp_sm_prj, src = "epqs")
