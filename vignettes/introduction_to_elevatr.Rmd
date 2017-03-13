@@ -26,6 +26,7 @@ library("elevatr")
 library("httr")
 library("prettyunits")
 opts_chunk$set(fig.width = 5, fig.height = 5, tidy = TRUE)
+key <- readRDS("../tests/testthat/key_file.rds")
 ```
 
 # Introduction to `elevatr`
@@ -174,7 +175,7 @@ plot(lake, add=TRUE)
 # data.frame example
 elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5)
 plot(elevation_df)
-plot(examp_sp, add = T)
+plot(examp_sp, add = TRUE)
 ```
 
 The zoom level determines the resolution of the output raster.  More details on resolution and zoom level is available in the [Mapzen Documentation on ground resolution](https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution).
