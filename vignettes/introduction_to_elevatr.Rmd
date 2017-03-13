@@ -168,12 +168,12 @@ There is no difference in using the `sp` and `raster` input data types.  The dat
 ```{r get_raster}
 # SpatialPolygonsDataFrame example
 data(lake)
-elevation <- get_elev_raster(lake,z = 9)
+elevation <- get_elev_raster(lake,z = 9, api_key = key)
 plot(elevation)
 plot(lake, add=TRUE)
 
 # data.frame example
-elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5)
+elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5, api_key = key)
 plot(elevation_df)
 plot(examp_sp, add = TRUE)
 ```
