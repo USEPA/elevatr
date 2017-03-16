@@ -1,5 +1,5 @@
 ## Comments
-This submission fixes a bug in the get_elev_raster function.  The API key for mapzen had a typo.  This also required some changes to testing the package.  The package is now tested locally and via travis-ci.  The tests are skipped on CRAN.  
+This submission fixes a bug in the get_elev_raster function.  The API key for mapzen had a typo.  This also required some changes to testing the package.  The package is now tested locally and via travis-ci.  The tests are skipped on CRAN.  Additionally, this corrects a problem with vignettes on a prior submission.
 
 ## Test Environments
 - Ubuntu 12.04, travis-ci, R Under development (unstable) (2017-03-13 r72338)

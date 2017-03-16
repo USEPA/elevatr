@@ -31,6 +31,9 @@ knitr::opts_chunk$set(purl = NOT_CRAN,
                       fig.width = 5, 
                       fig.height = 5, 
                       tidy = TRUE)
+```
+
+```{r environ, echo=FALSE}
 key <- readRDS("../tests/testthat/key_file.rds")
 Sys.setenv(mapzen_key=key)
 ```
