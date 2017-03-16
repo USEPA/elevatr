@@ -119,7 +119,7 @@ Sys.sleep(2)
 
 The process is the same for a SpatialPoints and a SpatialPointsDataFrame object.  The SpatialPointsDataFrame example is shown below.
 
-```{r examples_sp2, eval=T}
+```{r examples_sp2}
 # Example using SpatialPointsDataFrame
 # prj is taken from the SpatialPointsDataFrame object
 # api_key is taken from environment variable mapzen_key
@@ -171,7 +171,7 @@ As mentioned a data frame with x and y columns, a `sp` object, or a `raster` obj
 
 There is no difference in using the `sp` and `raster` input data types.  The data frame requires a `prj`.   We show examples using a `SpatialPolygonsDataFrame` and a data frame.  The zoom level (`z`) defaults to 9 (a trade off between resolution and time for download), but different zoom levels are often desired.  For example:  
 
-```{r get_raster, eval=NOT_CRAN}
+```{r get_raster}
 # SpatialPolygonsDataFrame example
 data(lake)
 elevation <- get_elev_raster(lake,z = 9)
