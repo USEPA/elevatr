@@ -6,7 +6,7 @@ utils::citEntry(entry = "manual",
              person("Tarak Shah", role = "ctb")),
   title = "elevatr: Access Elevation Data from Various APIs",
   year = "2017",
-  note = {"R package version 0.1.2, doi: "},
+  note = {"R package version 0.1.3, doi:10.5281/zenodo.400259"},
   url = "http://github.com/usepa/elevatr",
   textVersion = "Hollister, J.W., Tarak Shah (2017). quickmapr: elevatr: Access Elevation Data from Various APIs. CRAN v0.1.2."
 )
