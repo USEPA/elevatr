@@ -130,7 +130,7 @@ get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
                     api_key)
     }
     resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite = TRUE), ...)
-    if (httr::http_type(resp) != "image/tif") {
+    if (httr::http_type(resp) != "image/tif" & httr::http_type(resp) != "image/tiff") {
       stop("API did not return tif", call. = FALSE)
     } 
     dem_list[[i]] <- raster::raster(tmpfile)
@@ -194,7 +194,7 @@ get_aws_terrain <- function(bbx, z, prj,expand=NULL, ...){
     tmpfile <- tempfile()
     url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
     resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), ...)
-    if (httr::http_type(resp) != "image/tif") {
+    if (httr::http_type(resp) != "image/tif" & httr::http_type(resp) != "image/tiff") {
       stop("API did not return tif", call. = FALSE)
     } 
     dem_list[[i]] <- raster::raster(tmpfile)
