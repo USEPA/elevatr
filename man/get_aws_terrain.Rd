@@ -44,4 +44,3 @@ tiles are not cached so accessing them via a local/non-AWS machine will be
 slower than the Mapzen tiles.
 }
 \keyword{internal}
-

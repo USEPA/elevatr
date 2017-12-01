@@ -23,4 +23,3 @@ requires a key.  To get a key, visit
 Get point elevations from Mapzen
 }
 \keyword{internal}
-

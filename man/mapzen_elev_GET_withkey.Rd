@@ -16,4 +16,3 @@ this function will only enforce the 2/second limit
 see issue #4
 }
 \keyword{internal}
-

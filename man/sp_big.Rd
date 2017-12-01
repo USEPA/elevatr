@@ -10,4 +10,3 @@ This SpatialPoints dataset is 250 uniform random points to be used for
 examples and tests
 }
 \keyword{datasets}
-

@@ -20,4 +20,3 @@ a SpatialPointsDataFrame with elevation added to the data slot
 Function for accessing elevation data from the USGS epqs
 }
 \keyword{internal}
-

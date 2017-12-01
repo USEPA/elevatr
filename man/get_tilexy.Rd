@@ -10,4 +10,3 @@ get_tilexy(bbx, z)
 function to get a data.frame of all xyz tiles to download
 }
 \keyword{internal}
-

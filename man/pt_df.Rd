@@ -9,4 +9,3 @@
 Example data frame of locations for use in examples and text
 }
 \keyword{datasets}
-

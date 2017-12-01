@@ -81,4 +81,3 @@ x <- get_elev_raster(lake, z = 12, src = "aws")
 }
 
 }
-

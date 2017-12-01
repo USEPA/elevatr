@@ -64,4 +64,3 @@ get_elev_point(locations = mts_sp)
 data(sp_big)
 get_elev_point(sp_big)}
 }
-

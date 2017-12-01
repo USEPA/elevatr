@@ -10,4 +10,3 @@ This example data is a SpatialPolygonsDataFrame
 of a single lake, Lake Sunapee.  Used for examples and tests.
 }
 \keyword{datasets}
-

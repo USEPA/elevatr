@@ -44,4 +44,3 @@ input and returns a single raster object covering that extent.  You should have
 an api_key from Mapzen.
 }
 \keyword{internal}
-
