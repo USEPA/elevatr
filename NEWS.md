@@ -1,10 +1,13 @@
 elevatr 0.1.4 (2017-12-28)
 ==========================
-## Bug Fix
+## Bug Fixes
 - Primary change with this released is fixing a bug with the return file type on the AWS and mapzen APIs.  "tif" was changed to "tiff" and the check was stopping processing of the raster images.  Details are on <https://github.com/jhollist/elevatr/issues/17>. Thanks to the following individuals for catching this: @yipcma, @TomBor, @jslingsby.  And thanks to @vividbot for <https://github.com/jhollist/elevatr/pull/18> which provided a fix.  
 - Thanks to @pascalfust for this issue: <https://github.com/USEPA/elevatr/issues/2>.  Kicked me into gear to send fix to CRAN.
-- Fixed travis build errors.
-- README travis badge was failing on check.  Fixed link to badge.
+- Fixed NOTE on CRAN: Pakcages in Imports, not imported.
+    - Removed prettyunits
+    - moved rgdal to suggests
+    - Changed where ratelimitr getting called (was not in a function so couldn't be exported/called.
+- Fixed travis build errors caused by change in elevation API that now requires a key.
 
 elevatr 0.1.2 (2017-03-13)
 ==========================
