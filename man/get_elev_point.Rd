@@ -65,5 +65,6 @@ get_elev_point(locations = mt_wash, src = "epqs", units="meters",
                prj = ll_prj)
 get_elev_point(locations = mts_sp)
 data(sp_big)
-get_elev_point(sp_big)}
+get_elev_point(sp_big)
+}
 }
