@@ -20,9 +20,8 @@ argument is required for a \code{data.frame} of locations.}
 
 \item{src}{A character indicating which API to use, currently "mapzen" or 
 "epqs".  Default is "mapzen".  Note that the Mapzen Elevation 
-Service is subject to rate limits.  Keyless access limits 
-requests to 1,000 requests per day, 6 per minute, and 1 per 
-second.  With a Mapzen API key 
+Service is subject to rate limits.  Keyless access is not 
+allowed.  With a Mapzen API key 
 (\url{https://mapzen.com/developers/}) requests are limited to
 20,000 per day or 2 per second.  Per day and per second rates
 are not yet enforced by the \code{\link{elevatr}} package, but 
@@ -31,7 +30,11 @@ for larger numbers of points (e.g. > 500).}
 
 \item{api_key}{A character for the appropriate API key.  Default is to use key
 as defined in \code{.Renviron}.  Acceptable environment 
-variable name is currently only "mapzen_key".}
+variable name is currently only "mapzen_key" which is required.
+The \code{elevatr::set_api_key} function will set this key by
+updating the \code{.Renviron} file. An R restart is required 
+after using \code{elevatr::set_api_key}. Defaults to 
+\code{Sys.getenv("mapzen_key")}}
 
 \item{...}{Additional arguments passed to get_epqs or get_mapzen_elevation}
 }

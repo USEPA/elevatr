@@ -18,9 +18,8 @@
 #'            argument is required for a \code{data.frame} of locations.
 #' @param src A character indicating which API to use, currently "mapzen" or 
 #'               "epqs".  Default is "mapzen".  Note that the Mapzen Elevation 
-#'               Service is subject to rate limits.  Keyless access limits 
-#'               requests to 1,000 requests per day, 6 per minute, and 1 per 
-#'               second.  With a Mapzen API key 
+#'               Service is subject to rate limits.  Keyless access is not 
+#'               allowed.  With a Mapzen API key 
 #'               (\url{https://mapzen.com/developers/}) requests are limited to
 #'               20,000 per day or 2 per second.  Per day and per second rates
 #'               are not yet enforced by the \code{\link{elevatr}} package, but 
@@ -28,7 +27,11 @@
 #'               for larger numbers of points (e.g. > 500). 
 #' @param api_key A character for the appropriate API key.  Default is to use key
 #'                as defined in \code{.Renviron}.  Acceptable environment 
-#'                variable name is currently only "mapzen_key".
+#'                variable name is currently only "mapzen_key" which is required.
+#'                The \code{elevatr::set_api_key} function will set this key by
+#'                updating the \code{.Renviron} file. An R restart is required 
+#'                after using \code{elevatr::set_api_key}. Defaults to 
+#'                \code{Sys.getenv("mapzen_key")}
 #' @param ... Additional arguments passed to get_epqs or get_mapzen_elevation
 #' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
 #'         specified by the \code{prj} argument.
@@ -47,7 +50,8 @@
 #'                prj = ll_prj)
 #' get_elev_point(locations = mts_sp)
 #' data(sp_big)
-#' get_elev_point(sp_big)}
+#' get_elev_point(sp_big)
+#' }
 get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
                            api_key = get_api_key(src), ...){
   src <- match.arg(src)
@@ -123,9 +127,7 @@ get_epqs <- function(locations, units = c("meters","feet")){
 
 #' Get point elevations from Mapzen
 #' 
-#' @param api_key A valid Mapzen API key.  Although not required by the API, the
-#'                rate limits are low without a key.  The \code{elevatr} package
-#'                requires a key.  To get a key, visit 
+#' @param api_key A valid Mapzen API key.  Required by the API. To get a key, visit 
 #'                \url{https://mapzen.com/developers}. Defaults to 
 #'                \code{Sys.getenv("mapzen_key")}.
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
@@ -136,9 +138,16 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #' @keywords internal
 get_mapzen_elev <- function(locations, api_key = NULL){
   if(is.null(api_key)){
-    get_slowly <- mapzen_elev_GET_nokey
+    stop("A Mapzen API Key is required.  Visit https://mapzen.com/developers to generate an API Key.  Use set_api_key('API KEY') to set your key.")
   } else {
-    get_slowly <- mapzen_elev_GET_withkey
+    get_slowly <-  ratelimitr::limit_rate(
+        httr::GET,
+        ratelimitr::rate(n = 2, period = 1))
+    
+    # based on https://mapzen.com/documentation/overview/#rate-limits
+    # limits for valid keyholders are 2/second and 20K/day
+    # this function will only enforce the 2/second limit
+    # see issue #4
   }  
   base_url <- "https://elevation.mapzen.com/height?json="
   key <- paste0("&api_key=",api_key)

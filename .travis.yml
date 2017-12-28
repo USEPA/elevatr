@@ -20,7 +20,6 @@ notifications:
 r_github_packages:
 - jimhester/covr
 r_check_args: "--no-vignettes"
-r_build_args: "--no-build-vignettes"
 after_success:
 - Rscript -e 'library(covr); coveralls()'
 before_install:

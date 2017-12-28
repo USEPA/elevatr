@@ -3,6 +3,7 @@ data("pt_df")
 data("sp_big")
 library(sp)
 library(raster)
+library(rgdal)
 
 
 ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"

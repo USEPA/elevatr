@@ -18,9 +18,7 @@ Description: Several web services are available that provide access to elevation
              Elevation Point Query Service <http://ned.usgs.gov/epqs/>.
 Depends: R (>= 3.0.0)
 Imports:
-    prettyunits,
     sp,
-    rgdal,
     raster,
     httr,
     jsonlite,
@@ -34,5 +32,6 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    formatR
+    formatR,
+    rgdal
 VignetteBuilder: knitr
