@@ -9,10 +9,10 @@ r_binary_packages:
 - rgdal
 - sp
 - rgeos
+- raster
 r_packages:
 - formatR
 - devtools
-- raster
 notifications:
   email:
     on_success: change
