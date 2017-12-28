@@ -11,6 +11,7 @@ r_binary_packages:
 - rgeos
 r_packages:
 - formatR
+- devtools
 notifications:
   email:
     on_success: change

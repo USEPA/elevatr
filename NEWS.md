@@ -1,7 +1,8 @@
-elevatr 0.1.4 (201X-0X-XX)
+elevatr 0.1.4 (2017-12-28)
 ==========================
 ## Bug Fix
 - Primary change with this released is fixing a bug with the return file type on the AWS and mapzen APIs.  "tif" was changed to "tiff" and the check was stopping processing of the raster images.  Details are on <https://github.com/jhollist/elevatr/issues/17>. Thanks to the following individuals for catching this: @yipcma, @TomBor, @jslingsby.  And thanks to @vividbot for <https://github.com/jhollist/elevatr/pull/18> which provided a fix.  
+- Thanks to @pascalfust for this issue: <https://github.com/USEPA/elevatr/issues/2>.  Kicked me into gear to send fix to CRAN.
 
 elevatr 0.1.2 (2017-03-13)
 ==========================
