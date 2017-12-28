@@ -4,7 +4,7 @@ sudo: true
 env:
 - NOT_CRAN=true
 r:
-- devel
+- release
 r_binary_packages:
 - rgdal
 - sp
@@ -19,6 +19,8 @@ notifications:
     on_failure: change
 r_github_packages:
 - jimhester/covr
+r_check_args: "--no-vignettes"
+r_build_args: "--no-build-vignettes"
 after_success:
 - Rscript -e 'library(covr); coveralls()'
 before_install:
