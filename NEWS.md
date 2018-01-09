@@ -8,6 +8,7 @@ elevatr 0.1.4 (2017-12-28)
     - moved rgdal to suggests
     - Changed where ratelimitr getting called (was not in a function so couldn't be exported/called.
 - Fixed travis build errors caused by change in elevation API that now requires a key.
+- Added deprecation message to get_elev_point and get_elev_raster, due to pending shutdown of Mapzen :(
 
 elevatr 0.1.2 (2017-03-13)
 ==========================

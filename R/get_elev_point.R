@@ -55,6 +55,13 @@
 get_elev_point <- function(locations, prj = NULL, src = c("mapzen","epqs"),
                            api_key = get_api_key(src), ...){
   src <- match.arg(src)
+  if(src=="mapzen"){
+    warning("src 'mapzen' is deprecated and will cease to function after \
+            2018-01-31 due to shutdown of Mapzen; Use 'epqs' instead for US \
+            locations. Still searching for a global elevation service \
+            replacement.", 
+            call. = FALSE)
+  }
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   prj <- sp::proj4string(locations)
