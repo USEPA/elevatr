@@ -1,10 +1,9 @@
 #' Get Raster Elevation
 #' 
-#' Several web services provide access to raster elevation. Currently, this 
-#' function provides access to the Mapzen Terrain Service The function 
-#' accepts a \code{data.frame} of x (long) and y (lat), an 
-#' \code{sp}, or \code{raster} object as input.  A \code{raster} object is 
-#' returned.
+#' Several web services provide access to raster elevation. This function
+#' provides access to the Nextzen Terrain Service The function accepts a
+#' \code{data.frame} of x (long) and y (lat), an \code{sp}, or \code{raster}
+#' object as input.  A \code{raster} object is returned.
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
 #'                  \code{sp}, or \code{raster} object as input. 
