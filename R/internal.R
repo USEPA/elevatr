@@ -83,13 +83,22 @@ locations
 #' function to get API key based on source
 #' @keywords internal
 get_api_key<-function(src){
-  if(src == "mapzen"){
-    key <- Sys.getenv("mapzen_key")
+  if(src == "nextzen"){
+    key <- Sys.getenv("nextzen_key")
     if(nchar(key) == 0) {
       key <- NULL
     }
     return(key)
   }
+}
+
+#' function to set api key in .Renviron
+#' @param key the api key
+#' @param name the name to assign to the key in your .Renviron
+set_api_key <- function(key, name){
+  cat(paste0(name,"=",key,"\n"),
+      file=file.path(normalizePath("~/"), ".Renviron"),
+      append=TRUE)
 }
 
 #' function to project bounding box and if needed expand it

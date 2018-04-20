@@ -1,42 +1,44 @@
 #' Get Raster Elevation
 #' 
 #' Several web services provide access to raster elevation. This function
-#' provides access to the Nextzen Terrain Service The function accepts a
-#' \code{data.frame} of x (long) and y (lat), an \code{sp}, or \code{raster}
-#' object as input.  A \code{raster} object is returned.
+#' provides access to Terrain services from Nextzen (<https://www.nextzen.org/>)
+#' or AWS Open Data services. The function accepts a \code{data.frame} of 
+#' x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  
+#' A \code{raster} object is returned.
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
 #'                  \code{sp}, or \code{raster} object as input. 
 #' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
-#'           of the resultant raster is determined by the zoom and latitude.  For 
-#'           details on zoom and resolution see the documentation from Mapzen at 
+#'           of the resultant raster is determined by the zoom and latitude.   
+#'           Details on zoom and resolution are still maintained in the 
+#'           documentation from Mapzen at 
 #'           \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}                 
 #' @param prj A PROJ.4 string defining the projection of the locations argument. 
 #'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 
 #'            string will be taken from that.  This argument is required for a 
 #'            \code{data.frame} of locations."
 #' @param src A character indicating which API to use, currently either 
-#'               "mapzen" (default), or "aws" is used. Both use the same source
+#'               "aws" (default), or "nextzen" is used. Both use the same source
 #'               tiles.  The Amazon Web Services tiles are best if rate limits
-#'               are causing failure of the Mapzen tiles or if you are accessing
+#'               are causing failure of the Nextzen tiles or if you are accessing
 #'               the data via and AWS instance.
-#' @param api_key A valid API key.  
+#' @param api_key A valid API key. See <https://developers.nextzen.org/> for details. 
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
-#'            \code{config}.   See \code{\link{get_mapzen_terrain}} and 
+#'            \code{config}.   See \code{\link{get_nextzen_terrain}} and 
 #'            \code{\link{get_aws_terrain}} for more details. 
 #' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
 #'         specified by the \code{prj} argument.
 #' @details Currently, the \code{get_elev_raster} utilizes two separate APIs, 
-#'          the Mapzen Terrain Tile Service 
-#'          (\url{https://mapzen.com/documentation/terrain-tiles/}) or the 
+#'          the Nextzen Terrain Tile Service 
+#'          (\url{https://www.nextzen.org/#terrain-tiles}) or the 
 #'          Amazon Web Services 
 #'          (\url{https://aws.amazon.com/public-datasets/terrain/}).  Both 
 #'          services utilize the same underlying data and provide global 
-#'          coverage, but they have different use cases.  The Mapzen service is
+#'          coverage, but they have different use cases.  The Nextzen service is
 #'          cached and thus should provide speedier downloads.  It will work 
 #'          without an API key but an API key is suggested. 
 #'          
@@ -56,11 +58,11 @@
 #'                      api_key = NULL)
 #' 
 #' data(lake)
-#' x <- get_elev_raster(lake, z = 3, src = "mapzen")
+#' x <- get_elev_raster(lake, z = 3, src = "nextzen")
 #' x <- get_elev_raster(lake, z = 12, src = "aws")
 #' }
 #' 
-get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
+get_elev_raster <- function(locations, z, prj = NULL,src = c("aws", "nextzen"),
                            api_key = get_api_key(src), expand = NULL, ...){
   src <- match.arg(src)
   # Check location type and if sp, set prj.  If no prj (for either) then error
@@ -68,8 +70,8 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
   prj <- sp::proj4string(locations)
   
   # Pass of locations to APIs to get data as raster
-  if(src == "mapzen"){
-    raster_elev <- get_mapzen_terrain(sp::bbox(locations), z, prj = prj, 
+  if(src == "nextzen"){
+    raster_elev <- get_nextzen_terrain(sp::bbox(locations), z, prj = prj, 
                                       api_key = api_key, expand = expand, ...)
   } else if(src == "aws") {
     raster_elev <- get_aws_terrain(sp::bbox(locations), z, prj = prj, 
@@ -80,27 +82,28 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
   raster_elev
 }
 
-#' Get a digital elevation model from the Mapzen Terrain Tiles
+#' Get a digital elevation model from the Nextzen Terrain Tiles
 #' 
-#' This function uses the Mapzen Terrain Tile service to retrieve an elevation
+#' This function uses the Nextzen Terrain Tile service to retrieve an elevation
 #' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
 #' input and returns a single raster object covering that extent.  You should have
-#' an api_key from Mapzen.
+#' an api_key from Nextzen.
 #' 
-#' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
+#' @source Attribution: Nextzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
 #'         content courtesy of the U.S. Geological Survey and ETOPO1 content 
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
-#'         \url{https://mapzen.com/documentation/terrain-tiles/} 
+#'         \url{https://www.nextzen.org/#terrain-tiles} 
 #' 
 #' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
-#'          details on zoom and resolution see the documentation from Mapzen at 
+#'          details on zoom and resolution the documentation is still available 
+#'          from Mapzen at 
 #'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
 #' @param prj PROJ.4 string for input bbox 
-#' @param api_key An API Key from Mapzen, create at 
-#'                \url{https://mapzen.com/developers} Required. Set in your 
-#'                \code{.Renviron} file with the variable "mapzen_key"
+#' @param api_key An API Key from Nextzen, create at 
+#'                \url{https://developers.nextzen.org/} Required. Set in your 
+#'                \code{.Renviron} file with the variable "nextzen_key"
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
@@ -112,12 +115,13 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("mapzen", "aws"),
 #'            vector.              
 #' @export
 #' @keywords internal
-get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
+get_nextzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
 
   # Expand (if needed) and re-project bbx to dd
   bbx <- proj_expand(bbx,prj,expand)
   web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
-  base_url <- "https://tile.mapzen.com/mapzen/terrain/v1/geotiff/"
+  #https://tile.nextzen.org/tilezen/terrain/v1/geotiff/{z}/{x}/{y}.tif?api_key=your-nextzen-api-key
+  base_url <- "https://tile.nextzen.org/tilezen/terrain/v1/geotiff/"
   tiles <- get_tilexy(bbx,z)
   dem_list<-vector("list",length = nrow(tiles))
   for(i in seq_along(tiles[,1])){
@@ -128,6 +132,7 @@ get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
       url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif?api_key=",
                     api_key)
     }
+    browser()
     resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite = TRUE), ...)
     if (httr::http_type(resp) != "image/tiff") {
       stop("API did not return tif", call. = FALSE)
@@ -154,21 +159,22 @@ get_mapzen_terrain <- function(bbx, z, prj, api_key = NULL ,expand=NULL, ...){
 #' This function uses the AWS Terrain Tile service to retrieve an elevation
 #' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
 #' input and returns a single raster object covering that extent.  The data is
-#' the same as that available via the Mapzen tiles but does not require a key.  
-#' It is best used if rate limits are causing failures on the Mapzen service or 
+#' the same as that available via the Nextzen tiles but does not require a key.  
+#' It is best used if rate limits are causing failures on the Nextzen service or 
 #' if you are needing to access the terrain tiles via an AWS instance.  These 
 #' tiles are not cached so accessing them via a local/non-AWS machine will be 
-#' slower than the Mapzen tiles.
+#' slower than the Nextzen tiles.
 #' 
-#' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
+#' @source Attribution: Nextzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
 #'         content courtesy of the U.S. Geological Survey and ETOPO1 content 
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
-#'         \url{https://mapzen.com/documentation/terrain-tiles/} 
+#'         \url{https://www.nextzen.org/#terrain-tiles} 
 #' 
 #' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
-#'          details on zoom and resolution see the documentation from Mapzen at 
+#'          details on zoom and resolution see the documentation still available 
+#'          from Mapzen at 
 #'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
 #' @param prj PROJ.4 string for input bbox 
 #' @param expand A numeric value of a distance, in map units, used to expand the

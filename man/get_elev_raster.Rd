@@ -4,7 +4,7 @@
 \alias{get_elev_raster}
 \title{Get Raster Elevation}
 \usage{
-get_elev_raster(locations, z, prj = NULL, src = c("mapzen", "aws"),
+get_elev_raster(locations, z, prj = NULL, src = c("aws", "nextzen"),
   api_key = get_api_key(src), expand = NULL, ...)
 }
 \arguments{
@@ -12,8 +12,9 @@ get_elev_raster(locations, z, prj = NULL, src = c("mapzen", "aws"),
 \code{sp}, or \code{raster} object as input.}
 
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
-of the resultant raster is determined by the zoom and latitude.  For 
-details on zoom and resolution see the documentation from Mapzen at 
+of the resultant raster is determined by the zoom and latitude.   
+Details on zoom and resolution are still maintained in the 
+documentation from Mapzen at 
 \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}}
 
 \item{prj}{A PROJ.4 string defining the projection of the locations argument. 
@@ -22,12 +23,12 @@ string will be taken from that.  This argument is required for a
 \code{data.frame} of locations."}
 
 \item{src}{A character indicating which API to use, currently either 
-"mapzen" (default), or "aws" is used. Both use the same source
+"aws" (default), or "nextzen" is used. Both use the same source
 tiles.  The Amazon Web Services tiles are best if rate limits
-are causing failure of the Mapzen tiles or if you are accessing
+are causing failure of the Nextzen tiles or if you are accessing
 the data via and AWS instance.}
 
-\item{api_key}{A valid API key.}
+\item{api_key}{A valid API key. See <https://developers.nextzen.org/> for details.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 
@@ -35,7 +36,7 @@ be used for features that fall close to the edge of a tile and
 additional area around the feature is desired. Default is NULL.}
 
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
-\code{config}.   See \code{\link{get_mapzen_terrain}} and 
+\code{config}.   See \code{\link{get_nextzen_terrain}} and 
 \code{\link{get_aws_terrain}} for more details.}
 }
 \value{
@@ -43,20 +44,20 @@ Function returns a \code{SpatialPointsDataFrame} in the projection
         specified by the \code{prj} argument.
 }
 \description{
-Several web services provide access to raster elevation. Currently, this 
-function provides access to the Mapzen Terrain Service The function 
-accepts a \code{data.frame} of x (long) and y (lat), an 
-\code{sp}, or \code{raster} object as input.  A \code{raster} object is 
-returned.
+Several web services provide access to raster elevation. This function
+provides access to Terrain services from Nextzen (<https://www.nextzen.org/>)
+or AWS Open Data services. The function accepts a \code{data.frame} of 
+x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  
+A \code{raster} object is returned.
 }
 \details{
 Currently, the \code{get_elev_raster} utilizes two separate APIs, 
-         the Mapzen Terrain Tile Service 
-         (\url{https://mapzen.com/documentation/terrain-tiles/}) or the 
+         the Nextzen Terrain Tile Service 
+         (\url{https://www.nextzen.org/#terrain-tiles}) or the 
          Amazon Web Services 
          (\url{https://aws.amazon.com/public-datasets/terrain/}).  Both 
          services utilize the same underlying data and provide global 
-         coverage, but they have different use cases.  The Mapzen service is
+         coverage, but they have different use cases.  The Nextzen service is
          cached and thus should provide speedier downloads.  It will work 
          without an API key but an API key is suggested. 
          
@@ -76,7 +77,7 @@ x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10,
                      api_key = NULL)
 
 data(lake)
-x <- get_elev_raster(lake, z = 3, src = "mapzen")
+x <- get_elev_raster(lake, z = 3, src = "nextzen")
 x <- get_elev_raster(lake, z = 12, src = "aws")
 }
 

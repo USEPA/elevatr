@@ -4,10 +4,10 @@
 \alias{get_aws_terrain}
 \title{Get a digital elevation model from the AWS Terrain Tiles}
 \source{
-Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
+Attribution: Nextzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
         content courtesy of the U.S. Geological Survey and ETOPO1 content 
         courtesy of U.S. National Oceanic and Atmospheric Administration. 
-        \url{https://mapzen.com/documentation/terrain-tiles/}
+        \url{https://www.nextzen.org/#terrain-tiles}
 }
 \usage{
 get_aws_terrain(bbx, z, prj, expand = NULL, ...)
@@ -17,7 +17,8 @@ get_aws_terrain(bbx, z, prj, expand = NULL, ...)
 
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 of the resultant raster is determined by the zoom and latitude.  For 
-details on zoom and resolution see the documentation from Mapzen at 
+details on zoom and resolution see the documentation still available 
+from Mapzen at 
 \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}}
 
 \item{prj}{PROJ.4 string for input bbox}
@@ -37,10 +38,10 @@ vector.}
 This function uses the AWS Terrain Tile service to retrieve an elevation
 raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
 input and returns a single raster object covering that extent.  The data is
-the same as that available via the Mapzen tiles but does not require a key.  
-It is best used if rate limits are causing failures on the Mapzen service or 
+the same as that available via the Nextzen tiles but does not require a key.  
+It is best used if rate limits are causing failures on the Nextzen service or 
 if you are needing to access the terrain tiles via an AWS instance.  These 
 tiles are not cached so accessing them via a local/non-AWS machine will be 
-slower than the Mapzen tiles.
+slower than the Nextzen tiles.
 }
 \keyword{internal}
