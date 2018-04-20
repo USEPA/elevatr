@@ -20,11 +20,10 @@ rast <- rasterize(coordinates(spdf_sm),raster(spdf_sm))
 test_that("proj_expand works",{
   skip_on_cran()
   skip_on_appveyor()
-  key <- readRDS("key_file.rds")
   mans_sp <- SpatialPoints(coordinates(data.frame(x = -72.8145, y = 44.5438)),
                            CRS(ll_prj))
-  mans <- get_elev_raster(locations =  mans_sp, z = 6, api_key = key)
-  mans_exp <- get_elev_raster(locations = mans_sp, z = 6, expand = 2, api_key = key)
+  mans <- get_elev_raster(locations =  mans_sp, z = 6)
+  mans_exp <- get_elev_raster(locations = mans_sp, z = 6, expand = 2)
   
   expect_gt(ncell(mans_exp),ncell(mans))
   
@@ -48,14 +47,10 @@ test_that("loc_check errors correctly", {
 test_that("loc_check assigns prj correctly",{
   skip_on_cran()
   skip_on_appveyor()
-  key <- readRDS("key_file.rds")
-  expect_equal(proj4string(get_elev_point(locations = sp_sm, prj = ll_prj, 
-                                          api_key = key)),ll_prj)
-  Sys.sleep(10)
-  expect_equal(proj4string(get_elev_point(locations = spdf_sm, prj = ll_prj, 
-                                          api_key = key)),ll_prj)
-  Sys.sleep(10)
-  expect_equal(proj4string(get_elev_point(locations = rast, prj = ll_prj, 
-                                          api_key = key)), ll_prj)
-  Sys.sleep(10)
+  expect_equal(proj4string(get_elev_point(locations = sp_sm, prj = ll_prj)),
+                           ll_prj)
+  expect_equal(proj4string(get_elev_point(locations = spdf_sm, prj = ll_prj)),
+                           ll_prj)
+  expect_equal(proj4string(get_elev_point(locations = rast, prj = ll_prj)), 
+               ll_prj)
 })

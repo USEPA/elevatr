@@ -36,11 +36,6 @@ vector.}
 \description{
 This function uses the AWS Terrain Tile service to retrieve an elevation
 raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
-input and returns a single raster object covering that extent.  The data is
-the same as that available via the Mapzen tiles but does not require a key.  
-It is best used if rate limits are causing failures on the Mapzen service or 
-if you are needing to access the terrain tiles via an AWS instance.  These 
-tiles are not cached so accessing them via a local/non-AWS machine will be 
-slower than the Mapzen tiles.
+input and returns a single raster object covering that extent.
 }
 \keyword{internal}

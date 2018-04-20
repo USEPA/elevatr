@@ -4,8 +4,8 @@
 \alias{get_elev_raster}
 \title{Get Raster Elevation}
 \usage{
-get_elev_raster(locations, z, prj = NULL, src = c("mapzen", "aws"),
-  api_key = get_api_key(src), expand = NULL, ...)
+get_elev_raster(locations, z, prj = NULL, src = c("aws"), expand = NULL,
+  ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
@@ -21,13 +21,8 @@ If a \code{sp} or \code{raster} object is provided, the PROJ.4
 string will be taken from that.  This argument is required for a 
 \code{data.frame} of locations."}
 
-\item{src}{A character indicating which API to use, currently either 
-"mapzen" (default), or "aws" is used. Both use the same source
-tiles.  The Amazon Web Services tiles are best if rate limits
-are causing failure of the Mapzen tiles or if you are accessing
-the data via and AWS instance.}
-
-\item{api_key}{A valid API key.}
+\item{src}{A character indicating which API to use, currently only 
+"aws" is used.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 
@@ -35,7 +30,7 @@ be used for features that fall close to the edge of a tile and
 additional area around the feature is desired. Default is NULL.}
 
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
-\code{config}.   See \code{\link{get_mapzen_terrain}} and 
+\code{config}.   See
 \code{\link{get_aws_terrain}} for more details.}
 }
 \value{
@@ -50,17 +45,14 @@ accepts a \code{data.frame} of x (long) and y (lat), an
 returned.
 }
 \details{
-Currently, the \code{get_elev_raster} utilizes two separate APIs, 
-         the Mapzen Terrain Tile Service 
-         (\url{https://mapzen.com/documentation/terrain-tiles/}) or the 
+Currently, the \code{get_elev_raster} utilizes only the 
          Amazon Web Services 
-         (\url{https://aws.amazon.com/public-datasets/terrain/}).  Both 
-         services utilize the same underlying data and provide global 
-         coverage, but they have different use cases.  The Mapzen service is
-         cached and thus should provide speedier downloads.  It will work 
-         without an API key but an API key is suggested. 
+         (\url{https://aws.amazon.com/public-datasets/terrain/}) terrain 
+         tiles.  Versions of \code{elevatr} 0.1.4 or earlier had options for 
+         the Mapzen terrain tiles.  Mapzen data is no longer available.  
+         Support for the replacment Nextzen tiles is not currently available
          
-         Both services are provided via x, y, and z tiles (see 
+         The terrain data is provided via x, y, and z tiles (see 
          \url{http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
          details.) The x and y are determined from the bounding box of the 
          object submitted for \code{locations} argument, and the z argument 
@@ -72,12 +64,10 @@ loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1],
                                max=sp::bbox(lake)[1,2]),
                      y = runif(6,min=sp::bbox(lake)[2,1], 
                                max=sp::bbox(lake)[2,2]))
-x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10, 
-                     api_key = NULL)
+x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10)
 
 data(lake)
-x <- get_elev_raster(lake, z = 3, src = "mapzen")
-x <- get_elev_raster(lake, z = 12, src = "aws")
+x <- get_elev_raster(lake, z = 12)
 }
 
 }

@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Access Elevation Data from Various APIs
-Version: 0.1.4
+Version: 0.2.0
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre")),
              person("Tarak","Shah", role = "ctb"))    
@@ -12,10 +12,8 @@ Description: Several web services are available that provide access to elevation
              returns elevation data either as a SpatialPointsDataFrame from 
              point elevation services or as a raster object from raster 
              elevation services.  Currently, the package supports access to the
-             Mapzen Elevation Service <https://mapzen.com/documentation/elevation/elevation-service/>, 
-             Mapzen Terrain Service <https://mapzen.com/documentation/terrain-tiles/>,
-             Amazon Web Services Terrain Tiles <https://aws.amazon.com/public-datasets/terrain/> and the USGS
-             Elevation Point Query Service <http://ned.usgs.gov/epqs/>.
+             Amazon Web Services Terrain Tiles <https://aws.amazon.com/public-datasets/terrain/> 
+             and the USGS Elevation Point Query Service <http://ned.usgs.gov/epqs/>.
 Depends: R (>= 3.0.0)
 Imports:
     sp,

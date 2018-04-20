@@ -79,31 +79,7 @@ loc_check <- function(locations, prj = NULL){
 locations
 } 
 
-#' Utility function to set API key from mapzen
-#' 
-#' This function updates the .Renviron file with a new key
-#' 
-#' @export
-#' @keywords internal
-set_api_key<-function(api_key, src = c("mapzen")){
-  if(src == "mapzen"){
-    cat(paste0("mapzen_key=",api_key, "\n"),
-        file=file.path(normalizePath("~/"), ".Renviron"),
-        append=TRUE)
-  }
-}
 
-#' function to get API key based on source
-#' @keywords internal
-get_api_key<-function(src){
-  if(src == "mapzen"){
-    key <- Sys.getenv("mapzen_key")
-    if(nchar(key) == 0) {
-      key <- NULL
-    }
-    return(key)
-  }
-}
 
 #' function to project bounding box and if needed expand it
 #' @keywords internal

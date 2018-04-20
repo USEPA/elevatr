@@ -1,3 +1,11 @@
+elevatr 0.2.0 (2018-04-20)
+==========================
+# API Changes
+- Major change for this is dropping Mapzen support since Mapzen shutdown in January of 2018.  Replacement services for terrain tiles exist at Nextzen, however; the published geotiff endpoints were not working.  I opted to not include the Nextzen endpoints at this time.  Rolled back to terrain tiles from AWS and point services from USGS only.
+- Updated Vignette to reflect new focus on AWS and USGS
+- Updated Tests
+
+
 elevatr 0.1.4 (2017-12-28)
 ==========================
 ## Bug Fixes

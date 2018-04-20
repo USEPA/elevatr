@@ -15,13 +15,8 @@ knitr::opts_chunk$set(purl = NOT_CRAN,
                       tidy = TRUE)
 
 ## ----environ, echo=FALSE-------------------------------------------------
-key <- readRDS("../tests/testthat/key_file.rds")
-Sys.setenv(mapzen_key=key)
-
-## ----api_key, eval=FALSE-------------------------------------------------
-#  cat("mapzen_key=mapzen-XXXXXXX\n",
-#      file=file.path(normalizePath("~/"), ".Renviron"),
-#      append=TRUE)
+#key <- readRDS("../tests/testthat/key_file.rds")
+#Sys.setenv(mapzen_key=key)
 
 ## ----example_dataframe---------------------------------------------------
 # Create an example data.frame
@@ -41,38 +36,6 @@ examp_sp <- SpatialPoints(examp_df, proj4string = CRS(prj_dd))
 
 # Create an example SpatialPointsDataFrame
 examp_spdf <- SpatialPointsDataFrame(examp_sp, proj4string = CRS(prj_dd), data = cats )
-
-## ----examples_df1--------------------------------------------------------
-# Example using data.frame with longitude and latitude
-df_elev <- get_elev_point(examp_df, prj = prj_dd, src = "mapzen")
-
-# Compare
-examp_df
-data.frame(df_elev)
-
-## ----sleep1, echo=F------------------------------------------------------
-Sys.sleep(2)
-
-## ----examples_df2--------------------------------------------------------
-# Example using data.frame with longitude, latitude and an additional column
-df2_elev <- get_elev_point(examp_df2, prj = prj_dd, src = "mapzen")
-
-# Compare
-examp_df2
-data.frame(df2_elev)
-
-## ----sleep2, echo=F------------------------------------------------------
-Sys.sleep(2)
-
-## ----examples_sp2--------------------------------------------------------
-# Example using SpatialPointsDataFrame
-# prj is taken from the SpatialPointsDataFrame object
-# api_key is taken from environment variable mapzen_key
-spdf_elev <- get_elev_point(examp_spdf)
-
-# Compare
-examp_spdf
-spdf_elev
 
 ## ------------------------------------------------------------------------
 df_elev_epqs <- get_elev_point(examp_df, prj = prj_dd, src = "epqs")
@@ -98,25 +61,20 @@ plot(examp_sp, add = TRUE)
 
 ## ----expand--------------------------------------------------------------
 # Bounding box on edge
-elev_edge<-get_elev_raster(lake, z = 10, api_key = key)
+elev_edge<-get_elev_raster(lake, z = 10)
 plot(elev_edge)
 plot(lake, add = TRUE)
 
 # Use expand to grab additional tiles
-elev_expand<-get_elev_raster(lake, z = 10, expand = 1500, api_key = key)
+elev_expand<-get_elev_raster(lake, z = 10, expand = 1500)
 plot(elev_expand)
 plot(lake, add = TRUE)
 
 ## ----timeout-------------------------------------------------------------
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = timeout(5), api_key = key)
+get_elev_raster(lake, z = 5, config = timeout(5))
 
 ## ----timeout_verbose-----------------------------------------------------
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)), api_key = key)
-
-## ----aws-----------------------------------------------------------------
-elevation <- get_elev_raster(lake,z = 9, src = "aws")
-plot(elevation)
-plot(lake, add=TRUE)
+get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
 

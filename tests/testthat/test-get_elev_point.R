@@ -12,14 +12,6 @@ sp_sm_prj <- spTransform(sp_sm,CRS(aea_prj))
 test_that("get_elev_point returns correctly", {
   skip_on_cran()
   skip_on_appveyor()
-  key <- readRDS("key_file.rds")
-  mz_df <- get_elev_point(locations = pt_df,prj = ll_prj, api_key = key)
-  Sys.sleep(10)
-  mz_sp <- get_elev_point(locations = sp_big, api_key = key)
-  Sys.sleep(10)
-  mz_sp_prj <- get_elev_point(locations = sp_sm_prj, api_key = key)
-  Sys.sleep(10)
-  mz_sp_200 <- get_elev_point(locations = sp_big[1:200,], api_key = key)
   epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
   epqs_sp <- get_elev_point(locations = sp_sm, src = "epqs")
   epqs_sp_prj <- get_elev_point(locations = sp_sm_prj, src = "epqs")
@@ -27,18 +19,12 @@ test_that("get_elev_point returns correctly", {
   epqs_m <- get_elev_point(locations = sp_sm, src = "epqs", units = "meters")
   
   #class
-  expect_is(mz_df, "SpatialPointsDataFrame")
-  expect_is(mz_sp, "SpatialPointsDataFrame")
-  expect_is(mz_sp_200, "SpatialPointsDataFrame")
-  expect_is(mz_sp_prj, "SpatialPointsDataFrame")
   expect_is(epqs_df, "SpatialPointsDataFrame")
   expect_is(epqs_sp, "SpatialPointsDataFrame")
   expect_is(epqs_sp_prj, "SpatialPointsDataFrame")
   expect_is(epqs_sp_prj, "SpatialPointsDataFrame")
   
   #proj
-  expect_equal(proj4string(sp_sm),proj4string(mz_sp))
-  expect_equal(proj4string(sp_sm_prj),proj4string(mz_sp_prj))
   expect_equal(proj4string(sp_sm),proj4string(epqs_sp))
   expect_equal(proj4string(sp_sm_prj),proj4string(epqs_sp_prj))
   
