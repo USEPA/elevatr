@@ -22,6 +22,13 @@
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.
+#' @param clip A character value used to determine clipping of returned DEM.  
+#'             The default value is "tile" which returns the full tiles.  Other 
+#'             options are "bbox" which returns the DEM clipped to the bounding 
+#'             box of the original locations (or expanded bounding box if used), 
+#'             or "locations" if the spatials data (e.g. polygons) in the input 
+#'             locations should be used to clip the DEM.  Locations are not used 
+#'             to clip input point datasets.  Instead the bounding box is used.
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
@@ -53,20 +60,25 @@
 #' }
 #' 
 get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
-                           expand = NULL, ...){
+                           expand = NULL, clip = c("tile", "bbox", "locations"), ...){
   src <- match.arg(src)
-
+  clip <- match.arg(clip) 
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   prj <- sp::proj4string(locations)
   
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
-    raster_elev <- get_aws_terrain(sp::bbox(locations), z, prj = prj, 
+    raster_elev <- get_aws_terrain(locations, z, prj = prj, 
                                    expand = expand, ...)
   }
   # Re-project from webmerc back to original and return
-  raster_elev <- raster::projectRaster(raster_elev, crs = sp::CRS(prj))
+  if(clip != "tile"){
+    message(paste("Clipping DEM to", clip))
+    raster_elev <- clip_it(raster_elev, locations, expand, clip)
+  }
+  message(paste("Reprojecting DEM to original projection"))
+  raster_elev <- raster::projectRaster(raster_elev, crs = sp::CRS(prj))  
   raster_elev
 }
 
@@ -100,14 +112,19 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
 #'            vector.              
 #' @export
 #' @keywords internal
-get_aws_terrain <- function(bbx, z, prj,expand=NULL, ...){
+get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
-  bbx <- proj_expand(bbx,prj,expand)
-  web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
+  bbx <- proj_expand(sp::bbox(locations),prj,expand)
+  #web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/"
   tiles <- get_tilexy(bbx,z)
   dem_list<-vector("list",length = nrow(tiles))
+  pb <- progress::progress_bar$new(
+    format = "Downloading DEMs [:bar] :percent eta: :eta",
+    total = nrow(tiles), clear = FALSE, width= 60)
   for(i in seq_along(tiles[,1])){
+    pb$tick()
+    Sys.sleep(1/100)
     tmpfile <- tempfile()
     url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
     resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), ...)
@@ -127,6 +144,7 @@ get_aws_terrain <- function(bbx, z, prj,expand=NULL, ...){
   if(length(dem_list) == 1){
     return(dem_list[[1]])
   } else if (length(dem_list) > 1){
+    message("Merging DEMs")
     return(do.call(raster::merge, dem_list))
   } 
 }
