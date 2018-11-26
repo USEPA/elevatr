@@ -11,6 +11,7 @@ r_binary_packages:
 - rgeos
 - raster
 - sf
+- classint
 r_packages:
 - formatR
 - devtools
