@@ -11,10 +11,12 @@ get_epqs(locations, units = c("meters", "feet"))
 wish to return elevation. The first column is Longitude and 
 the second column is Latitude.}
 
-\item{units}{Character string of either meters or feet. Only works for 'epqs'}
+\item{units}{Character string of either meters or feet. Conversions for 
+'epqs' are handled by the API itself.}
 }
 \value{
-a SpatialPointsDataFrame with elevation added to the data slot
+a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
+        elevation added to the data slot
 }
 \description{
 Function for accessing elevation data from the USGS epqs

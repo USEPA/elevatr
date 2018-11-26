@@ -54,12 +54,13 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
   } 
   
   if(src == "aws"){
-    locations_prj <- get_aws_points(locations, prj, ...)
+    locations_prj <- get_aws_points(locations, ...)
   }
-  # Re-project back to original and return
+
+  # Re-project back to original, add in units, and return
   locations <- sp::spTransform(locations_prj,sp::CRS(prj))
-  if(length(list(...)) > 0){ 
-    if(names(list(...)) %in% "units" & list(...)$units == "feet"){
+  if(any(names(list(...)) %in% "units")){
+    if(list(...)$units == "feet"){
       locations$elev_units <- rep("feet", nrow(locations))
     } else {
       locations$elev_units <- rep("meters", nrow(locations))
@@ -67,7 +68,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
   } else {
     locations$elev_units <- rep("meters", nrow(locations))
   }
-  
+    
   if(sf_check){locations <- sf::st_as_sf(locations)}
   locations
 }
@@ -79,7 +80,8 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
 #' @param locations A SpatialPointsDataFrame of the location(s) for which you 
 #'                  wish to return elevation. The first column is Longitude and 
 #'                  the second column is Latitude.  
-#' @param units Character string of either meters or feet. Only works for 'epqs'
+#' @param units Character string of either meters or feet. Conversions for 
+#'              'epqs' are handled by the API itself.
 #' @return a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
 #'         elevation added to the data slot
 #' @export
@@ -133,23 +135,29 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
 #'           \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}.  
-#'           Returned                   
+#'           Returned   
+#' @param units Character string of either meters or feet. Conversions for 
+#'              'aws' are handled in R as the AWS terrain tiles are served in 
+#'              meters.               
 #' @param ... Arguments to be passed to \code{get_elev_raster}
 #' @return a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
 #'         elevation added to the data slot
 #' @export
 #' @examples 
 #' data(lake)
+#' lake_sf <- sf::st_as_sf(lake)
 #' loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
 #'                                max=sp::bbox(lake)[1,2]),
 #'                      y = runif(6,min=sp::bbox(lake)[2,1], 
 #'                                max=sp::bbox(lake)[2,2]))
-#' loc_sf <- loc_sf <- st_as_sf(loc_df, coords = c("x", "y"), crs = st_crs(lake_sf))                               
+#' loc_sf <- sf::st_as_sf(loc_df, coords = c("x", "y"), crs = sf::st_crs(lake_sf))                               
 #' get_elev_point(loc_sf, src = "aws", z = 12)
 #' @keywords internal
-get_aws_points <- function(locations, ...){
+get_aws_points <- function(locations, units = c("meters", "feet"), ...){
+  units <- match.arg(units)
   dem <- get_elev_raster(locations, ...)
   elevation <- raster::extract(dem, locations)
+  if(units == "feet") {elevation <- elevation * 3.28084}
   locations$elevation <- round(elevation, 2)
   locations
 }

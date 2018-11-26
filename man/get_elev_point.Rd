@@ -4,28 +4,33 @@
 \alias{get_elev_point}
 \title{Get Point Elevation}
 \usage{
-get_elev_point(locations, prj = NULL, src = c("epqs"), ...)
+get_elev_point(locations, prj = NULL, src = c("epqs", "aws"), ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the 
-first column and y (e.g. latitude) as the second column or a 
-\code{SpatialPoints}/\code{SpatialPointsDataFrame}.  
-Elevation for these points will be returned.}
+first column and y (e.g. latitude) as the second column, a 
+\code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a 
+\code{sf} \code{POINT} or \code{MULTIPOINT} object.   
+Elevation for these points will be returned in the 
+originally supplied class.}
 
 \item{prj}{A PROJ.4 string defining the projection of the locations argument. 
 If a \code{SpatialPoints} or \code{SpatialPointsDataFrame} is 
 provided, the PROJ.4 string will be taken from that.  This 
 argument is required for a \code{data.frame} of locations.}
 
-\item{src}{A character indicating which API to use, currently only "epqs". 
-The "epqs" source is relatively slow for larger numbers of points 
-(e.g. > 500).}
+\item{src}{A character indicating which API to use, either "epqs" or "aws" 
+accepted. The "epqs" source is relatively slow for larger numbers 
+of points (e.g. > 500).  The "aws" source may be quicker in these 
+cases provided the points are in a similar geographic area.  The 
+"aws" source downloads a DEM using \code(get_elev_raster) and then
+extracts the elevation for each point.}
 
-\item{...}{Additional arguments passed to get_epqs}
+\item{...}{Additional arguments passed to get_epqs or get_aws_points}
 }
 \value{
-Function returns a \code{SpatialPointsDataFrame} in the projection 
-        specified by the \code{prj} argument.
+Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
+        in the projection specified by the \code{prj} argument.
 }
 \description{
 Several web services provide access to point elevations.  This function 
