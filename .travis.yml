@@ -10,6 +10,7 @@ r_binary_packages:
 - sp
 - rgeos
 - raster
+- sf
 r_packages:
 - formatR
 - devtools
