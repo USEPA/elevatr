@@ -21,7 +21,7 @@
 #'            accepted. The "epqs" source is relatively slow for larger numbers 
 #'            of points (e.g. > 500).  The "aws" source may be quicker in these 
 #'            cases provided the points are in a similar geographic area.  The 
-#'            "aws" source downloads a DEM using \code(get_elev_raster) and then
+#'            "aws" source downloads a DEM using \code{get_elev_raster} and then
 #'            extracts the elevation for each point. 
 #' @param ... Additional arguments passed to get_epqs or get_aws_points
 #' @return Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
@@ -143,15 +143,6 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #' @return a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
 #'         elevation added to the data slot
 #' @export
-#' @examples 
-#' data(lake)
-#' lake_sf <- sf::st_as_sf(lake)
-#' loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-#'                                max=sp::bbox(lake)[1,2]),
-#'                      y = runif(6,min=sp::bbox(lake)[2,1], 
-#'                                max=sp::bbox(lake)[2,2]))
-#' loc_sf <- sf::st_as_sf(loc_df, coords = c("x", "y"), crs = sf::st_crs(lake_sf))                               
-#' get_elev_point(loc_sf, src = "aws", z = 12)
 #' @keywords internal
 get_aws_points <- function(locations, units = c("meters", "feet"), ...){
   units <- match.arg(units)

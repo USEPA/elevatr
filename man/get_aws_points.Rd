@@ -33,14 +33,4 @@ a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with
 \description{
 Function for accessing elevation data from AWS and extracting the elevations
 }
-\examples{
-data(lake)
-lake_sf <- sf::st_as_sf(lake)
-loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-                               max=sp::bbox(lake)[1,2]),
-                     y = runif(6,min=sp::bbox(lake)[2,1], 
-                               max=sp::bbox(lake)[2,2]))
-loc_sf <- sf::st_as_sf(loc_df, coords = c("x", "y"), crs = sf::st_crs(lake_sf))                               
-get_elev_point(loc_sf, src = "aws", z = 12)
-}
 \keyword{internal}

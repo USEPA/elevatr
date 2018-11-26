@@ -121,8 +121,8 @@ clip_it <- function(rast, loc, expand, clip){
 bbox_to_sp <- function(bbox) {
   x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
   y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
-  p <- Polygon(cbind(x, y))
-  ps <- Polygons(list(p), "p1")
-  sp <- SpatialPolygons(list(ps), 1L, proj4string = CRS(ll_geo))
-  return(sp)
+  p <- sp::Polygon(cbind(x, y))
+  ps <- sp::Polygons(list(p), "p1")
+  sp_bbx <- sp::SpatialPolygons(list(ps), 1L, proj4string = sp::CRS(ll_geo))
+  sp_bbx
 }

@@ -23,7 +23,7 @@ argument is required for a \code{data.frame} of locations.}
 accepted. The "epqs" source is relatively slow for larger numbers 
 of points (e.g. > 500).  The "aws" source may be quicker in these 
 cases provided the points are in a similar geographic area.  The 
-"aws" source downloads a DEM using \code(get_elev_raster) and then
+"aws" source downloads a DEM using \code{get_elev_raster} and then
 extracts the elevation for each point.}
 
 \item{...}{Additional arguments passed to get_epqs or get_aws_points}
