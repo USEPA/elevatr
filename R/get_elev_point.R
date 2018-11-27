@@ -23,7 +23,13 @@
 #'            cases provided the points are in a similar geographic area.  The 
 #'            "aws" source downloads a DEM using \code{get_elev_raster} and then
 #'            extracts the elevation for each point. 
-#' @param ... Additional arguments passed to get_epqs or get_aws_points
+#' @param ... Additional arguments passed to get_epqs or get_aws_points.  When 
+#'            using "aws" as the source, pay attention to the `z` argument.  A 
+#'            defualt of 5 is used, but this uses a raster with a large ~4-5 km 
+#'            pixel.  Additionally, the source data changes as zoom levels 
+#'            increase.  
+#'            Read \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution} 
+#'            for details.  
 #' @return Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
 #'         in the projection specified by the \code{prj} argument.
 #' @export
@@ -135,7 +141,7 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
 #'           \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}.  
-#'           Returned   
+#'           default value is 5 is supplied.   
 #' @param units Character string of either meters or feet. Conversions for 
 #'              'aws' are handled in R as the AWS terrain tiles are served in 
 #'              meters.               
@@ -144,9 +150,9 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #'         elevation added to the data slot
 #' @export
 #' @keywords internal
-get_aws_points <- function(locations, units = c("meters", "feet"), ...){
+get_aws_points <- function(locations, z=5, units = c("meters", "feet"), ...){
   units <- match.arg(units)
-  dem <- get_elev_raster(locations, ...)
+  dem <- get_elev_raster(locations, z, ...)
   elevation <- raster::extract(dem, locations)
   if(units == "feet") {elevation <- elevation * 3.28084}
   locations$elevation <- round(elevation, 2)

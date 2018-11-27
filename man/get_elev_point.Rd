@@ -26,7 +26,13 @@ cases provided the points are in a similar geographic area.  The
 "aws" source downloads a DEM using \code{get_elev_raster} and then
 extracts the elevation for each point.}
 
-\item{...}{Additional arguments passed to get_epqs or get_aws_points}
+\item{...}{Additional arguments passed to get_epqs or get_aws_points.  When 
+using "aws" as the source, pay attention to the `z` argument.  A 
+defualt of 5 is used, but this uses a raster with a large ~4-5 km 
+pixel.  Additionally, the source data changes as zoom levels 
+increase.  
+Read \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution} 
+for details.}
 }
 \value{
 Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 

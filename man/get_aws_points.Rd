@@ -4,7 +4,7 @@
 \alias{get_aws_points}
 \title{Get point elevation data from the AWS Terrain Tiles}
 \usage{
-get_aws_points(locations, units = c("meters", "feet"), ...)
+get_aws_points(locations, z = 5, units = c("meters", "feet"), ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the 
@@ -14,17 +14,17 @@ first column and y (e.g. latitude) as the second column, a
 Elevation for these points will be returned in the 
 originally supplied class.}
 
+\item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
+of the resultant raster is determined by the zoom and latitude.  For 
+details on zoom and resolution see the documentation from Mapzen at 
+\url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}.  
+default value is 5 is supplied.}
+
 \item{units}{Character string of either meters or feet. Conversions for 
 'aws' are handled in R as the AWS terrain tiles are served in 
 meters.}
 
 \item{...}{Arguments to be passed to \code{get_elev_raster}}
-
-\item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
-of the resultant raster is determined by the zoom and latitude.  For 
-details on zoom and resolution see the documentation from Mapzen at 
-\url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}.  
-Returned}
 }
 \value{
 a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
