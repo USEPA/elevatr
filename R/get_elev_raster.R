@@ -115,7 +115,6 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
 get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
   bbx <- proj_expand(sp::bbox(locations),prj,expand)
-  #web_merc <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/"
   tiles <- get_tilexy(bbx,z)
   dem_list<-vector("list",length = nrow(tiles))
@@ -141,7 +140,8 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
     x
   }
   dem_list <- lapply(dem_list, function(x,y) change_origins(x,min_origin))
-  if(length(dem_list) == 1){
+  
+  if(length(dem_list) == 1){ #Not sure this case will ever be satsified...
     return(dem_list[[1]])
   } else if (length(dem_list) > 1){
     message("Merging DEMs")
