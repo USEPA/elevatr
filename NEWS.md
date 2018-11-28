@@ -1,9 +1,17 @@
-elevatr 0.2.0 (2018-04-20)
+elevatr 0.2.0 (2018-11-28)
 ==========================
 # API Changes
-- Major change for this is dropping Mapzen support since Mapzen shutdown in January of 2018.  Replacement services for terrain tiles exist at Nextzen, however; the published geotiff endpoints were not working.  I opted to not include the Nextzen endpoints at this time.  Rolled back to terrain tiles from AWS and point services from USGS only.
+- Major change for this is dropping Mapzen support since Mapzen shutdown in January of 2018.  Replacement services for terrain tiles exist at Nextzen, however; the published geotiff endpoints were not working.  I opted to not include the Nextzen endpoints at this time.  Rolled back to terrain tiles from AWS only.
+
+# Added Functionality
+- Added point elevations from AWS.  Extract point elevations from a DEM obtained via `get_elev_raster()`.  Will likely be faster for cases with many points in a relatively small geographic area.
+- Added a clip argument to `get_elev_raster()`.  Default behavior of returning the full tiles is the same as in prior versions.  The argument expands this by allowing users to clip the resultant DEM either by the bounding box of the input locations via `clip = "bbox"` or by the locations themselves via `clip = "locations"`.   
+- Support for input simple features of the class `sf` has been added.  This is supported by coercion of the input `sf` class to a `SpatialXDataFrame`.  An `sf` object is also returned when used as the input locations for `get_elev_point`
+
+# Minor Changes
 - Updated Vignette to reflect new focus on AWS and USGS
 - Updated Tests
+- Updated README
 
 
 elevatr 0.1.4 (2017-12-28)
@@ -11,7 +19,7 @@ elevatr 0.1.4 (2017-12-28)
 ## Bug Fixes
 - Primary change with this released is fixing a bug with the return file type on the AWS and mapzen APIs.  "tif" was changed to "tiff" and the check was stopping processing of the raster images.  Details are on <https://github.com/jhollist/elevatr/issues/17>. Thanks to the following individuals for catching this: @yipcma, @TomBor, @jslingsby.  And thanks to @vividbot for <https://github.com/jhollist/elevatr/pull/18> which provided a fix.  
 - Thanks to @pascalfust for this issue: <https://github.com/USEPA/elevatr/issues/2>.  Kicked me into gear to send fix to CRAN.
-- Fixed NOTE on CRAN: Pakcages in Imports, not imported.
+- Fixed NOTE on CRAN: Packages in Imports, not imported.
     - Removed prettyunits
     - moved rgdal to suggests
     - Changed where ratelimitr getting called (was not in a function so couldn't be exported/called.

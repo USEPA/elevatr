@@ -9,11 +9,11 @@
 # elevatr
 An R package for accessing elevation data from various sources
 
-The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/)) may be used. Additional elevation data sources may be added.
+The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added.
 
-Current plan for this package includes just two functions to access elevation web services:
+Currently this package includes just two primary functions to access elevation web services:
 
-- `get_elev_point()`:  Get point elevations using the USGS Elevation Point Query Service (for the US Only) .  This will accept a data frame of x (long) and y (lat) or a SpatialPoints/SpatialPointsDataFame as input.  A SpatialPointsDataFrame is returned.
+- `get_elev_point()`:  Get point elevations using the USGS Elevation Point Query Service (for the US Only) or using the AWS Terrian Tiles (global).  This will accept a data frame of x (long) and y (lat), a SpatialPoints/SpatialPointsDataFame, or a Simple Features object as input.  A SpatialPointsDataFrame or Simple Features object is returned, depending on the class of the input locations.
 - `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital Elevation Model) from the AWS Open Data Terrain Tiles.  Other sources may be added later.  This will accept a data frame of of x (long) and y (lat) or any `sp` or `raster` object as input and will return a `raster` object of the elevation tiles that cover the bounding box of the input spatial data. 
 
 ## Installation

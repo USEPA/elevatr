@@ -5,7 +5,9 @@ dist: trusty
 env:
 - NOT_CRAN=true
 r:
+- oldrel
 - release
+- devel
 before_install:
   - sudo add-apt-repository ppa:ubuntugis/ppa --yes
   - sudo apt-get --yes --force-yes update -qq
