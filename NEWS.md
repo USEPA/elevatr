@@ -5,13 +5,14 @@ elevatr 0.2.0 (2018-11-28)
 
 # Added Functionality
 - Added point elevations from AWS.  Extract point elevations from a DEM obtained via `get_elev_raster()`.  Will likely be faster for cases with many points in a relatively small geographic area.
-- Added a clip argument to `get_elev_raster()`.  Default behavior of returning the full tiles is the same as in prior versions.  The argument expands this by allowing users to clip the resultant DEM either by the bounding box of the input locations via `clip = "bbox"` or by the locations themselves via `clip = "locations"`.   
+- Added a clip argument to `get_elev_raster()`.  Default behavior of returning the full tiles is the same as in prior versions.  The argument expands this by allowing users to clip the resultant DEM either by the bounding box of the input locations via `clip = "bbox"` or by the locations themselves via `clip = "locations"`.  Partly inspired by https://github.com/jhollist/elevatr/issues/13.  Thanks to Michael Sumner (@mdsumner) for the inspiration.     
 - Support for input simple features of the class `sf` has been added.  This is supported by coercion of the input `sf` class to a `SpatialXDataFrame`.  An `sf` object is also returned when used as the input locations for `get_elev_point`
 
 # Minor Changes
 - Updated Vignette to reflect new focus on AWS and USGS
 - Updated Tests
 - Updated README
+- Added message to inform user of vertical units and CRS.
 
 
 elevatr 0.1.4 (2017-12-28)

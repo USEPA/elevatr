@@ -29,6 +29,8 @@
 #'             or "locations" if the spatials data (e.g. polygons) in the input 
 #'             locations should be used to clip the DEM.  Locations are not used 
 #'             to clip input point datasets.  Instead the bounding box is used.
+#' @param verbose Toggles on and off the note about units and coordinate 
+#'                reference system.
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
@@ -60,7 +62,8 @@
 #' }
 #' 
 get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
-                           expand = NULL, clip = c("tile", "bbox", "locations"), ...){
+                           expand = NULL, clip = c("tile", "bbox", "locations"), 
+                           verbose = TRUE, ...){
   src <- match.arg(src)
   clip <- match.arg(clip) 
   # Check location type and if sp, set prj.  If no prj (for either) then error
@@ -78,7 +81,10 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
     raster_elev <- clip_it(raster_elev, locations, expand, clip)
   }
   message(paste("Reprojecting DEM to original projection"))
-  raster_elev <- raster::projectRaster(raster_elev, crs = sp::CRS(prj))  
+  raster_elev <- raster::projectRaster(raster_elev, crs = sp::CRS(prj))
+  if(verbose){
+    message(paste("Note: Elevation units are in meters.\nNote: The coordinate reference system is:\n", prj))
+  }
   raster_elev
 }
 

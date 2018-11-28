@@ -57,10 +57,14 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if (src == "epqs"){
     locations_prj <- get_epqs(locations, ...)
+    units <- locations_prj[[2]]
+    locations_prj <- locations_prj[[1]]
   } 
   
   if(src == "aws"){
     locations_prj <- get_aws_points(locations, ...)
+    units <- locations_prj[[2]]
+    locations_prj <- locations_prj[[1]]
   }
 
   # Re-project back to original, add in units, and return
@@ -74,8 +78,9 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
   } else {
     locations$elev_units <- rep("meters", nrow(locations))
   }
-    
   if(sf_check){locations <- sf::st_as_sf(locations)}
+  message(paste("Note: Elevation units are in", units, 
+                "\nNote:. The coordinate reference system is:\n", prj))
   locations
 }
 
@@ -88,8 +93,8 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
 #'                  the second column is Latitude.  
 #' @param units Character string of either meters or feet. Conversions for 
 #'              'epqs' are handled by the API itself.
-#' @return a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
-#'         elevation added to the data slot
+#' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
+#'         elevation added to the data slot and a character of the elevation units
 #' @export
 #' @keywords internal
 get_epqs <- function(locations, units = c("meters","feet")){
@@ -123,8 +128,8 @@ get_epqs <- function(locations, units = c("meters","feet")){
     pb$tick()
     Sys.sleep(1 / 100)
   }
-  
-  locations
+  location_list <- list(locations, units)
+  location_list
 }
 
 #' Get point elevation data from the AWS Terrain Tiles
@@ -146,17 +151,18 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #'              'aws' are handled in R as the AWS terrain tiles are served in 
 #'              meters.               
 #' @param ... Arguments to be passed to \code{get_elev_raster}
-#' @return a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
-#'         elevation added to the data slot
+#' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
+#'         elevation added to the data slot and a character of the elevation units
 #' @export
 #' @keywords internal
 get_aws_points <- function(locations, z=5, units = c("meters", "feet"), ...){
   units <- match.arg(units)
-  dem <- get_elev_raster(locations, z, ...)
+  dem <- suppressMessages(get_elev_raster(locations, z, ...))
   elevation <- raster::extract(dem, locations)
   if(units == "feet") {elevation <- elevation * 3.28084}
   locations$elevation <- round(elevation, 2)
-  locations
+  location_list <- list(locations, units)
+  location_list
 }
 
 

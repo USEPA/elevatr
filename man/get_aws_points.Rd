@@ -27,8 +27,8 @@ meters.}
 \item{...}{Arguments to be passed to \code{get_elev_raster}}
 }
 \value{
-a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
-        elevation added to the data slot
+a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
+        elevation added to the data slot and a character of the elevation units
 }
 \description{
 Function for accessing elevation data from AWS and extracting the elevations
