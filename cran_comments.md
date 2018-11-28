@@ -1,5 +1,5 @@
 ## Comments
-This submission adds some new functionality to the package, fully deprecates the mapzen source, and updates tests.  The new functionalities are allowing for clipping of the output DEMs as well as providing an alternative, global, source for point elevations.
+Fixes incorrect URL in vigenette from initial v 0.2.0 submission per 2018-11-28 email from Uwe Ligges. Additionally, this submission adds some new functionality to the package, fully deprecates the mapzen source, and updates tests.  The new functionalities are allowing for clipping of the output DEMs as well as providing an alternative, global, source for point elevations.  Additin
 
 ## Test Environments
 - Travis-CI, Ubuntu 14.04.5 LTS, R version 3.4.4 (2017-01-27)
