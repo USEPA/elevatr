@@ -11,7 +11,7 @@
 #' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
-#'           \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}                 
+#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution                 
 #' @param prj A PROJ.4 string defining the projection of the locations argument. 
 #'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 
 #'            string will be taken from that.  This argument is required for a 
@@ -105,7 +105,7 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
-#'          \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}
+#'          \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
 #' @param prj PROJ.4 string for input bbox 
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
