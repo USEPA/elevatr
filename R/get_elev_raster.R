@@ -38,7 +38,7 @@
 #'         specified by the \code{prj} argument.
 #' @details Currently, the \code{get_elev_raster} utilizes only the 
 #'          Amazon Web Services 
-#'          (\url{https://aws.amazon.com/public-datasets/terrain/}) terrain 
+#'          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
 #'          tiles.  Versions of \code{elevatr} 0.1.4 or earlier had options for 
 #'          the Mapzen terrain tiles.  Mapzen data is no longer available.  
 #'          Support for the replacment Nextzen tiles is not currently available
