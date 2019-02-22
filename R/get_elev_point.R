@@ -28,7 +28,7 @@
 #'            defualt of 5 is used, but this uses a raster with a large ~4-5 km 
 #'            pixel.  Additionally, the source data changes as zoom levels 
 #'            increase.  
-#'            Read \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution} 
+#'            Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
 #'            for details.  
 #' @return Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
 #'         in the projection specified by the \code{prj} argument.
@@ -145,7 +145,7 @@ get_epqs <- function(locations, units = c("meters","feet")){
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
-#'           \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution}.  
+#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.  
 #'           default value is 5 is supplied.   
 #' @param units Character string of either meters or feet. Conversions for 
 #'              'aws' are handled in R as the AWS terrain tiles are served in 

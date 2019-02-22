@@ -3,7 +3,8 @@ Title: Access Elevation Data from Various APIs
 Version: 0.2.0
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre")),
-             person("Tarak","Shah", role = "ctb"))    
+             person("Tarak","Shah", role = "ctb"),
+             person("Alec L.", "Robitaille", role = "ctb", comment = c(ORCID = "0000-0002-4706-1762")))
 URL: https://www.github.com/jhollist/elevatr
 BugReports: https://github.com/jhollist/elevatr/issues
 Maintainer: Jeffrey Hollister <hollister.jeff@epa.gov>
