@@ -102,5 +102,7 @@ get_epqs <- function(locations, units = c("meters","feet")){
     Sys.sleep(1 / 100)
   }
   
+  # For areas without epqs values that return -1000000, switch to NA
+  locations[locations$elevation == -1000000] <- NA
   locations
 }
