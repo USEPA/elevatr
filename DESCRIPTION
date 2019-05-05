@@ -3,9 +3,10 @@ Title: Access Elevation Data from Various APIs
 Version: 0.2.1.9999
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre")),
-             person("Tarak","Shah", role = "ctb"))    
-URL: https://www.github.com/usepa/elevatr
-BugReports: https://github.com/usepa/elevatr/issues
+             person("Tarak","Shah", role = "ctb"),
+             person("Alec L.", "Robitaille", role = "ctb", comment = c(ORCID = "0000-0002-4706-1762")))
+URL: https://www.github.com/jhollist/elevatr
+BugReports: https://github.com/jhollist/elevatr/issues
 Maintainer: Jeffrey Hollister <hollister.jeff@epa.gov>
 Description: Several web services are available that provide access to elevation
              data. This package provides access to several of those services and 
@@ -21,11 +22,11 @@ Imports:
     httr,
     jsonlite,
     progress,
-    ratelimitr
+    sf
 License: CC0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Suggests: 
     testthat,
     knitr,

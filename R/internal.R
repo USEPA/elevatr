@@ -13,10 +13,10 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 #' function to get a data.frame of all xyz tiles to download
 #' @keywords internal
 get_tilexy <- function(bbx,z){
-  min_tile <- floor(latlong_to_tilexy(bbx[1,1],bbx[2,1],z))
-  max_tile <- floor(latlong_to_tilexy(bbx[1,2],bbx[2,2],z))
-  x_all <- seq(from = min_tile[1], to = max_tile[1])
-  y_all <- seq(from = min_tile[2], to = max_tile[2])
+  min_tile <- latlong_to_tilexy(bbx[1,1],bbx[2,1],z)
+  max_tile <- latlong_to_tilexy(bbx[1,2],bbx[2,2],z)
+  x_all <- seq(from = floor(min_tile[1]), to = ceiling(max_tile[1]))
+  y_all <- seq(from = ceiling(min_tile[2]), to = floor(max_tile[2]))
   return(expand.grid(x_all,y_all))
 }
 
@@ -24,6 +24,12 @@ get_tilexy <- function(bbx,z){
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
 #' @keywords internal
 loc_check <- function(locations, prj = NULL){
+  
+  #Convert sf locations to SP
+  if("sf" %in% class(locations)){
+    locations <- sf::as_Spatial(locations)
+  }
+  #browser()
   if(class(locations)=="data.frame"){ 
     if(is.null(prj)){
       stop("Please supply a valid proj.4 string.")
@@ -64,7 +70,7 @@ loc_check <- function(locations, prj = NULL){
     if(is.na(sp::proj4string(locations)) & is.null(prj)){
       stop("Please supply a valid proj.4 string.")
     }
-    #browser()
+    
     if(is.na(sp::proj4string(locations))){
       if(attributes(class(locations)) == "raster"){
         if(sum(!is.na(raster::getValues(locations))) == 0){
@@ -85,15 +91,38 @@ locations
 #' @keywords internal
 proj_expand <- function(bbx,prj,expand){
   if(!is.null(expand)){
-    bbx <- bbx
     bbx[,1] <- bbx[,1] - expand
     bbx[,2] <- bbx[,2] + expand
   }
   bbx <- sp::bbox(sp::spTransform(sp::SpatialPoints(t(sp::coordinates(bbx)),
                                                     bbox=bbx, proj4string = sp::CRS(prj)),
-                     sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")))
+                     sp::CRS(ll_geo)))
   bbx
 }
 
+#' function to clip the DEM
+#' @keywords internal
+clip_it <- function(rast, loc, expand, clip){
+  loc_wm <- sp::spTransform(loc, sp::CRS(web_merc))
+  if(clip == "locations" & !grepl("Points", class(loc_wm))){
+    dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
+  } else if(clip == "bbox" | grepl("Points", class(loc_wm))){
+    bbx <- proj_expand(sp::bbox(loc_wm), web_merc, expand)
+    bbx_sp <- sp::spTransform(bbox_to_sp(bbx), sp::CRS(web_merc))
+    dem <- raster::mask(raster::crop(rast,bbx_sp), bbx_sp)
+  }
+  dem
+}
 
-
+#' Edited from https://github.com/jhollist/quickmapr/blob/master/R/internals.R
+#' sp bbox to poly
+#' @param bbx an sp object
+#' @keywords internal
+bbox_to_sp <- function(bbox) {
+  x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
+  y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
+  p <- sp::Polygon(cbind(x, y))
+  ps <- sp::Polygons(list(p), "p1")
+  sp_bbx <- sp::SpatialPolygons(list(ps), 1L, proj4string = sp::CRS(ll_geo))
+  sp_bbx
+}

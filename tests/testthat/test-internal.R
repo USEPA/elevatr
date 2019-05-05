@@ -17,6 +17,19 @@ spdf_sm <- SpatialPointsDataFrame(sp_sm, data.frame(1:nrow(coordinates(sp_sm))))
 
 rast <- rasterize(coordinates(spdf_sm),raster(spdf_sm))
 
+mt_wash <- data.frame(x = -71.3036, y = 44.2700)
+mt_mans <- data.frame(x = -72.8145, y = 44.5438)
+mts <- rbind(mt_wash,mt_mans)
+mts$name <- c("Mount Washington", "Mount Mansfield")
+
+test_that("data frame with more extra columns work", {
+  skip_on_cran()
+  skip_on_appveyor()
+  
+  mts_with_names_and_elevation <- get_elev_point(mts, ll_prj)
+  expect_true("name" %in% names(mts_with_names_and_elevation))
+})
+
 test_that("proj_expand works",{
   skip_on_cran()
   skip_on_appveyor()

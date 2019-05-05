@@ -1,11 +1,11 @@
 ## Comments
-This submission fixes a bug in the get_elev_raster function.  The response type changed on the API side and internal checks were failing.  This is corrected.  Also, three packages were listed as Imports, but not called.  That has been fixed and all NOTES listed in the CRAN checks should be addressed.  Lastly, a deprecation notice for the mapzen api (which is shutting down soon) was added.
+Fixes incorrect URL in vigenette from initial v 0.2.0 submission per 2018-11-28 email from Uwe Ligges. Additionally, this submission adds some new functionality to the package, fully deprecates the mapzen source, and updates tests.  The new functionalities are allowing for clipping of the output DEMs as well as providing an alternative, global, source for point elevations.  Additin
 
 ## Test Environments
-- Travis-CI, Ubuntu 14.04.5 LTS, R 3.4.2 (2017-01-27)
-- r-hub, x86_64-redhat-linux-gnu (64-bit), 3.4.2 (2017-09-28) 
-- Appveyor, Windows Server 2012 R2 x64 (build 9600),  R version 3.4.3 Patched (2018-01-07 r74099)
-- Local, Windows 10, R version 3.4.0 (2017-04-21)
+- Travis-CI, Ubuntu 14.04.5 LTS, R version 3.4.4 (2017-01-27)
+- Travis-CI, Ubuntu 14.04.5 LTS, R version 3.5.1 (2017-01-27)
+- Travis-CI, Ubuntu 14.04.5 LTS, R Under development (unstable) (2018-11-28 r75712)
+- Local, Windows 10, R version 3.5.1 (2018-07-02)
 
 ## R CMD check results
 - No ERRORS or WARNINGS

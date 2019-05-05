@@ -4,8 +4,9 @@
 \alias{get_elev_raster}
 \title{Get Raster Elevation}
 \usage{
-get_elev_raster(locations, z, prj = NULL, src = c("aws"), expand = NULL,
-  ...)
+get_elev_raster(locations, z, prj = NULL, src = c("aws"),
+  expand = NULL, clip = c("tile", "bbox", "locations"),
+  verbose = TRUE, ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
@@ -28,6 +29,17 @@ string will be taken from that.  This argument is required for a
 bounding box that is used to fetch the terrain tiles. This can 
 be used for features that fall close to the edge of a tile and 
 additional area around the feature is desired. Default is NULL.}
+
+\item{clip}{A character value used to determine clipping of returned DEM.
+The default value is "tile" which returns the full tiles.  Other 
+options are "bbox" which returns the DEM clipped to the bounding 
+box of the original locations (or expanded bounding box if used), 
+or "locations" if the spatials data (e.g. polygons) in the input 
+locations should be used to clip the DEM.  Locations are not used 
+to clip input point datasets.  Instead the bounding box is used.}
+
+\item{verbose}{Toggles on and off the note about units and coordinate 
+reference system.}
 
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
 \code{config}.   See

@@ -1,6 +1,7 @@
 context("get_elev_raster")
 data("pt_df")
 data("sp_big")
+data("lake")
 library(sp)
 ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
 aea_prj <- "+proj=aea +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
@@ -23,5 +24,24 @@ test_that("get_elev_raster returns correctly", {
   expect_equal(proj4string(aws),ll_prj)
   expect_equal(proj4string(aws_prj),aea_prj)
 
+})
+
+test_that("get_elev_raster clip argument works", {
+  skip_on_cran()
+  skip_on_appveyor()
+  
+  default_clip <- get_elev_raster(lake, z = 5, clip = "tile")
+  bbox_clip <- get_elev_raster(lake, z = 5, clip = "bbox")
+  locations_clip <- get_elev_raster(lake, z = 5, clip = "locations")
+  
+  default_values <- raster::getValues(default_clip)
+  num_cell_default <- length(default_values[!is.na(default_values)])
+  bbox_values <- raster::getValues(bbox_clip)
+  num_cell_bbox <- length(bbox_values[!is.na(bbox_values)])
+  locations_values <- raster::getValues(locations_clip)
+  num_cell_locations <- length(locations_values[!is.na(locations_values)])
+  
+  expect_true(num_cell_default > num_cell_bbox)
+  expect_true(num_cell_bbox > num_cell_locations)
 })
 
