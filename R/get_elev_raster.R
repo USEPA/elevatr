@@ -59,7 +59,7 @@
 #' 
 #' data(lake)
 #' x <- get_elev_raster(lake, z = 12)
-#' x <- get_elev_raster(lake, src = "gl3", expand = 0.5)
+#' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 #' }
 #' 
 get_elev_raster <- function(locations, z, prj = NULL,src = c("aws", "gl3"),
@@ -76,7 +76,7 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws", "gl3"),
     raster_elev <- get_aws_terrain(locations, z, prj = prj, 
                                    expand = expand, ...)
   } else if(src == "gl3"){
-    raster_elev <- get_gl3(locations, prj = prj, ...)
+    raster_elev <- get_gl3(locations, prj = prj, expand = expand, ...)
   }
   # Re-project from webmerc back to original and return
   if(clip != "tile"){
@@ -178,6 +178,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
 get_gl3 <- function(locations, z, prj, expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
   # MAKE SURE BBX IS WGS84!
+  
   bbx <- data.frame(proj_expand(sp::bbox(locations),prj,expand))
   tmpfile <- tempfile()
   base_url <- "http://opentopo.sdsc.edu/otr/getdem?demtype=SRTMGL3"
