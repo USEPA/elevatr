@@ -16,8 +16,8 @@
 #'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 
 #'            string will be taken from that.  This argument is required for a 
 #'            \code{data.frame} of locations."
-#' @param src A character indicating which API to use, currently only 
-#'               "aws" is used. 
+#' @param src A character indicating which API to use.  Currently supports "aws" 
+#'            and "gl3" from the Open Topograhy API. "aws" is the default.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
@@ -59,9 +59,10 @@
 #' 
 #' data(lake)
 #' x <- get_elev_raster(lake, z = 12)
+#' x <- get_elev_raster(lake, src = "gl3", expand = 0.5)
 #' }
 #' 
-get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
+get_elev_raster <- function(locations, z, prj = NULL,src = c("aws", "gl3"),
                            expand = NULL, clip = c("tile", "bbox", "locations"), 
                            verbose = TRUE, ...){
   src <- match.arg(src)
@@ -74,6 +75,8 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
   if(src == "aws") {
     raster_elev <- get_aws_terrain(locations, z, prj = prj, 
                                    expand = expand, ...)
+  } else if(src == "gl3"){
+    raster_elev <- get_gl3(locations, prj = prj, ...)
   }
   # Re-project from webmerc back to original and return
   if(clip != "tile"){
@@ -153,4 +156,41 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
     message("Merging DEMs")
     return(do.call(raster::merge, dem_list))
   } 
+}
+
+#' Get a digital elevation model from the Open Topography SRTM Version 3
+#' 
+#' This function uses the Open Topography SRTM Version 3 files.   
+#' 
+#' @source Attribution: Details here
+#' 
+#' @param locations
+#' @param prj PROJ.4 string for input bbox 
+#' @param expand A numeric value of a distance, in map units, used to expand the
+#'               bounding box that is used to fetch the SRTM data. 
+#' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
+#'            usage is to adjust timeout.  This is done as 
+#'            \code{config=timeout(x)} where \code{x} is a numeric value in 
+#'            seconds.  Multiple configuration functions may be passed as a 
+#'            vector.              
+#' @export
+#' @keywords internal
+get_gl3 <- function(locations, z, prj, expand=NULL, ...){
+  # Expand (if needed) and re-project bbx to dd
+  # MAKE SURE BBX IS WGS84!
+  bbx <- data.frame(proj_expand(sp::bbox(locations),prj,expand))
+  tmpfile <- tempfile()
+  base_url <- "http://opentopo.sdsc.edu/otr/getdem?demtype=SRTMGL3"
+  url <- paste0(base_url,
+                "&west=",bbx[1,]$min,
+                "&south=",bbx[2,]$min,
+                "&east=",bbx[1,]$max,
+                "&north=",bbx[2,]$max,
+                "&outputFormat=GTiff")
+  resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), ...)
+  if (httr::http_type(resp) != "application/octet-stream") {
+    stop("API did not return octet-stream as expected", call. = FALSE)
+  } 
+  dem <- raster::raster(tmpfile)
+  dem
 }
