@@ -91,24 +91,29 @@ locations
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
   if(!is.null(expand)){
+    
     bbx_sp <- bbox_to_sp(sp::bbox(locations), sp::CRS(prj))
     bbx_sp_expand <- rgeos::gBuffer(bbx_sp, width = expand, capStyle = "SQUARE")
     bbx <- sp::bbox(sp::spTransform(bbx_sp_expand, sp::CRS(ll_geo)))
   } else{
     bbx <- sp::bbox(sp::spTransform(locations, sp::CRS(ll_geo)))
   }
+  #if(length(warnings())>0){browser()}
   bbx
 }
 
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
-  loc_wm <- sp::spTransform(loc, sp::CRS(web_merc))
-  if(clip == "locations" & !grepl("Points", class(loc_wm))){
-    dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
-  } else if(clip == "bbox" | grepl("Points", class(loc_wm))){
-    bbx <- proj_expand(loc_wm, web_merc, expand)
-    bbx_sp <- sp::spTransform(bbox_to_sp(bbx), sp::CRS(web_merc))
+  
+  loc_rast_prj <- sp::spTransform(loc, sp::CRS(sp::proj4string(rast)))
+  if(clip == "locations" & !grepl("Points", class(loc_rast_prj))){
+    dem <- raster::mask(raster::crop(rast,loc_rast_prj), loc_rast_prj)
+  } else if(clip == "bbox" | grepl("Points", class(loc_rast_prj))){
+    
+    bbx <- proj_expand(loc_rast_prj, sp::proj4string(rast), expand)
+    bbx_sp <- sp::spTransform(bbox_to_sp(bbx), 
+                              sp::CRS(sp::proj4string(rast)))
     dem <- raster::mask(raster::crop(rast,bbx_sp), bbx_sp)
   }
   dem
