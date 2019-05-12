@@ -89,14 +89,14 @@ locations
 
 #' function to project bounding box and if needed expand it
 #' @keywords internal
-proj_expand <- function(bbx,prj,expand){
+proj_expand <- function(locations,prj,expand){
   if(!is.null(expand)){
-    bbx[,1] <- bbx[,1] - expand
-    bbx[,2] <- bbx[,2] + expand
+    bbx_sp <- bbox_to_sp(sp::bbox(locations), sp::CRS(prj))
+    bbx_sp_expand <- rgeos::gBuffer(bbx_sp, width = expand, capStyle = "SQUARE")
+    bbx <- sp::bbox(sp::spTransform(bbx_sp_expand, sp::CRS(ll_geo)))
+  } else{
+    bbx <- sp::bbox(sp::spTransform(locations, sp::CRS(ll_geo)))
   }
-  bbx <- sp::bbox(sp::spTransform(sp::SpatialPoints(t(sp::coordinates(bbx)),
-                                                    bbox=bbx, proj4string = sp::CRS(prj)),
-                     sp::CRS(ll_geo)))
   bbx
 }
 
@@ -107,7 +107,7 @@ clip_it <- function(rast, loc, expand, clip){
   if(clip == "locations" & !grepl("Points", class(loc_wm))){
     dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
   } else if(clip == "bbox" | grepl("Points", class(loc_wm))){
-    bbx <- proj_expand(sp::bbox(loc_wm), web_merc, expand)
+    bbx <- proj_expand(loc_wm, web_merc, expand)
     bbx_sp <- sp::spTransform(bbox_to_sp(bbx), sp::CRS(web_merc))
     dem <- raster::mask(raster::crop(rast,bbx_sp), bbx_sp)
   }
@@ -117,12 +117,13 @@ clip_it <- function(rast, loc, expand, clip){
 #' Edited from https://github.com/jhollist/quickmapr/blob/master/R/internals.R
 #' sp bbox to poly
 #' @param bbx an sp object
+#' @param prj an sp CRS object
 #' @keywords internal
-bbox_to_sp <- function(bbox) {
+bbox_to_sp <- function(bbox, prj = sp::CRS(ll_geo)) {
   x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
   y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
   p <- sp::Polygon(cbind(x, y))
   ps <- sp::Polygons(list(p), "p1")
-  sp_bbx <- sp::SpatialPolygons(list(ps), 1L, proj4string = sp::CRS(ll_geo))
+  sp_bbx <- sp::SpatialPolygons(list(ps), 1L , proj4string = prj)
   sp_bbx
 }

@@ -1,5 +1,8 @@
-elevatr 0.2.1 (XXX-XX-XX)
+elevatr 0.3.0 (XXX-XX-XX)
 ==========================
+# Added functionality
+- Added Open Topography gl3 raster source
+
 # Minor Changes
 - USGS epqs return -1000000 for areas without an elevation.  `elevatr` now converts those values to NA.  Thanks to George Moroz for the catch! <https://github.com/jhollist/elevatr/issues/24>
 

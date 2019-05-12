@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Access Elevation Data from Various APIs
-Version: 0.2.1.9999
+Version: 0.3.0.9999
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre")),
              person("Tarak","Shah", role = "ctb"),
@@ -19,6 +19,7 @@ Depends: R (>= 3.0.0)
 Imports:
     sp,
     raster,
+    rgeos,
     httr,
     jsonlite,
     progress,

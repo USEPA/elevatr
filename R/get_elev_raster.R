@@ -81,6 +81,7 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws", "gl3"),
   # Re-project from webmerc back to original and return
   if(clip != "tile"){
     message(paste("Clipping DEM to", clip))
+    #raster_elev not web merc from Open Topo - need to deal with that.
     raster_elev <- clip_it(raster_elev, locations, expand, clip)
   }
   message(paste("Reprojecting DEM to original projection"))
@@ -123,7 +124,7 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws", "gl3"),
 #' @keywords internal
 get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
-  bbx <- proj_expand(sp::bbox(locations),prj,expand)
+  bbx <- proj_expand(locations,prj,expand)
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/"
   tiles <- get_tilexy(bbx,z)
   dem_list<-vector("list",length = nrow(tiles))
@@ -176,10 +177,8 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
 #' @export
 #' @keywords internal
 get_gl3 <- function(locations, z, prj, expand=NULL, ...){
-  # Expand (if needed) and re-project bbx to dd
-  # MAKE SURE BBX IS WGS84!
-  
-  bbx <- data.frame(proj_expand(sp::bbox(locations),prj,expand))
+  # Expand (if needed) and re-project bbx to ll_geo
+  bbx <- data.frame(proj_expand(locations,prj,expand))
   tmpfile <- tempfile()
   base_url <- "http://opentopo.sdsc.edu/otr/getdem?demtype=SRTMGL3"
   url <- paste0(base_url,
