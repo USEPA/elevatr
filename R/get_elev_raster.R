@@ -11,7 +11,7 @@
 #' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
-#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution                 
+#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
 #' @param prj A PROJ.4 string defining the projection of the locations argument. 
 #'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 
 #'            string will be taken from that.  This argument is required for a 
@@ -133,8 +133,8 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
     tmpfile <- tempfile()
     url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
     resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), ...)
-    if (httr::http_type(resp) != "image/tiff") {
-      stop("API did not return tif", call. = FALSE)
+    if (!grepl("image/tif", httr::http_type(resp))) {
+      stop(paste("This url:", url,"did not return a tif"), call. = FALSE)
     } 
     dem_list[[i]] <- raster::raster(tmpfile)
     raster::projection(dem_list[[i]]) <- web_merc
@@ -147,7 +147,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   }
   dem_list <- lapply(dem_list, function(x,y) change_origins(x,min_origin))
   
-  if(length(dem_list) == 1){ #Not sure this case will ever be satsified...
+  if(length(dem_list) == 1){ 
     return(dem_list[[1]])
   } else if (length(dem_list) > 1){
     message("Merging DEMs")

@@ -1,7 +1,12 @@
 elevatr 0.2.1 (XXX-XX-XX)
 ==========================
-# Minor Changes
+
+# Bug Fixes
+- Zoom levels 1 and 0 were throwing errors becuase tile selction was overzealous and was selecting tiles that existed.  Conditionals to check fo this.  Also zoom 0 returns as "image/tif", not "image/tiff" that all other levls return.  More robust checking on return type.
+- Tiles for points that fall exactly on the equator were returning NA on `get_elev_point()`.  On tile selection in `get_tilexy()` a conditional was added to check for lat == 0 and projeciton being and acceptable proj4 alias of Lat/Long.  If that is met a very small (~ 1meter) expansion to the bounding box is done.  Thanks @willgearty for the bug report <https://github.com/jhollist/elevatr/issues/25>. 
 - USGS epqs return -1000000 for areas without an elevation.  `elevatr` now converts those values to NA.  Thanks to George Moroz for the catch! <https://github.com/jhollist/elevatr/issues/24>
+
+
 
 
 elevatr 0.2.0 (2018-11-28)

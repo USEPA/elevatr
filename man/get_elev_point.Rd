@@ -31,7 +31,7 @@ using "aws" as the source, pay attention to the `z` argument.  A
 defualt of 5 is used, but this uses a raster with a large ~4-5 km 
 pixel.  Additionally, the source data changes as zoom levels 
 increase.  
-Read \url{https://mapzen.com/documentation/terrain-tiles/data-sources/#what-is-the-ground-resolution} 
+Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
 for details.}
 }
 \value{

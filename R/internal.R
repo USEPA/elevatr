@@ -17,6 +17,13 @@ get_tilexy <- function(bbx,z){
   max_tile <- latlong_to_tilexy(bbx[1,2],bbx[2,2],z)
   x_all <- seq(from = floor(min_tile[1]), to = ceiling(max_tile[1]))
   y_all <- seq(from = ceiling(min_tile[2]), to = floor(max_tile[2]))
+  if(z == 1){
+    x_all <- x_all[x_all<2]
+    y_all <- y_all[y_all<2]
+  } else if(z == 0){
+    x_all <- x_all[x_all<1]
+    y_all <- y_all[y_all<1]
+  }
   return(expand.grid(x_all,y_all))
 }
 
@@ -90,10 +97,18 @@ locations
 #' function to project bounding box and if needed expand it
 #' @keywords internal
 proj_expand <- function(bbx,prj,expand){
+ 
+  if(any(bbx[2,] == 0) & grepl("longlat",prj) ){
+    # Edge case for lat exactly at the equator - was returning NA
+    # Expansion of bbox is approximately one meter
+    expand <- 0.00001
+  } 
+  
   if(!is.null(expand)){
     bbx[,1] <- bbx[,1] - expand
     bbx[,2] <- bbx[,2] + expand
   }
+  
   bbx <- sp::bbox(sp::spTransform(sp::SpatialPoints(t(sp::coordinates(bbx)),
                                                     bbox=bbx, proj4string = sp::CRS(prj)),
                      sp::CRS(ll_geo)))
