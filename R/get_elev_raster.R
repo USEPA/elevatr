@@ -89,6 +89,7 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws", "gl3"),
   if(verbose){
     message(paste("Note: Elevation units are in meters.\nNote: The coordinate reference system is:\n", prj))
   }
+  message(length(warnings()))
   raster_elev
 }
 

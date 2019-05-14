@@ -98,7 +98,7 @@ proj_expand <- function(locations,prj,expand){
   } else{
     bbx <- sp::bbox(sp::spTransform(locations, sp::CRS(ll_geo)))
   }
-  #if(length(warnings())>0){browser()}
+  
   bbx
 }
 
