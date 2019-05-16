@@ -16,3 +16,4 @@
 ^elevatr_tech_review_weber\.pdf$
 ^elevatr_qa_review_livolsi\.pdf$
 ^tests\\testthat\\key_file\.rds\.enc$
+^zoom_size\.R$
