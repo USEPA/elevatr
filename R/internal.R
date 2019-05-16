@@ -97,8 +97,12 @@ locations
 #' function to project bounding box and if needed expand it
 #' @keywords internal
 proj_expand <- function(bbx,prj,expand){
- 
-  if(any(bbx[2,] == 0) & grepl("longlat",prj) ){
+  lll <- grepl("longlat",prj) |
+    grepl("lonlat",prj) |
+    grepl("latlong",prj) |
+    grepl("latlon",prj)
+  
+  if(any(bbx[2,] == 0) & lll ){
     # Edge case for lat exactly at the equator - was returning NA
     # Expansion of bbox is approximately one meter
     expand <- 0.00001
