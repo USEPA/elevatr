@@ -4,7 +4,8 @@ Version: 0.2.1.9999
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre")),
              person("Tarak","Shah", role = "ctb"),
-             person("Alec L.", "Robitaille", role = "ctb", comment = c(ORCID = "0000-0002-4706-1762")))
+             person("Alec L.", "Robitaille", role = "ctb", comment = c(ORCID = "0000-0002-4706-1762")),
+             person("Marcus W.", "Beck", role = "rev", comment = c(ORCID = "0000-0002-4996-0059")))
 URL: https://www.github.com/jhollist/elevatr
 BugReports: https://github.com/jhollist/elevatr/issues
 Maintainer: Jeffrey Hollister <hollister.jeff@epa.gov>
