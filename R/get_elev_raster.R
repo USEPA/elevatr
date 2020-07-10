@@ -60,35 +60,35 @@
 #' data(lake)
 #' x <- get_elev_raster(lake, z = 12)
 #' }
-#' 
-get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
+
+get_elev_raster <- function(locations, z, prj = NULL, src = c("aws"),
                            expand = NULL, clip = c("tile", "bbox", "locations"), 
                            verbose = TRUE, ...){
-  src <- match.arg(src)
+  src  <- match.arg(src)
   clip <- match.arg(clip) 
+  
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
-  prj <- sp::proj4string(locations)
+  prj       <- sp::proj4string(locations)
   
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
     raster_elev <- get_aws_terrain(locations, z, prj = prj, 
-                                   expand = expand, ...)
+                                   expand = expand)
   }
-  # Re-project from webmerc back to original and return
+ 
   if(clip != "tile"){
     message(paste("Clipping DEM to", clip))
     raster_elev <- clip_it(raster_elev, locations, expand, clip)
   }
-  message(paste("Reprojecting DEM to original projection"))
-  raster_elev <- raster::projectRaster(raster_elev, crs = sp::CRS(prj))
+ 
   if(verbose){
     message(paste("Note: Elevation units are in meters.\nNote: The coordinate reference system is:\n", prj))
   }
+  
   raster_elev
+  
 }
-
-
 
 #' Get a digital elevation model from the AWS Terrain Tiles
 #' 
@@ -118,39 +118,77 @@ get_elev_raster <- function(locations, z, prj = NULL,src = c("aws"),
 #'            vector.              
 #' @export
 #' @keywords internal
+
 get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
   bbx <- proj_expand(sp::bbox(locations),prj,expand)
-  base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/"
+  
+  base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff"
+  
   tiles <- get_tilexy(bbx,z)
-  dem_list<-vector("list",length = nrow(tiles))
+  
+  urls <-  sprintf("%s/%s/%s/%s.tif", base_url, z, tiles[,1], tiles[,2])
+  
+  dem_list <- vector("list",length = nrow(tiles))
+  
+  dir <- tempdir()
+  
   pb <- progress::progress_bar$new(
     format = "Downloading DEMs [:bar] :percent eta: :eta",
-    total = nrow(tiles), clear = FALSE, width= 60)
-  for(i in seq_along(tiles[,1])){
+    total = length(urls), clear = FALSE, width= 60)
+  
+  for(i in seq_along(urls)){
     pb$tick()
     Sys.sleep(1/100)
-    tmpfile <- tempfile()
-    url <- paste0(base_url,z,"/",tiles[i,1],"/",tiles[i,2],".tif")
-    resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), ...)
+    tmpfile <- tempfile(fileext = ".tif")
+
+    resp <- httr::GET(urls[i], httr::write_disk(tmpfile,overwrite=TRUE))
+    
     if (!grepl("image/tif", httr::http_type(resp))) {
-      stop(paste("This url:", url,"did not return a tif"), call. = FALSE)
+      stop(paste("This url:", urls[i],"did not return a tif"), call. = FALSE)
     } 
-    dem_list[[i]] <- raster::raster(tmpfile)
-    raster::projection(dem_list[[i]]) <- web_merc
+    
+    dem_list[[i]] <- tmpfile
   }
-  origins<-t(data.frame(lapply(dem_list,raster::origin)))
-  min_origin<-c(min(origins[,1]),min(origins[,2]))
-  change_origins <- function(x,y){
-    raster::origin(x)<-y
-    x
-  }
-  dem_list <- lapply(dem_list, function(x,y) change_origins(x,min_origin))
+
+  merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
   
-  if(length(dem_list) == 1){ 
-    return(dem_list[[1]])
-  } else if (length(dem_list) > 1){
-    message("Merging DEMs")
-    return(do.call(raster::merge, dem_list))
-  } 
+  return(merged_elevation_grid)
+}
+
+#' Merge Rasters
+#' 
+#' Merge multiple downloaded raster files into a single file. The input `target_prj` 
+#' describes the  the projection for the new grid. The resampling method used in reprojection is "bilinear:
+#' 
+#' @param raster_list a list of raster filepaths to be mosaiced
+#' @param target_prj the target projection of the output raster
+#' @param returnRaster if TRUE return a raster object (default) else return the file path to the object
+#' @export
+#' @keywords internal
+          
+merge_rasters = function(raster_list,  target_prj, method = "bilinear", returnRaster = TRUE){
+  
+  message(paste("Mosaicing & Projecting"))
+  
+  destfile <- tempfile(fileext = ".tif")
+  files    <- unlist(raster_list)
+  
+  if(is.null(target_prj)){
+    r <- raster::raster(files[1])
+    target_prj <- raster::crs(r)
+  }
+  
+  sf::gdal_utils(util = "warp", 
+                 source = files, 
+                 destination = destfile,
+                 options = c("-t_srs", as.character(target_prj),
+                             "-r", method)
+             )
+  
+  if(returnRaster){
+    raster::raster(destfile)
+  } else {
+    destfile
+  }
 }
