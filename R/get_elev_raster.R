@@ -64,6 +64,7 @@
 get_elev_raster <- function(locations, z, prj = NULL, src = c("aws"),
                            expand = NULL, clip = c("tile", "bbox", "locations"), 
                            verbose = TRUE, ...){
+  
   src  <- match.arg(src)
   clip <- match.arg(clip) 
   
@@ -121,13 +122,14 @@ get_elev_raster <- function(locations, z, prj = NULL, src = c("aws"),
 
 get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
+  
   bbx <- proj_expand(sp::bbox(locations),prj,expand)
   
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff"
   
   tiles <- get_tilexy(bbx,z)
   
-  urls <-  sprintf("%s/%s/%s/%s.tif", base_url, z, tiles[,1], tiles[,2])
+  urls  <-  sprintf("%s/%s/%s/%s.tif", base_url, z, tiles[,1], tiles[,2])
   
   dem_list <- vector("list",length = nrow(tiles))
   
@@ -159,11 +161,13 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
 #' Merge Rasters
 #' 
 #' Merge multiple downloaded raster files into a single file. The input `target_prj` 
-#' describes the  the projection for the new grid. The resampling method used in reprojection is "bilinear:
+#' describes the projection for the new grid.
 #' 
-#' @param raster_list a list of raster filepaths to be mosaiced
+#' @param raster_list a list of raster file paths to be mosaiced
 #' @param target_prj the target projection of the output raster
-#' @param returnRaster if TRUE return a raster object (default) else return the file path to the object
+#' @param method the method for resampling/reprojecting. Default is 'bilinear'. 
+#' Options can be found [here](https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-r)
+#' @param returnRaster if TRUE, return a raster object (default), else, return the file path to the object
 #' @export
 #' @keywords internal
           

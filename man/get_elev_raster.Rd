@@ -4,9 +4,16 @@
 \alias{get_elev_raster}
 \title{Get Raster Elevation}
 \usage{
-get_elev_raster(locations, z, prj = NULL, src = c("aws"),
-  expand = NULL, clip = c("tile", "bbox", "locations"),
-  verbose = TRUE, ...)
+get_elev_raster(
+  locations,
+  z,
+  prj = NULL,
+  src = c("aws"),
+  expand = NULL,
+  clip = c("tile", "bbox", "locations"),
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
@@ -81,5 +88,4 @@ x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10)
 data(lake)
 x <- get_elev_raster(lake, z = 12)
 }
-
 }
