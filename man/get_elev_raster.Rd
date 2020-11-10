@@ -88,5 +88,4 @@ x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10)
 data(lake)
 x <- get_elev_raster(lake, z = 12)
 }
-
 }

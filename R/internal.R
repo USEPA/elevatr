@@ -122,12 +122,12 @@ proj_expand <- function(bbx,prj,expand){
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
-  loc_wm <- sp::spTransform(loc, sp::CRS(web_merc))
+  loc_wm <- sp::spTransform(loc, raster::crs(rast))
   if(clip == "locations" & !grepl("Points", class(loc_wm))){
     dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
   } else if(clip == "bbox" | grepl("Points", class(loc_wm))){
-    bbx <- proj_expand(sp::bbox(loc_wm), web_merc, expand)
-    bbx_sp <- sp::spTransform(bbox_to_sp(bbx), sp::CRS(web_merc))
+    bbx <- proj_expand(sp::bbox(loc_wm), as.character(raster::crs(rast)), expand)
+    bbx_sp <- sp::spTransform(bbox_to_sp(bbx), raster::crs(rast))
     dem <- raster::mask(raster::crop(rast,bbx_sp), bbx_sp)
   }
   dem

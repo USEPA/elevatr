@@ -6,9 +6,8 @@ elevatr 0.2.1 (2020-11-09)
 - Tiles for points that fall exactly on the equator were returning NA on `get_elev_point()`.  On tile selection in `get_tilexy()` a conditional was added to check for lat == 0 and projeciton being and acceptable proj4 alias of Lat/Long.  If that is met a very small (~ 1meter) expansion to the bounding box is done.  Thanks @willgearty for the bug report <https://github.com/jhollist/elevatr/issues/25>. 
 - USGS epqs return -1000000 for areas without an elevation.  `elevatr` now converts those values to NA.  Thanks to George Moroz for the catch! <https://github.com/jhollist/elevatr/issues/24>
 - Updated stale sp objects.  Thank you Roger Bivand for making the update very easy!
-
-
-
+- Updated links to mapzen documentation.  Thanks to Alec Robitaille for the fix.
+- Sped up merging and projecting via PR from Mike Johnson.  Thanks for the contribution, Mike.
 
 elevatr 0.2.0 (2018-11-28)
 ==========================
