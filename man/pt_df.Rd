@@ -4,7 +4,9 @@
 \name{pt_df}
 \alias{pt_df}
 \title{Small data frame of xy locations}
-\format{A data.frame with two columns, x(long) and y(lat)}
+\format{
+A data.frame with two columns, x(long) and y(lat)
+}
 \description{
 Example data frame of locations for use in examples and text
 }

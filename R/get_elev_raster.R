@@ -146,7 +146,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
     x
   }
   dem_list <- lapply(dem_list, function(x,y) change_origins(x,min_origin))
-  
+  browser()
   if(length(dem_list) == 1){ 
     return(dem_list[[1]])
   } else if (length(dem_list) > 1){
