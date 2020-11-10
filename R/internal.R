@@ -17,6 +17,13 @@ get_tilexy <- function(bbx,z){
   max_tile <- latlong_to_tilexy(bbx[1,2],bbx[2,2],z)
   x_all <- seq(from = floor(min_tile[1]), to = ceiling(max_tile[1]))
   y_all <- seq(from = ceiling(min_tile[2]), to = floor(max_tile[2]))
+  if(z == 1){
+    x_all <- x_all[x_all<2]
+    y_all <- y_all[y_all<2]
+  } else if(z == 0){
+    x_all <- x_all[x_all<1]
+    y_all <- y_all[y_all<1]
+  }
   return(expand.grid(x_all,y_all))
 }
 
@@ -89,7 +96,19 @@ locations
 
 #' function to project bounding box and if needed expand it
 #' @keywords internal
-proj_expand <- function(locations,prj,expand){
+
+proj_expand <- function(bbx,prj,expand){
+  lll <- grepl("longlat",prj) |
+    grepl("lonlat",prj) |
+    grepl("latlong",prj) |
+    grepl("latlon",prj)
+  
+  if(any(bbx[2,] == 0) & lll ){
+    # Edge case for lat exactly at the equator - was returning NA
+    # Expansion of bbox is approximately one meter
+    expand <- 0.00001
+  } 
+
   if(!is.null(expand)){
     
     bbx_sp <- bbox_to_sp(sp::bbox(locations), sp::CRS(prj))
@@ -98,22 +117,23 @@ proj_expand <- function(locations,prj,expand){
   } else{
     bbx <- sp::bbox(sp::spTransform(locations, sp::CRS(ll_geo)))
   }
-  
+
+  bbx <- sp::bbox(sp::spTransform(sp::SpatialPoints(t(sp::coordinates(bbx)),
+                                                    bbox=bbx, proj4string = sp::CRS(prj)),
+                     sp::CRS(ll_geo)))
+
   bbx
 }
 
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
-  
-  loc_rast_prj <- sp::spTransform(loc, sp::CRS(sp::proj4string(rast)))
-  if(clip == "locations" & !grepl("Points", class(loc_rast_prj))){
-    dem <- raster::mask(raster::crop(rast,loc_rast_prj), loc_rast_prj)
-  } else if(clip == "bbox" | grepl("Points", class(loc_rast_prj))){
-    
-    bbx <- proj_expand(loc_rast_prj, sp::proj4string(rast), expand)
-    bbx_sp <- sp::spTransform(bbox_to_sp(bbx), 
-                              sp::CRS(sp::proj4string(rast)))
+  loc_wm <- sp::spTransform(loc, raster::crs(rast))
+  if(clip == "locations" & !grepl("Points", class(loc_wm))){
+    dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
+  } else if(clip == "bbox" | grepl("Points", class(loc_wm))){
+    bbx <- proj_expand(sp::bbox(loc_wm), as.character(raster::crs(rast)), expand)
+    bbx_sp <- sp::spTransform(bbox_to_sp(bbx), raster::crs(rast))
     dem <- raster::mask(raster::crop(rast,bbx_sp), bbx_sp)
   }
   dem

@@ -45,6 +45,21 @@
 #' get_elev_point(locations = mt_wash, units="feet", prj = ll_prj)
 #' get_elev_point(locations = mt_wash, units="meters", prj = ll_prj)
 #' get_elev_point(locations = mts_sp)
+#' 
+#' # Code to split into a loop and grab point at a time.
+#' # This is usually faster for points that are spread apart 
+#'  
+#' library(dplyr)
+#' 
+#' elev <- vector("numeric", length = nrow(mts))
+#' pb <- progress_estimated(length(elev))
+#' for(i in seq_along(mts)){
+#' pb$tick()$print()
+#' elev[i]<-suppressMessages(get_elev_point(locations = mts[i,], prj = ll_prj, 
+#'                                         src = "aws", z = 14)$elevation)
+#'                                         }
+#' mts_elev <- cbind(mts, elev)
+#' mts_elev
 #' }
 get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
   

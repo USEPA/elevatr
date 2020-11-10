@@ -5,9 +5,11 @@
 \title{Edited from https://github.com/jhollist/quickmapr/blob/master/R/internals.R
 sp bbox to poly}
 \usage{
-bbox_to_sp(bbox)
+bbox_to_sp(bbox, prj = sp::CRS(ll_geo))
 }
 \arguments{
+\item{prj}{an sp CRS object}
+
 \item{bbx}{an sp object}
 }
 \description{

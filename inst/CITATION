@@ -3,10 +3,11 @@ utils::citHeader("To cite elevatr:")
 utils::citEntry(entry = "manual",
   author = c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre")),
-             person("Tarak Shah", role = "ctb")),
+             person("Tarak Shah", role = "ctb"),
+             person("Marcus W.", "Beck", role = "rev")),
   title = "elevatr: Access Elevation Data from Various APIs",
-  year = "2017",
-  note = {"R package version 0.1.3, doi:10.5281/zenodo.400259"},
+  year = "2018",
+  note = {"R package version 0.2.1, doi:10.5281/zenodo.400259"},
   url = "http://github.com/usepa/elevatr",
-  textVersion = "Hollister, J.W., Tarak Shah (2017). elevatr: Access Elevation Data from Various APIs."
+  textVersion = "Hollister, J.W., T. Shah (2018). elevatr: Access Elevation Data from Various APIs. R package version 0.2.1. https://CRAN.R-project.org/package=elevatr"
 )

@@ -4,16 +4,16 @@ data("sp_big")
 library(sp)
 library(sf)
 
-ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-aea_prj <- "+proj=aea +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
+ll_prj  <- "+proj=longlat +datum=WGS84 +no_defs"
+aea_prj <- "+proj=aea +lat_0=40 +lon_0=-96 +lat_1=20 +lat_2=60 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs"
 
 sp_sm <- SpatialPoints(coordinates(pt_df),CRS(ll_prj))
 sf_sm <- st_as_sf(sp_sm)
 sp_sm_prj <- spTransform(sp_sm,CRS(aea_prj))
 
 test_that("get_elev_point returns correctly", {
-  skip_on_cran()
-  skip_on_appveyor()
+  #skip_on_cran()
+  #skip_on_appveyor()
   epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
   epqs_sp <- get_elev_point(locations = sp_sm, src = "epqs")
   epqs_sf <- get_elev_point(locations = sf_sm, src = "epqs")

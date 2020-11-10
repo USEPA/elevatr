@@ -4,7 +4,9 @@
 \name{sp_big}
 \alias{sp_big}
 \title{SpatialPoints of random points}
-\format{A SpatialPoints object}
+\format{
+A SpatialPoints object
+}
 \description{
 This SpatialPoints dataset is 250 uniform random points to be used for 
 examples and tests
