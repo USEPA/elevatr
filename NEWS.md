@@ -1,5 +1,10 @@
-elevatr 0.2.1 (2020-11-09)
+elevatr 0.3.0 (2020-11-09)
 ==========================
+
+# Added Functionality
+- Added user agents to httr requests
+- Added new OpenTopography API access to three global datasets, SRTM GL1 and 3, and the  ALOS World 3D 30m.  These are accessed via the src argument
+- Added new argument to convert any negative values to NA.  
 
 # Bug Fixes
 - Zoom levels 1 and 0 were throwing errors becuase tile selction was overzealous and was selecting tiles that existed.  Conditionals to check fo this.  Also zoom 0 returns as "image/tif", not "image/tiff" that all other levls return.  More robust checking on return type.

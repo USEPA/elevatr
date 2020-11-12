@@ -24,7 +24,8 @@ Imports:
     httr,
     jsonlite,
     progress,
-    sf
+    sf,
+    methods
 License: CC0
 Encoding: UTF-8
 LazyData: true

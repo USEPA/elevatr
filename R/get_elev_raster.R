@@ -11,13 +11,15 @@
 #' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
-#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
+#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
+#'           The z is not required for the OpenTopography data sources. 
 #' @param prj A PROJ.4 string defining the projection of the locations argument. 
 #'            If a \code{sp} or \code{raster} object is provided, the PROJ.4 
 #'            string will be taken from that.  This argument is required for a 
 #'            \code{data.frame} of locations."
-#' @param src A character indicating which API to use, currently only 
-#'               "aws" is used. 
+#' @param src A character indicating which API to use.  Currently supports "aws" 
+#'            and "gl3", "gl1", or "alos" from the OpenTopography API global 
+#'            datasets. "aws" is the default.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
@@ -31,6 +33,10 @@
 #'             to clip input point datasets.  Instead the bounding box is used.
 #' @param verbose Toggles on and off the note about units and coordinate 
 #'                reference system.
+#' @param neg_to_na Some of the data sources return large negative numbers as 
+#'                  missing data.  When the end result is a projected those 
+#'                  large negative numbers can vary.  When set to TRUE, only 
+#'                  zero and positive values are returned.  Default is FALSE.
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
@@ -59,11 +65,13 @@
 #' 
 #' data(lake)
 #' x <- get_elev_raster(lake, z = 12)
+#' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 #' }
 
-get_elev_raster <- function(locations, z, prj = NULL, src = c("aws"),
-                           expand = NULL, clip = c("tile", "bbox", "locations"), 
-                           verbose = TRUE, ...){
+get_elev_raster <- function(locations, z, prj = NULL, 
+                            src = c("aws", "gl3", "gl1", "alos"),
+                            expand = NULL, clip = c("tile", "bbox", "locations"), 
+                            verbose = TRUE, neg_to_na = FALSE, ...){
   
   src  <- match.arg(src)
   clip <- match.arg(clip) 
@@ -74,17 +82,23 @@ get_elev_raster <- function(locations, z, prj = NULL, src = c("aws"),
   
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
-    raster_elev <- get_aws_terrain(locations, z, prj = prj, 
-                                   expand = expand)
+    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand)
+  } else if(src %in% c("gl3", "gl1", "alos")){
+    raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, ...)
   }
- 
   if(clip != "tile"){
     message(paste("Clipping DEM to", clip))
+    #raster_elev not web merc from Open Topo - need to deal with that.
     raster_elev <- clip_it(raster_elev, locations, expand, clip)
   }
  
   if(verbose){
     message(paste("Note: Elevation units are in meters.\nNote: The coordinate reference system is:\n", prj))
+  }
+  
+  
+  if(neg_to_na){
+    raster_elev[raster_elev < 0] <- NA
   }
   
   raster_elev
@@ -123,7 +137,7 @@ get_elev_raster <- function(locations, z, prj = NULL, src = c("aws"),
 get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   # Expand (if needed) and re-project bbx to dd
   
-  bbx <- proj_expand(sp::bbox(locations),prj,expand)
+  bbx <- proj_expand(locations,prj,expand)
   
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff"
   
@@ -141,10 +155,12 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   
   for(i in seq_along(urls)){
     pb$tick()
-    Sys.sleep(1/100)
+    Sys.sleep(1/1000)
     tmpfile <- tempfile(fileext = ".tif")
 
-    resp <- httr::GET(urls[i], httr::write_disk(tmpfile,overwrite=TRUE))
+    resp <- httr::GET(urls[i], 
+                      httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
+                      httr::write_disk(tmpfile,overwrite=TRUE))
     
     if (!grepl("image/tif", httr::http_type(resp))) {
       stop(paste("This url:", urls[i],"did not return a tif"), call. = FALSE)
@@ -152,7 +168,6 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
     
     dem_list[[i]] <- tmpfile
   }
-
   merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
   
   return(merged_elevation_grid)
@@ -177,7 +192,6 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
   
   destfile <- tempfile(fileext = ".tif")
   files    <- unlist(raster_list)
-  
   if(is.null(target_prj)){
     r <- raster::raster(files[1])
     target_prj <- raster::crs(r)
@@ -195,4 +209,51 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
   } else {
     destfile
   }
+}
+
+#' Get a digital elevation model from the Open Topography SRTM Version 3
+#' 
+#' This function uses the Open Topography SRTM Version 3 files.   
+#' 
+#' @source Attribution: Details here
+#' 
+#' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
+#'                  \code{sp}, an \code{sf}, or \code{raster} object as input. 
+#' @param prj PROJ.4 string for input bbox 
+#' @param expand A numeric value of a distance, in map units, used to expand the
+#'               bounding box that is used to fetch the SRTM data. 
+#' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
+#'            usage is to adjust timeout.  This is done as 
+#'            \code{config=timeout(x)} where \code{x} is a numeric value in 
+#'            seconds.  Multiple configuration functions may be passed as a 
+#'            vector.              
+#' @export
+#' @keywords internal
+get_opentopo <- function(locations, src, prj, expand=NULL, ...){
+  # Expand (if needed) and re-project bbx to ll_geo
+  bbx <- proj_expand(locations,prj,expand)
+  
+  tmpfile <- tempfile()
+  base_url <- "https://portal.opentopography.org/API/globaldem?demtype="
+  data_set <- switch(src,
+                     gl3 = "SRTMGL3",
+                     gl1 = "SRTMGL1",
+                     alos = "AW3D30")
+  url <- paste0(base_url, data_set,
+                "&west=",min(bbx[1,]),
+                "&south=",min(bbx[2,]),
+                "&east=",max(bbx[1,]),
+                "&north=",max(bbx[2,]),
+                "&outputFormat=GTiff")
+  
+  message("Downloading OpenTopography DEMs")
+  resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), 
+                    httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
+                    httr::progress(), ...)
+  message("")
+  if (httr::http_type(resp) != "application/octet-stream") {
+    stop("API did not return octet-stream as expected", call. = FALSE)
+  } 
+  dem <- merge_rasters(tmpfile, target_prj = prj)
+  dem
 }

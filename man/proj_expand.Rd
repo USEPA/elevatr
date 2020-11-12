@@ -4,7 +4,7 @@
 \alias{proj_expand}
 \title{function to project bounding box and if needed expand it}
 \usage{
-proj_expand(bbx, prj, expand)
+proj_expand(locations, prj, expand)
 }
 \description{
 function to project bounding box and if needed expand it

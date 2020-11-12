@@ -96,27 +96,28 @@ locations
 
 #' function to project bounding box and if needed expand it
 #' @keywords internal
-proj_expand <- function(bbx,prj,expand){
+proj_expand <- function(locations,prj,expand){
+ 
   lll <- grepl("longlat",prj) |
     grepl("lonlat",prj) |
     grepl("latlong",prj) |
     grepl("latlon",prj)
   
-  if(any(bbx[2,] == 0) & lll ){
+  if(any(locations@bbox[2,] == 0) & lll & is.null(expand)){
     # Edge case for lat exactly at the equator - was returning NA
     # Expansion of bbox is approximately one meter
     expand <- 0.00001
   } 
   
+  bbx <- bbox_to_sp(sp::bbox(locations), prj = prj)
+  
   if(!is.null(expand)){
-    bbx[,1] <- bbx[,1] - expand
-    bbx[,2] <- bbx[,2] + expand
+    bbx <- methods::as(sf::st_buffer(sf::st_as_sf(bbx), expand), "Spatial")
   }
   
-  bbx <- sp::bbox(sp::spTransform(sp::SpatialPoints(t(sp::coordinates(bbx)),
-                                                    bbox=bbx, proj4string = sp::CRS(prj)),
-                     sp::CRS(ll_geo)))
+  bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
   bbx
+  
 }
 
 #' function to clip the DEM
@@ -126,7 +127,7 @@ clip_it <- function(rast, loc, expand, clip){
   if(clip == "locations" & !grepl("Points", class(loc_wm))){
     dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
   } else if(clip == "bbox" | grepl("Points", class(loc_wm))){
-    bbx <- proj_expand(sp::bbox(loc_wm), as.character(raster::crs(rast)), expand)
+    bbx <- proj_expand(loc_wm, as.character(raster::crs(rast)), expand)
     bbx_sp <- sp::spTransform(bbox_to_sp(bbx), raster::crs(rast))
     dem <- raster::mask(raster::crop(rast,bbx_sp), bbx_sp)
   }
@@ -134,14 +135,17 @@ clip_it <- function(rast, loc, expand, clip){
 }
 
 #' Edited from https://github.com/jhollist/quickmapr/blob/master/R/internals.R
+#' Assumes geographic projection
 #' sp bbox to poly
-#' @param bbx an sp object
+#' @param bbx an sp bbox object
+#' @param prj defaults to "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
 #' @keywords internal
-bbox_to_sp <- function(bbox) {
+bbox_to_sp <- function(bbox, prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs") {
   x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
   y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
   p <- sp::Polygon(cbind(x, y))
   ps <- sp::Polygons(list(p), "p1")
-  sp_bbx <- sp::SpatialPolygons(list(ps), 1L, proj4string = sp::CRS(ll_geo))
+  sp_bbx <- sp::SpatialPolygons(list(ps), 1L, proj4string = sp::CRS(prj))
   sp_bbx
 }
+

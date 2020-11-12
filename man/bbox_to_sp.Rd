@@ -3,15 +3,19 @@
 \name{bbox_to_sp}
 \alias{bbox_to_sp}
 \title{Edited from https://github.com/jhollist/quickmapr/blob/master/R/internals.R
+Assumes geographic projection
 sp bbox to poly}
 \usage{
-bbox_to_sp(bbox)
+bbox_to_sp(bbox, prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 }
 \arguments{
-\item{bbx}{an sp object}
+\item{prj}{defaults to "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"}
+
+\item{bbx}{an sp bbox object}
 }
 \description{
 Edited from https://github.com/jhollist/quickmapr/blob/master/R/internals.R
+Assumes geographic projection
 sp bbox to poly
 }
 \keyword{internal}

@@ -11,8 +11,8 @@ sp_sm     <- SpatialPoints(coordinates(pt_df),CRS(ll_prj))
 sp_sm_prj <- spTransform(sp_sm,CRS(aea_prj))
 
 test_that("get_elev_raster returns correctly", {
-  #skip_on_cran()
-  #skip_on_appveyor()
+  skip_on_cran()
+  skip_on_appveyor()
   
   aws <- get_elev_raster(locations = sp_sm, z = 6, src = "aws")
   aws_prj <- get_elev_raster(locations = sp_sm_prj, z = 6, src = "aws")
@@ -28,8 +28,8 @@ test_that("get_elev_raster returns correctly", {
 })
 
 test_that("get_elev_raster clip argument works", {
-  #skip_on_cran()
-  #skip_on_appveyor()
+  skip_on_cran()
+  skip_on_appveyor()
   
   default_clip <- get_elev_raster(lake, z = 5, clip = "tile")
   bbox_clip <- get_elev_raster(lake, z = 5, clip = "bbox")
@@ -46,3 +46,20 @@ test_that("get_elev_raster clip argument works", {
   expect_true(num_cell_bbox > num_cell_locations)
 })
 
+test_that("get_elev_raster returns correctly from opentopo", {
+  skip_on_cran()
+  skip_on_appveyor()
+  
+  gl1 <- get_elev_raster(locations = sp_sm[3:4,], src = "gl1", neg_to_na = TRUE)
+  gl1_prj <- get_elev_raster(locations = sp_sm_prj[3:4,], src = "gl1", 
+                             clip = "bbox")
+  
+  #class
+  expect_is(gl1,"RasterLayer")
+  expect_is(gl1_prj,"RasterLayer")
+  
+  #project
+  expect_equal(proj4string(gl1),ll_prj)
+  expect_equal(proj4string(gl1_prj),aea_prj)
+  
+})
