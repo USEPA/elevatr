@@ -1,9 +1,10 @@
 context("internals not yet caught")
-data("pt_df")
-data("sp_big")
 library(sp)
 library(raster)
 library(rgdal)
+library(elevatr)
+data("pt_df")
+data("sp_big")
 
 
 ll_prj  <- "+proj=longlat +datum=WGS84 +no_defs"
@@ -38,8 +39,13 @@ test_that("proj_expand works",{
   mans <- get_elev_raster(locations =  mans_sp, z = 6)
   mans_exp <- get_elev_raster(locations = mans_sp, z = 6, expand = 2)
   
+  origin_sp <- SpatialPoints(coordinates(data.frame(x = 0, y = 0)),
+                             CRS(ll_prj))
+  origins <- get_elev_raster(locations = origin_sp, z = 6)
+  
   expect_gt(ncell(mans_exp),ncell(mans))
   
+  expect_is(origins, "RasterLayer")
 })
 
 test_that("loc_check errors correctly", {
@@ -66,4 +72,15 @@ test_that("loc_check assigns prj correctly",{
                            ll_prj)
   expect_equal(proj4string(get_elev_point(locations = rast, prj = ll_prj)), 
                ll_prj)
+})
+
+test_that("Z of 1 or 0 works in get_tilexy",{
+  skip_on_cran()
+  skip_on_appveyor()
+  
+  sp_sm_1 <- get_elev_raster(sp_sm_prj, z = 1, clip = "bbox")
+  sp_sm_0 <- get_elev_raster(sp_sm_prj, z = 0, clip = "bbox")
+  
+  expect_gt(max(res(sp_sm_1)), 0.27)
+  expect_gt(max(res(sp_sm_0)), 0.54)
 })

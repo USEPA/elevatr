@@ -64,3 +64,11 @@ test_that("get_elev_raster returns correctly from opentopo", {
   expect_equal(proj4string(gl1_prj),aea_prj)
   
 })
+
+test_that("A resp that isn't a tiff or octet-stream works",{
+  bad_sp <- SpatialPoints(coordinates(data.frame(x = 1000, y = 1000)),
+                             CRS(ll_prj))
+  
+  expect_error(get_elev_raster(bad_sp, z = 6))
+  expect_error(get_elev_raster(bad_sp, src = "gl3"))
+})

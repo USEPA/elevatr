@@ -192,6 +192,7 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
   
   destfile <- tempfile(fileext = ".tif")
   files    <- unlist(raster_list)
+ 
   if(is.null(target_prj)){
     r <- raster::raster(files[1])
     target_prj <- raster::crs(r)
