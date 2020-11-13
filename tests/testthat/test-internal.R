@@ -23,16 +23,16 @@ mts <- rbind(mt_wash,mt_mans)
 mts$name <- c("Mount Washington", "Mount Mansfield")
 
 test_that("data frame with more extra columns work", {
-  #skip_on_cran()
-  #skip_on_appveyor()
+  skip_on_cran()
+  skip_on_appveyor()
   
   mts_with_names_and_elevation <- get_elev_point(mts, ll_prj)
   expect_true("name" %in% names(mts_with_names_and_elevation))
 })
 
 test_that("proj_expand works",{
-  #skip_on_cran()
-  #skip_on_appveyor()
+  skip_on_cran()
+  skip_on_appveyor()
   mans_sp <- SpatialPoints(coordinates(data.frame(x = -72.8145, y = 44.5438)),
                            CRS(ll_prj))
   mans <- get_elev_raster(locations =  mans_sp, z = 6)
@@ -43,8 +43,8 @@ test_that("proj_expand works",{
 })
 
 test_that("loc_check errors correctly", {
-  #skip_on_cran()
-  #skip_on_appveyor()
+  skip_on_cran()
+  skip_on_appveyor()
   expect_error(get_elev_point(locations = pt_df), 
                "Please supply a valid proj.4 string.")
   expect_error(get_elev_point(locations = sp_sm), 
@@ -58,8 +58,8 @@ test_that("loc_check errors correctly", {
 })
 
 test_that("loc_check assigns prj correctly",{
-  #skip_on_cran()
-  #skip_on_appveyor()
+  skip_on_cran()
+  skip_on_appveyor()
   expect_equal(proj4string(get_elev_point(locations = sp_sm, prj = ll_prj)),
                            ll_prj)
   expect_equal(proj4string(get_elev_point(locations = spdf_sm, prj = ll_prj)),
