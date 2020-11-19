@@ -13,6 +13,7 @@ get_elev_raster(
   clip = c("tile", "bbox", "locations"),
   verbose = TRUE,
   neg_to_na = FALSE,
+  override_size_check = FALSE,
   ...
 )
 }
@@ -55,6 +56,12 @@ reference system.}
 missing data.  When the end result is a projected those 
 large negative numbers can vary.  When set to TRUE, only 
 zero and positive values are returned.  Default is FALSE.}
+
+\item{override_size_check}{Boolean to override size checks.  Any download 
+between 100 Mb and 500Mb report a message but
+continue.  Between 500Mb and 3000Mb requires 
+interaction and greater than 3000Mb fails.  These
+can be overriden with this argument set to TRUE.}
 
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
 \code{config}.   See

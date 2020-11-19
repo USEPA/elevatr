@@ -86,7 +86,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
   locations <- loc_check(locations,prj)
   prj       <- sp::proj4string(locations)
   
-  browser()
+  
   # Check download size and provide feedback, stop if too big!
   dl_size <- estimate_raster_size(locations, src, z)
   if(dl_size > 100 & dl_size < 500){
