@@ -155,8 +155,8 @@ bbox_to_sp <- function(bbox, prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_
 #' @z zoom level if source is aws
 #' @keywords internal
 estimate_raster_size <- function(locations, src, z = NULL){
-  
-  locations <- sp::spTransform(locations, CRS("+init=EPSG:4326"))
+ 
+  locations <- sp::spTransform(locations, sp::CRS("+init=EPSG:4326"))
   # Estimated cell size from zoom level source
   # https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#sources-native-resolution
   z_res <- data.frame(z = 0:14, res_dd = c(0.54905236, 0.27452618, 0.15455633, 
@@ -178,8 +178,8 @@ estimate_raster_size <- function(locations, src, z = NULL){
                   gl1 = 0.0002778,
                   alos = 0.0002778) 
   }
-  num_rows <- (bbox(locations)["x", "max"] - bbox(locations)["x", "min"])/res
-  num_cols <- (bbox(locations)["y", "max"] - bbox(locations)["y", "min"])/res
+  num_rows <- (sp::bbox(locations)[1, "max"] - sp::bbox(locations)[1, "min"])/res
+  num_cols <- (sp::bbox(locations)[2, "max"] - sp::bbox(locations)[2, "min"])/res
   
   num_megabytes <- (num_rows * num_cols * bits)/8388608
   num_megabytes

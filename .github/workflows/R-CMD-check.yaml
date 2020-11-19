@@ -17,8 +17,8 @@ jobs:
         config:
         - {os: windows-latest, r: 'release'}
         - {os: macOS-latest, r: 'release', sf_args: '--with-proj-lib=/usr/local/lib/'}
-        - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
-        - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+        - {os: ubuntu-18.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+        - {os: ubuntu-18.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
         #- { os: windows-latest, r: '4.6', args: "--no-manual"}
         #- { os: ubuntu-16.04, r: '3.6', args: "--no-manual"}
         #- { os: macOS-latest, r: '3.6', args: "--no-manual", sf_args: "--with-proj-lib=/usr/local/lib/"}

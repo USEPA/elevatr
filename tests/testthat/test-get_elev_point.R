@@ -16,8 +16,8 @@ bad_sp <- SpatialPoints(coordinates(data.frame(x = 1000, y = 1000)),
                         CRS(ll_prj))
 
 test_that("get_elev_point returns correctly", {
-  #skip_on_cran()
-  #skip_on_appveyor()
+  skip_on_cran()
+  skip_on_appveyor()
   epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
   epqs_sp <- get_elev_point(locations = sp_sm, src = "epqs")
   epqs_sf <- get_elev_point(locations = sf_sm, src = "epqs")
