@@ -1,9 +1,10 @@
 
-[![Travis](https://api.travis-ci.org/jhollist/elevatr.png?branch=master)](https://travis-ci.org/jhollist/elevatr)
-[![Appveyor](https://ci.appveyor.com/api/projects/status/github/jhollist/elevatr?svg=true)](https://ci.appveyor.com/project/jhollist/elevatr)
+[![R build
+status](https://github.com/jhollist/elevatr/workflows/R-CMD-check/badge.svg)](https://github.com/jhollist/elevatr/actions)
 [![](http://www.r-pkg.org/badges/version/elevatr)](http://www.r-pkg.org/pkg/elevatr)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/elevatr)](http://www.r-pkg.org/pkg/elevatr)
-[![Coverage Status](https://coveralls.io/repos/github/jhollist/elevatr/badge.svg?branch=master)](https://coveralls.io/github/jhollist/elevatr?branch=master)
+[![Codecov test
+coverage](https://codecov.io/gh/jhollist/elevatr/branch/master/graph/badge.svg)](https://codecov.io/gh/jhollist/elevatr?branch=master)
 [![DOI](https://zenodo.org/badge/65325400.svg)](https://zenodo.org/badge/latestdoi/65325400)
 
 # elevatr
