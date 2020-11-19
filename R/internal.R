@@ -149,3 +149,36 @@ bbox_to_sp <- function(bbox, prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_
   sp_bbx
 }
 
+#' Estimate download size of DEMs
+#' @param locations the locations
+#' @param src the src
+#' @z zoom level if source is aws
+#' @keywords internal
+estimate_raster_size <- function(locations, src, z = NULL){
+  # Estimated cell size from zoom level source
+  # https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#sources-native-resolution
+  z_res <- data.frame(z = 0:14, res_dd = c(0.54905236, 0.27452618, 0.15455633, 
+                                           0.07145545, 0.03719130, 0.01901903, 
+                                           0.00962056, 0.00483847, 0.00241219, 
+                                           0.00120434, 0.00060173, 0.00030075, 
+                                           0.00015035, 0.00007517, 0.00003758))
+
+  bits <- switch(src,
+                 aws = 32,
+                 gl3 = 32,
+                 gl1 = 32,
+                 alos = 32)
+  if(src == "aws"){
+    res <- z_res[z_res$z == z,]$res_dd
+  } else{
+    res <- switch(src,
+                  gl3 = 0.0008333,
+                  gl1 = 0.0002778,
+                  alos = 0.0002778) 
+  }
+  num_rows <- (bbox(locations)["x", "max"] - bbox(locations)["x", "min"])/res
+  num_cols <- (bbox(locations)["y", "max"] - bbox(locations)["y", "min"])/res
+  
+  num_megabytes <- (num_rows * num_cols * bits)/8388608
+  num_megabytes
+}

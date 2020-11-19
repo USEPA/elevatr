@@ -9,7 +9,7 @@
 # elevatr
 An R package for accessing elevation data from various sources
 
-The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added.
+The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) and the Open Topography [Global datasets API](https://opentopography.org/developers#API) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added.
 
 Currently this package includes just two primary functions to access elevation web services:
 
@@ -18,7 +18,7 @@ Currently this package includes just two primary functions to access elevation w
 
 ## Installation
 
-Version 0.2.0 of this package is currently available from CRAN and may be installed by:
+Version 0.3.0 of this package is currently available from CRAN and may be installed by:
 
 ```{r eval=F}
 install.packages("elevatr")
@@ -33,7 +33,7 @@ install_github("jhollist/elevatr")
 
 
 ## Attribution
-Mapzen terrain tiles (which supply the AWS source) contain 3DEP, SRTM, and GMTED2010 content courtesy of the U.S. Geological Survey and ETOPO1 content courtesy of U.S. National Oceanic and Atmospheric Administration.
+Mapzen terrain tiles (which supply the AWS source) contain 3DEP, SRTM, and GMTED2010 content courtesy of the U.S. Geological Survey and ETOPO1 content courtesy of U.S. National Oceanic and Atmospheric Administration. The Open Topography API provide access to the SRTM and the ALOS World 3D datasets.  See <https://opentopography.org/> for details.  
 
 ## Repositories
 The source code for this repository is maintained at https://github.com/jhollist/elevatr which is also mirrored at https://github.com/usepa/elevatr

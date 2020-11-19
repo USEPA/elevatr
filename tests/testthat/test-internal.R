@@ -5,7 +5,7 @@ library(rgdal)
 library(elevatr)
 data("pt_df")
 data("sp_big")
-
+data("lake")
 
 ll_prj  <- "+proj=longlat +datum=WGS84 +no_defs"
 aea_prj <- "+proj=aea +lat_0=40 +lon_0=-96 +lat_1=20 +lat_2=60 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs"

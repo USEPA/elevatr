@@ -37,6 +37,11 @@
 #'                  missing data.  When the end result is a projected those 
 #'                  large negative numbers can vary.  When set to TRUE, only 
 #'                  zero and positive values are returned.  Default is FALSE.
+#' @param override_size_check Boolean to override size checks.  Any download 
+#'                            between 100 Mb and 500Mb report a message but
+#'                            continue.  Between 500Mb and 3000Mb requires 
+#'                            interaction and greater than 3000Mb fails.  These
+#'                            can be overriden with this argument set to TRUE.                  
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
@@ -71,7 +76,8 @@
 get_elev_raster <- function(locations, z, prj = NULL, 
                             src = c("aws", "gl3", "gl1", "alos"),
                             expand = NULL, clip = c("tile", "bbox", "locations"), 
-                            verbose = TRUE, neg_to_na = FALSE, ...){
+                            verbose = TRUE, neg_to_na = FALSE, 
+                            override_size_check = FALSE, ...){
   
   src  <- match.arg(src)
   clip <- match.arg(clip) 
@@ -79,6 +85,26 @@ get_elev_raster <- function(locations, z, prj = NULL,
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   prj       <- sp::proj4string(locations)
+  
+  browser()
+  # Check download size and provide feedback, stop if too big!
+  dl_size <- estimate_raster_size(locations, src, z)
+  if(dl_size > 100 & dl_size < 500){
+    message(paste0("Note: Your request will download approximately ", 
+                   round(dl_size, 1), "Mb."))
+  } else if(dl_size > 500 & dl_size <= 2000){
+    message(paste0("Your request will download approximately ",
+                   round(dl_size, 1), "Mb."))
+    if(!override_size_check){
+      y <- readline(prompt = "Press [y] to continue with this request.")
+      if(tolower(y) != "y"){return()}
+    }
+  } else if(!override_size_check & dl_size > 2000){
+    stop(paste0("Your request will download approximately ",
+                   round(dl_size, 1), "Mb. That's probably too big. If you 
+                   really want to do this, set override_size_check = TRUE. Note
+                   that the OpenTopography API Limit will likely be exceeded."))
+  }
   
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
