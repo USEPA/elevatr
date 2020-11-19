@@ -17,8 +17,8 @@ jobs:
         config:
         - {os: windows-latest, r: 'release'}
         - {os: macOS-latest, r: 'release', sf_args: '--with-proj-lib=/usr/local/lib/'}
-        - {os: ubuntu-18.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
-        - {os: ubuntu-18.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+        - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+        - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
         #- { os: windows-latest, r: '4.6', args: "--no-manual"}
         #- { os: ubuntu-16.04, r: '3.6', args: "--no-manual"}
         #- { os: macOS-latest, r: '3.6', args: "--no-manual", sf_args: "--with-proj-lib=/usr/local/lib/"}
@@ -56,25 +56,33 @@ jobs:
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
-        env:
-          RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
         run: |
-          Rscript -e "remotes::install_github('r-hub/sysreqs')"
-          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
-          sudo add-apt-repository -y ppa:cran/jq
-          sudo -s eval "$sysreqs"
-          # install spatial dependencies
-          sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
-          sudo apt update
-          sudo apt install \
-            libudunits2-dev \
-            libgdal-dev \
-            libgeos-dev \
-            libproj-dev \
-            liblwgeom-dev \
-          # install 7-zip
-          sudo add-apt-repository -y universe
-          sudo apt install p7zip-full
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
+          
+      # -  name: Install system dependencies
+      #  if: runner.os == 'Linux'
+      #  env:
+      #    RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
+      #  run: |
+      #    Rscript -e "remotes::install_github('r-hub/sysreqs')"
+      #    sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
+      #    sudo add-apt-repository -y ppa:cran/jq
+      #    sudo -s eval "$sysreqs"
+      #    # install spatial dependencies
+      #    sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
+      #    sudo apt update
+      #    sudo apt install \
+      #      libudunits2-dev \
+      #      libgdal-dev \
+      #      libgeos-dev \
+      #      libproj-dev \
+      #      liblwgeom-dev \
+      #    # install 7-zip
+      #    sudo add-apt-repository -y universe
+      #    sudo apt install p7zip-full
 
       - name: Install dev Rcpp mac
         if: runner.os == 'macOS'
