@@ -19,3 +19,5 @@
 ^zoom_size\.R$
 ^\.github$
 ^codecov\.yml$
+^doc$
+^Meta$
