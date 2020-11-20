@@ -8,10 +8,12 @@ get_elev_raster(
   locations,
   z,
   prj = NULL,
-  src = c("aws"),
+  src = c("aws", "gl3", "gl1", "alos"),
   expand = NULL,
   clip = c("tile", "bbox", "locations"),
   verbose = TRUE,
+  neg_to_na = FALSE,
+  override_size_check = FALSE,
   ...
 )
 }
@@ -22,15 +24,17 @@ get_elev_raster(
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 of the resultant raster is determined by the zoom and latitude.  For 
 details on zoom and resolution see the documentation from Mapzen at 
-\url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}}
+\url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
+The z is not required for the OpenTopography data sources.}
 
 \item{prj}{A PROJ.4 string defining the projection of the locations argument. 
 If a \code{sp} or \code{raster} object is provided, the PROJ.4 
 string will be taken from that.  This argument is required for a 
 \code{data.frame} of locations."}
 
-\item{src}{A character indicating which API to use, currently only 
-"aws" is used.}
+\item{src}{A character indicating which API to use.  Currently supports "aws" 
+and "gl3", "gl1", or "alos" from the OpenTopography API global 
+datasets. "aws" is the default.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 
@@ -47,6 +51,17 @@ to clip input point datasets.  Instead the bounding box is used.}
 
 \item{verbose}{Toggles on and off the note about units and coordinate 
 reference system.}
+
+\item{neg_to_na}{Some of the data sources return large negative numbers as 
+missing data.  When the end result is a projected those 
+large negative numbers can vary.  When set to TRUE, only 
+zero and positive values are returned.  Default is FALSE.}
+
+\item{override_size_check}{Boolean to override size checks.  Any download 
+between 100 Mb and 500Mb report a message but
+continue.  Between 500Mb and 3000Mb requires 
+interaction and greater than 3000Mb fails.  These
+can be overriden with this argument set to TRUE.}
 
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
 \code{config}.   See
@@ -87,5 +102,6 @@ x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10)
 
 data(lake)
 x <- get_elev_raster(lake, z = 12)
+x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 }
 }

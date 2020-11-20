@@ -23,6 +23,7 @@ library("raster")
 library("knitr")
 library("elevatr")
 library("httr")
+library("sf")
 NOT_CRAN <- identical(tolower(Sys.getenv("NOT_CRAN")), "true")
 knitr::opts_chunk$set(purl = NOT_CRAN, 
                       eval = NOT_CRAN,
@@ -60,13 +61,12 @@ Example usage of each is included below.  For these examples, we can create a da
 ```{r example_dataframe}
 # Create an example data.frame
 set.seed(65.7)
-examp_df <- data.frame(x = runif(10, min = -73, max = -71), 
-                       y = runif(10, min = 41 , max = 45))
+examp_df <- data.frame(x = runif(3, min = -73, max = -72.5), 
+                       y = runif(3, min = 42 , max = 43))
 prj_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
 
 # Create and example data.frame with additional columns
-cats <- data.frame(category = c("H", "H", "L", "L", "L", 
-                                "M", "H", "L", "M", "M"))
+cats <- data.frame(category = c("H", "M", "L"))
 
 examp_df2 <- data.frame(examp_df, cats)
 

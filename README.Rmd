@@ -1,15 +1,16 @@
 
-[![Travis](https://api.travis-ci.org/jhollist/elevatr.png?branch=master)](https://travis-ci.org/jhollist/elevatr)
-[![Appveyor](https://ci.appveyor.com/api/projects/status/github/jhollist/elevatr?svg=true)](https://ci.appveyor.com/project/jhollist/elevatr)
+[![R build
+status](https://github.com/jhollist/elevatr/workflows/R-CMD-check/badge.svg)](https://github.com/jhollist/elevatr/actions)
 [![](http://www.r-pkg.org/badges/version/elevatr)](http://www.r-pkg.org/pkg/elevatr)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/elevatr)](http://www.r-pkg.org/pkg/elevatr)
-[![Coverage Status](https://coveralls.io/repos/github/jhollist/elevatr/badge.svg?branch=master)](https://coveralls.io/github/jhollist/elevatr?branch=master)
+[![Codecov test
+coverage](https://codecov.io/gh/jhollist/elevatr/branch/master/graph/badge.svg)](https://codecov.io/gh/jhollist/elevatr?branch=master)
 [![DOI](https://zenodo.org/badge/65325400.svg)](https://zenodo.org/badge/latestdoi/65325400)
 
 # elevatr
 An R package for accessing elevation data from various sources
 
-The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added.
+The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) and the Open Topography [Global datasets API](https://opentopography.org/developers#API) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added.
 
 Currently this package includes just two primary functions to access elevation web services:
 
@@ -18,7 +19,7 @@ Currently this package includes just two primary functions to access elevation w
 
 ## Installation
 
-Version 0.2.0 of this package is currently available from CRAN and may be installed by:
+Version 0.3.0 of this package is currently available from CRAN and may be installed by:
 
 ```{r eval=F}
 install.packages("elevatr")
@@ -33,7 +34,7 @@ install_github("jhollist/elevatr")
 
 
 ## Attribution
-Mapzen terrain tiles (which supply the AWS source) contain 3DEP, SRTM, and GMTED2010 content courtesy of the U.S. Geological Survey and ETOPO1 content courtesy of U.S. National Oceanic and Atmospheric Administration.
+Mapzen terrain tiles (which supply the AWS source) contain 3DEP, SRTM, and GMTED2010 content courtesy of the U.S. Geological Survey and ETOPO1 content courtesy of U.S. National Oceanic and Atmospheric Administration. The Open Topography API provide access to the SRTM and the ALOS World 3D datasets.  See <https://opentopography.org/> for details.  
 
 ## Repositories
 The source code for this repository is maintained at https://github.com/jhollist/elevatr which is also mirrored at https://github.com/usepa/elevatr
