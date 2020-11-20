@@ -2,7 +2,7 @@ Package: elevatr
 Title: Access Elevation Data from Various APIs
 Version: 0.3.0
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
-                  role = c("aut", "cre")),
+                  role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9254-9740")),
              person("Tarak","Shah", role = "ctb"),
              person("Alec L.", "Robitaille", role = "ctb", comment = c(ORCID = "0000-0002-4706-1762")),
              person("Marcus W.", "Beck", role = "rev", comment = c(ORCID = "0000-0002-4996-0059")),
