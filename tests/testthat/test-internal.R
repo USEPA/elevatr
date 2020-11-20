@@ -25,7 +25,7 @@ mts$name <- c("Mount Washington", "Mount Mansfield")
 
 test_that("data frame with more extra columns work", {
   skip_on_cran()
-  skip_on_ci()
+  #skip_on_ci()
   
   mts_with_names_and_elevation <- get_elev_point(mts, ll_prj)
   expect_true("name" %in% names(mts_with_names_and_elevation))
@@ -50,7 +50,7 @@ test_that("proj_expand works",{
 
 test_that("loc_check errors correctly", {
   skip_on_cran()
-  skip_on_ci()
+  #skip_on_ci()
   expect_error(get_elev_point(locations = pt_df), 
                "Please supply a valid proj.4 string.")
   expect_error(get_elev_point(locations = sp_sm), 
@@ -65,7 +65,7 @@ test_that("loc_check errors correctly", {
 
 test_that("loc_check assigns prj correctly",{
   skip_on_cran()
-  skip_on_ci()
+  #skip_on_ci()
   expect_equal(proj4string(get_elev_point(locations = sp_sm, prj = ll_prj)),
                            ll_prj)
   expect_equal(proj4string(get_elev_point(locations = spdf_sm, prj = ll_prj)),
@@ -76,7 +76,6 @@ test_that("loc_check assigns prj correctly",{
 
 test_that("Z of 1 or 0 works in get_tilexy",{
   skip_on_cran()
-  skip_on_appveyor()
   
   sp_sm_1 <- get_elev_raster(sp_sm_prj, z = 1, clip = "bbox")
   sp_sm_0 <- get_elev_raster(sp_sm_prj, z = 0, clip = "bbox")
