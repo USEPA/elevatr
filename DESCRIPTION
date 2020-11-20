@@ -15,7 +15,8 @@ Description: Several web services are available that provide access to elevation
              returns elevation data either as a SpatialPointsDataFrame from 
              point elevation services or as a raster object from raster 
              elevation services.  Currently, the package supports access to the
-             Amazon Web Services Terrain Tiles <https://aws.amazon.com/public-datasets/terrain/> 
+             Amazon Web Services Terrain Tiles <https://aws.amazon.com/public-datasets/terrain/>, 
+             the Open Topography Global Datasets API <https://opentopography.org/developers>, 
              and the USGS Elevation Point Query Service <http://ned.usgs.gov/epqs/>.
 Depends: R (>= 3.0.0)
 Imports:
