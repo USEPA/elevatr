@@ -73,20 +73,19 @@ Function returns a \code{SpatialPointsDataFrame} in the projection
 }
 \description{
 Several web services provide access to raster elevation. Currently, this 
-function provides access to the Mapzen Terrain Service The function 
-accepts a \code{data.frame} of x (long) and y (lat), an 
-\code{sp}, or \code{raster} object as input.  A \code{raster} object is 
-returned.
+function provides access to the Amazon Web Services Terrian Tiles and the 
+Open Topography global datasets API. The function accepts a \code{data.frame} 
+of x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  A 
+\code{raster} object is returned.
 }
 \details{
-Currently, the \code{get_elev_raster} utilizes only the 
+Currently, the \code{get_elev_raster} function utilizes  the 
          Amazon Web Services 
          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
-         tiles.  Versions of \code{elevatr} 0.1.4 or earlier had options for 
-         the Mapzen terrain tiles.  Mapzen data is no longer available.  
-         Support for the replacment Nextzen tiles is not currently available
+         tiles and the Open Topography Global Datasets API 
+         (\url{https://opentopography.org/developers}).  
          
-         The terrain data is provided via x, y, and z tiles (see 
+         The AWS Terrain Tiles data is provided via x, y, and z tiles (see 
          \url{http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
          details.) The x and y are determined from the bounding box of the 
          object submitted for \code{locations} argument, and the z argument 

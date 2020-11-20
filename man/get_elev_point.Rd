@@ -39,9 +39,9 @@ Function returns a \code{SpatialPointsDataFrame} or \code{sf} object
         in the projection specified by the \code{prj} argument.
 }
 \description{
-Several web services provide access to point elevations.  This function 
-provides access to one of those.  Currently it uses the USGS Elevation Point 
-Query Service (US Only).  The function accepts a \code{data.frame} of x 
+This function provides access to point elevations using either the USGS 
+Elevation Point Query Service (US Only) or by extracting point elevations 
+from the AWS Terrain Tiles.  The function accepts a \code{data.frame} of x 
 (long) and y (lat) or a \code{SpatialPoints}/\code{SpatialPointsDataFame} as 
 input.  A SpatialPointsDataFrame is returned with elevation as an added 
 \code{data.frame}.

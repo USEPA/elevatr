@@ -113,7 +113,8 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
 #' @export
 #' @keywords internal
 get_epqs <- function(locations, units = c("meters","feet")){
-  base_url <- "http://ned.usgs.gov/epqs/pqs.php?"
+  
+  base_url <- "https://nationalmap.gov/epqs/pqs.php?"
   if(match.arg(units) == "meters"){
     units <- "Meters"
   } else if(match.arg(units) == "feet"){
