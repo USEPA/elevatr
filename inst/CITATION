@@ -9,7 +9,7 @@ utils::citEntry(entry = "manual",
              person("Mike", "Johnson", role = "ctb", comment = c(ORCID = "0000-0002-5288-8350"))),
   title = "elevatr: Access Elevation Data from Various APIs",
   year = "2020",
-  note = {"R package version 0.3.0, doi:10.5281/zenodo.4282962"},
+  note = {"R package version 0.3.1, doi:10.5281/zenodo.4282962"},
   url = "https://github.com/usepa/elevatr/",
-  textVersion = "Hollister, J.W., T. Shah (2020). elevatr: Access Elevation Data from Various APIs. R package version 0.3.0. https://CRAN.R-project.org/package=elevatr/"
+  textVersion = "Hollister, J.W. (2020). elevatr: Access Elevation Data from Various APIs. R package version 0.3.1. https://CRAN.R-project.org/package=elevatr/"
 )
