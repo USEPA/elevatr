@@ -1,8 +1,8 @@
 
 [![R build
 status](https://github.com/jhollist/elevatr/workflows/R-CMD-check/badge.svg)](https://github.com/jhollist/elevatr/actions)
-[![](http://www.r-pkg.org/badges/version/elevatr)](http://www.r-pkg.org/pkg/elevatr)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/elevatr)](http://www.r-pkg.org/pkg/elevatr)
+[![](https://www.r-pkg.org/badges/version/elevatr)](https://www.r-pkg.org/pkg/elevatr)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/elevatr)](https://www.r-pkg.org/pkg/elevatr)
 [![Codecov test
 coverage](https://codecov.io/gh/jhollist/elevatr/branch/master/graph/badge.svg)](https://codecov.io/gh/jhollist/elevatr?branch=master)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4282962.svg)](https://doi.org/10.5281/zenodo.4282962)
@@ -10,7 +10,7 @@ coverage](https://codecov.io/gh/jhollist/elevatr/branch/master/graph/badge.svg)]
 # elevatr
 An R package for accessing elevation data from various sources
 
-The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) and the Open Topography [Global datasets API](https://opentopography.org/developers#API) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added.
+The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) and the Open Topography [Global datasets API](https://opentopography.org/developers#API) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](https://nationalmap.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added.
 
 Currently this package includes just two primary functions to access elevation web services:
 

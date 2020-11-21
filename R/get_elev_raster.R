@@ -54,7 +54,7 @@
 #'          (\url{https://opentopography.org/developers}).  
 #'          
 #'          The AWS Terrain Tiles data is provided via x, y, and z tiles (see 
-#'          \url{http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
+#'          \url{https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
 #'          details.) The x and y are determined from the bounding box of the 
 #'          object submitted for \code{locations} argument, and the z argument 
 #'          must be specified by the user.   
@@ -139,7 +139,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
 #'         content courtesy of the U.S. Geological Survey and ETOPO1 content 
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
-#'         \url{https://mapzen.com/documentation/terrain-tiles/} 
+#'         \url{https://github.com/tilezen/joerd/tree/master/docs} 
 #' 
 #' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution

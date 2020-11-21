@@ -2,7 +2,7 @@
 #' rounding to tile occurs in \code{get_tilexy}
 #' @keywords internal
 latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
-  #Code from http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Coordinates_to_tile_numbers_2
+  #Code from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Coordinates_to_tile_numbers_2
   lat_rad <- lat_deg * pi /180
   n <- 2.0 ^ zoom
   xtile <- (lon_deg + 180.0) / 360.0 * n
