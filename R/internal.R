@@ -36,7 +36,7 @@ loc_check <- function(locations, prj = NULL){
   if("sf" %in% class(locations)){
     locations <- sf::as_Spatial(locations)
   }
-  #browser()
+  
   if(class(locations)=="data.frame"){ 
     if(is.null(prj)){
       stop("Please supply a valid proj.4 string.")
