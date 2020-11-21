@@ -152,7 +152,7 @@ bbox_to_sp <- function(bbox, prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_
 #' Estimate download size of DEMs
 #' @param locations the locations
 #' @param src the src
-#' @z zoom level if source is aws
+#' @param z zoom level if source is aws
 #' @keywords internal
 estimate_raster_size <- function(locations, src, z = NULL){
  

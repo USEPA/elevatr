@@ -7,7 +7,7 @@
 Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
         content courtesy of the U.S. Geological Survey and ETOPO1 content 
         courtesy of U.S. National Oceanic and Atmospheric Administration. 
-        \url{https://mapzen.com/documentation/terrain-tiles/}
+        \url{https://github.com/tilezen/joerd/tree/master/docs}
 }
 \usage{
 get_aws_terrain(locations, z, prj, expand = NULL, ...)

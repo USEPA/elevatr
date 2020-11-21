@@ -10,6 +10,8 @@ estimate_raster_size(locations, src, z = NULL)
 \item{locations}{the locations}
 
 \item{src}{the src}
+
+\item{z}{zoom level if source is aws}
 }
 \description{
 Estimate download size of DEMs

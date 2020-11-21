@@ -86,7 +86,7 @@ Currently, the \code{get_elev_raster} function utilizes  the
          (\url{https://opentopography.org/developers}).  
          
          The AWS Terrain Tiles data is provided via x, y, and z tiles (see 
-         \url{http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
+         \url{https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
          details.) The x and y are determined from the bounding box of the 
          object submitted for \code{locations} argument, and the z argument 
          must be specified by the user.
