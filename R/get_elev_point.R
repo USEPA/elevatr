@@ -33,6 +33,7 @@
 #' @return Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
 #'         in the projection specified by the \code{prj} argument.
 #' @export
+#' @importFrom sp wkt
 #' @examples
 #' \dontrun{
 #' mt_wash <- data.frame(x = -71.3036, y = 44.2700)
@@ -65,9 +66,10 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
   
   src <- match.arg(src)
   sf_check <- "sf" %in% class(locations)
-  # Check location type and if sp, set prj.  If no prj (for either) then error
+  # Check location type and if sp or raster, set prj.  If no prj (for either) then error
+  
   locations <- loc_check(locations,prj)
-  prj <- sp::proj4string(locations)
+  prj <- sp::wkt(locations)
   
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if (src == "epqs"){
@@ -114,16 +116,17 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
 #' @keywords internal
 get_epqs <- function(locations, units = c("meters","feet")){
   
+  ll_prj <- "GEOGCRS[\"unknown\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1]],\n        ID[\"EPSG\",6326]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433],\n        ID[\"EPSG\",8901]],\n    CS[ellipsoidal,2],\n        AXIS[\"longitude\",east,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]],\n        AXIS[\"latitude\",north,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]]]"
+  
   base_url <- "https://nationalmap.gov/epqs/pqs.php?"
   if(match.arg(units) == "meters"){
     units <- "Meters"
   } else if(match.arg(units) == "feet"){
     units <- "Feet"
   }
-  # Re-project locations to dd
   
   locations <- sp::spTransform(locations,
-                                   sp::CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs"))
+                                   sp::CRS(ll_prj))
   units <- paste0("&units=",units)
   pb <- progress::progress_bar$new(format = " Accessing point elevations [:bar] :percent",
                                    total = nrow(locations), clear = FALSE, 

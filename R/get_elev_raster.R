@@ -7,7 +7,7 @@
 #' \code{raster} object is returned.
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
-#'                  \code{sp}, or \code{raster} object as input. 
+#'                  \code{sp}, \code{sf}, or \code{raster} object as input. 
 #' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
@@ -59,13 +59,14 @@
 #'          object submitted for \code{locations} argument, and the z argument 
 #'          must be specified by the user.   
 #' @export
+#' @importFrom sp wkt
 #' @examples 
 #' \dontrun{
 #' loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
 #'                                max=sp::bbox(lake)[1,2]),
 #'                      y = runif(6,min=sp::bbox(lake)[2,1], 
 #'                                max=sp::bbox(lake)[2,2]))
-#' x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake), z=10)
+#' x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake), z=10)
 #' 
 #' data(lake)
 #' x <- get_elev_raster(lake, z = 12)
@@ -83,7 +84,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
   
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
-  prj       <- sp::proj4string(locations)
+  prj       <- sp::wkt(locations)
   
   
   # Check download size and provide feedback, stop if too big!

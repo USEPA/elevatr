@@ -29,6 +29,7 @@ get_tilexy <- function(bbx,z){
 
 #' function to check input type and projection.  All input types convert to a
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
+#' @importFrom sp wkt
 #' @keywords internal
 loc_check <- function(locations, prj = NULL){
   
@@ -39,7 +40,7 @@ loc_check <- function(locations, prj = NULL){
   
   if(class(locations)=="data.frame"){ 
     if(is.null(prj)){
-      stop("Please supply a valid proj.4 string.")
+      stop("Please supply a valid WKT string.")
     }
     if(ncol(locations) > 2){
       df <- data.frame(locations[,3:ncol(locations)],
@@ -54,10 +55,10 @@ loc_check <- function(locations, prj = NULL){
                              proj4string = sp::CRS(prj),
                              data = df)
   } else if(class(locations) == "SpatialPoints"){
-    if(is.na(sp::proj4string(locations))& is.null(prj)){
-      stop("Please supply a valid proj.4 string.")
+    if(is.null(sp::wkt(locations))& is.null(prj)){
+      stop("Please supply a valid WKT string.")
     }
-    if(is.na(sp::proj4string(locations))){
+    if(is.null(sp::wkt(locations))){
       sp::proj4string(locations)<-prj
     }
     locations<-sp::SpatialPointsDataFrame(locations,
@@ -65,28 +66,36 @@ loc_check <- function(locations, prj = NULL){
                                                               vector("numeric",
                                                                      nrow(sp::coordinates(locations)))))
   } else if(class(locations) == "SpatialPointsDataFrame"){
-    if(is.na(sp::proj4string(locations)) & is.null(prj)) {
-      stop("Please supply a valid proj.4 string.")
+    if(is.null(sp::wkt(locations)) & is.null(prj)) {
+      stop("Please supply a valid WKT string.")
     }
-    if(is.na(sp::proj4string(locations))){
+    if(is.null(sp::wkt(locations))){
       sp::proj4string(locations)<-prj
     }
     locations@data <- data.frame(locations@data,
                                  elevation = vector("numeric",nrow(locations))) 
   } else if(attributes(class(locations)) %in% c("raster","sp")){
-    if(is.na(sp::proj4string(locations)) & is.null(prj)){
-      stop("Please supply a valid proj.4 string.")
+    if((is.null(sp::wkt(locations)) | 
+       nchar(sp::wkt(locations)) == 0 |
+       is.na(sp::wkt(locations))) & is.null(prj)){
+     
+      stop("Please supply a valid WKT string.")
     }
-    
-    if(is.na(sp::proj4string(locations))){
-      if(attributes(class(locations)) == "raster"){
-        if(sum(!is.na(raster::getValues(locations))) == 0){
-          stop("No distinct points, all values NA.")
+    if(is.null(sp::wkt(locations)) | 
+       nchar(sp::wkt(locations)) == 0 |
+       is.na(sp::wkt(locations))){
+        if(attributes(class(locations)) == "raster"){
+          if(sum(!is.na(raster::getValues(locations))) == 0){
+            stop("No distinct points, all values NA.")
+          } else {
+            locations <- raster::rasterToPoints(locations,spatial = TRUE)
+            sp::proj4string(locations)<-prj
+          }
         } else {
-          locations <- raster::rasterToPoints(locations,spatial = TRUE)
           sp::proj4string(locations)<-prj
         }
-      } 
+    } else if(attributes(class(locations)) %in% c("raster")){
+      locations <- raster::rasterToPoints(locations,spatial = TRUE)
     }
   }
 locations
@@ -103,7 +112,7 @@ proj_expand <- function(locations,prj,expand){
     grepl("latlong",prj) |
     grepl("latlon",prj)
   
-  if(any(locations@bbox[2,] == 0) & lll & is.null(expand)){
+  if(any(sp::bbox(locations)[2,] == 0) & lll & is.null(expand)){
     # Edge case for lat exactly at the equator - was returning NA
     # Expansion of bbox is approximately one meter
     expand <- 0.00001
@@ -140,7 +149,8 @@ clip_it <- function(rast, loc, expand, clip){
 #' @param bbx an sp bbox object
 #' @param prj defaults to "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
 #' @keywords internal
-bbox_to_sp <- function(bbox, prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs") {
+#' @importFrom sp wkt
+bbox_to_sp <- function(bbox, prj = sp::wkt(sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))) {
   x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
   y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
   p <- sp::Polygon(cbind(x, y))
@@ -154,8 +164,11 @@ bbox_to_sp <- function(bbox, prj = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_
 #' @param src the src
 #' @param z zoom level if source is aws
 #' @keywords internal
+#' @importFrom sp wkt
 estimate_raster_size <- function(locations, src, z = NULL){
- 
+  
+  locations <- bbox_to_sp(sp::bbox(locations), 
+                          prj = sp::wkt(locations))
   locations <- sp::spTransform(locations, sp::CRS("+init=EPSG:4326"))
   # Estimated cell size from zoom level source
   # https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#sources-native-resolution
