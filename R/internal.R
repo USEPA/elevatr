@@ -108,7 +108,9 @@ locations
 proj_expand <- function(locations,prj,expand){
 
   lll <- grepl("GEOGCRS",prj) |
-    grepl("GEODCRS",prj)
+    grepl("GEODCRS",prj) |
+    grepl("GEODETICCRS",prj) |
+    grepl("GEOGRAPHICCRS",prj) 
   
   if(any(sp::bbox(locations)[2,] == 0) & lll & is.null(expand)){
     # Edge case for lat exactly at the equator - was returning NA
