@@ -106,18 +106,21 @@ locations
 #' function to project bounding box and if needed expand it
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
- 
-  lll <- grepl("longlat",prj) |
-    grepl("lonlat",prj) |
-    grepl("latlong",prj) |
-    grepl("latlon",prj)
+
+  lll <- grepl("GEOGCRS",prj) |
+    grepl("GEODCRS",prj)
   
   if(any(sp::bbox(locations)[2,] == 0) & lll & is.null(expand)){
     # Edge case for lat exactly at the equator - was returning NA
-    # Expansion of bbox is approximately one meter
-    expand <- 0.00001
-  } 
-  
+    expand <- 0.01
+  } else if(nrow(locations) == 1 & lll & is.null(expand)){
+    # Edge case for single point and lat long
+    expand <- 0.01
+  } else if(nrow(locations) == 1 & is.null(expand)){
+    # Edge case for single point and projected
+    expand <- 1
+  }
+ 
   bbx <- bbox_to_sp(sp::bbox(locations), prj = prj)
   
   if(!is.null(expand)){
