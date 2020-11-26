@@ -1,4 +1,12 @@
-elevatr 0.3.0 (2020-11-09)
+elevatr 0.3.1 (XXXX-XX-XX)
+==========================
+
+# Bug Fixes
+- Rasters were not getting handled correctly by size estimation.  Thanks to @tteo for the catch (https://github.com/jhollist/elevatr/issues/37)
+- Single point requests to Open Topography were failing.  Expands now to capture small area around single point
+- Switched to using wkt instead of proj4.  I think this will help with the more recent versions of PROJ...
+
+elevatr 0.3.1 (2020-11-09)
 ==========================
 
 # Added Functionality
