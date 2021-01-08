@@ -1,5 +1,5 @@
 ## Comments
-Added new elevation data sources available via Open Topography.  Includes several bug fixes and enhancements.  Fixed URLs per 2020-11-20 and 2020-11-21 (sorry!!) email from Uwe Ligges.
+Fixed several bugs, including one throwing errors when rasters used as input locations
 
 ## Test Environments
 - Github Actions, Ubuntu 20.04.1 LTS, R version 4.0.3

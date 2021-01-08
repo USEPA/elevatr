@@ -1,10 +1,12 @@
-elevatr 0.3.1 (XXXX-XX-XX)
+elevatr 0.3.3 (2021-01-08)
 ==========================
 
 # Bug Fixes
 - Rasters were not getting handled correctly by size estimation.  Thanks to @tteo for the catch (https://github.com/jhollist/elevatr/issues/37)
 - Single point requests to Open Topography were failing.  Expands now to capture small area around single point
 - Switched to using wkt instead of proj4.  I think this will help with the more recent versions of PROJ...
+- Added rgdal_show_exportToProj4_warning=thin to options on load.  
+- Fixed https://github.com/jhollist/elevatr/issues/38.  Thanks to @cjcarlson, @ACheysson, and @jsta for helping track this one down.
 
 elevatr 0.3.1 (2020-11-09)
 ==========================

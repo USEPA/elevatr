@@ -58,6 +58,7 @@ loc_check <- function(locations, prj = NULL){
     if(is.null(sp::wkt(locations))& is.null(prj)){
       stop("Please supply a valid WKT string.")
     }
+    
     if(is.null(sp::wkt(locations))){
       sp::proj4string(locations)<-prj
     }

@@ -39,7 +39,7 @@
 #' mt_wash <- data.frame(x = -71.3036, y = 44.2700)
 #' mt_mans <- data.frame(x = -72.8145, y = 44.5438)
 #' mts <- rbind(mt_wash,mt_mans)
-#' ll_prj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+#' ll_prj <- "EPSG:4326"
 #' mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
 #'                             proj4string = sp::CRS(ll_prj)) 
 #' get_elev_point(locations = mt_wash, prj = ll_prj)
