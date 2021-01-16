@@ -52,7 +52,7 @@ loc_check <- function(locations, prj = NULL){
       names(df) <- "elevation"
     }
     locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
-                             proj4string = sp::CRS(prj),
+                             proj4string = sp::CRS(SRS_string = prj$wkt),
                              data = df)
   } else if(class(locations) == "SpatialPoints"){
     if(is.null(sp::wkt(locations))& is.null(prj)){
@@ -60,7 +60,7 @@ loc_check <- function(locations, prj = NULL){
     }
     
     if(is.null(sp::wkt(locations))){
-      sp::proj4string(locations)<-prj
+      locations <- sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
     }
     locations<-sp::SpatialPointsDataFrame(locations,
                                           data = data.frame(elevation = 
@@ -71,7 +71,7 @@ loc_check <- function(locations, prj = NULL){
       stop("Please supply a valid WKT string.")
     }
     if(is.null(sp::wkt(locations))){
-      sp::proj4string(locations)<-prj
+      locations <- sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
     }
     locations@data <- data.frame(locations@data,
                                  elevation = vector("numeric",nrow(locations))) 
@@ -90,9 +90,10 @@ loc_check <- function(locations, prj = NULL){
             stop("No distinct points, all values NA.")
           } else {
             locations <- raster::rasterToPoints(locations,spatial = TRUE)
-            sp::proj4string(locations)<-prj
+            sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
           }
         } else {
+          browser()
           sp::proj4string(locations)<-prj
         }
     } else if(attributes(class(locations)) %in% c("raster")){

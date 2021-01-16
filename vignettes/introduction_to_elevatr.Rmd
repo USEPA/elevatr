@@ -63,7 +63,7 @@ Example usage of each is included below.  For these examples, we can create a da
 set.seed(65.7)
 examp_df <- data.frame(x = runif(3, min = -73, max = -72.5), 
                        y = runif(3, min = 42 , max = 43))
-prj_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+prj_dd <- "+init=EPSG:4326"
 
 # Create and example data.frame with additional columns
 cats <- data.frame(category = c("H", "M", "L"))
@@ -74,7 +74,7 @@ examp_df2 <- data.frame(examp_df, cats)
 examp_sp <- SpatialPoints(examp_df, proj4string = CRS(prj_dd))
 
 # Create an example SpatialPointsDataFrame
-examp_spdf <- SpatialPointsDataFrame(examp_sp, proj4string = CRS(prj_dd), data = cats )
+examp_spdf <- SpatialPointsDataFrame(examp_sp, data = cats)
 ```
 
 If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output SpatialPointsDataFrame.  Similarly, an elevation column is added to the data slot of a SpatialPointsDataFrame.
