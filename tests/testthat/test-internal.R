@@ -7,6 +7,7 @@ library(elevatr)
 data("pt_df")
 data("sp_big")
 data("lake")
+skip_on_os(os = "solaris")
 
 ll_prj  <- st_crs(4326)
 aea_prj <- st_crs(5072)
@@ -55,13 +56,13 @@ test_that("loc_check errors correctly", {
   skip_on_cran()
   #skip_on_ci()
   expect_error(get_elev_point(locations = pt_df), 
-               "Please supply a valid WKT string.")
+               "Please supply a valid crs.")
   expect_error(get_elev_point(locations = sp_sm), 
-               "Please supply a valid WKT string.")
+               "Please supply a valid crs.")
   expect_error(get_elev_point(locations = spdf_sm),
-               "Please supply a valid WKT string.")
+               "Please supply a valid crs.")
   expect_error(get_elev_point(locations = rast),
-               "Please supply a valid WKT string.")
+               "Please supply a valid crs.")
   expect_error(get_elev_point(locations = raster(sp_sm), prj = ll_prj),
                "No distinct points, all values NA.")
 })

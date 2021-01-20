@@ -4,6 +4,7 @@ library(sf)
 library(elevatr)
 data("pt_df")
 data("sp_big")
+skip_on_os(os = "solaris")
 
 ll_prj  <- st_crs(4326)
 aea_prj <- st_crs(5072)

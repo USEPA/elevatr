@@ -30,8 +30,11 @@ get_tilexy <- function(bbx,z){
 #' function to check input type and projection.  All input types convert to a
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
 #' @importFrom sp wkt
+#' @importFrom sf st_crs
 #' @keywords internal
 loc_check <- function(locations, prj = NULL){
+  
+  prj <- st_crs(prj)
   
   #Convert sf locations to SP
   if("sf" %in% class(locations)){
@@ -39,8 +42,8 @@ loc_check <- function(locations, prj = NULL){
   }
   
   if(class(locations)=="data.frame"){ 
-    if(is.null(prj)){
-      stop("Please supply a valid WKT string.")
+    if(is.na(prj)){
+      stop("Please supply a valid crs.")
     }
     if(ncol(locations) > 2){
       df <- data.frame(locations[,3:ncol(locations)],
@@ -55,8 +58,8 @@ loc_check <- function(locations, prj = NULL){
                              proj4string = sp::CRS(SRS_string = prj$wkt),
                              data = df)
   } else if(class(locations) == "SpatialPoints"){
-    if(is.null(sp::wkt(locations))& is.null(prj)){
-      stop("Please supply a valid WKT string.")
+    if(is.null(sp::wkt(locations))& is.na(prj)){
+      stop("Please supply a valid crs.")
     }
     
     if(is.null(sp::wkt(locations))){
@@ -67,8 +70,8 @@ loc_check <- function(locations, prj = NULL){
                                                               vector("numeric",
                                                                      nrow(sp::coordinates(locations)))))
   } else if(class(locations) == "SpatialPointsDataFrame"){
-    if(is.null(sp::wkt(locations)) & is.null(prj)) {
-      stop("Please supply a valid WKT string.")
+    if(is.null(sp::wkt(locations)) & is.na(prj)) {
+      stop("Please supply a valid crs.")
     }
     if(is.null(sp::wkt(locations))){
       locations <- sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
@@ -78,9 +81,9 @@ loc_check <- function(locations, prj = NULL){
   } else if(attributes(class(locations)) %in% c("raster","sp")){
     if((is.null(sp::wkt(locations)) | 
        nchar(sp::wkt(locations)) == 0 |
-       is.na(sp::wkt(locations))) & is.null(prj)){
+       is.na(sp::wkt(locations))) & is.na(prj)){
      
-      stop("Please supply a valid WKT string.")
+      stop("Please supply a valid crs.")
     }
     if(is.null(sp::wkt(locations)) | 
        nchar(sp::wkt(locations)) == 0 |
