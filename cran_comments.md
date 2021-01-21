@@ -1,5 +1,5 @@
 ## Comments
-Fixed several bugs, including one throwing errors when rasters used as input locations
+Fixed build errors on CRAN, updated handling of crs
 
 ## Test Environments
 - Github Actions, Ubuntu 20.04 LTS, R version 4.0.3
