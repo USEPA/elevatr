@@ -1,3 +1,11 @@
+elevatr 0.3.4 (2021-01-21)
+==========================
+# Errors
+- updated tests to deal with build errors
+- Parsing crs through st_crs()
+- Fixed vignettes
+
+
 elevatr 0.3.3 (2021-01-08)
 ==========================
 
