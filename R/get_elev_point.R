@@ -86,14 +86,19 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
 
   # Re-project back to original, add in units, and return
   locations <- sp::spTransform(locations_prj,sp::CRS(prj))
+  if(is.null(nrow(locations))){
+    nfeature <- length(locations) 
+  } else {
+    nfeature <- nrow(locations)
+  }
   if(any(names(list(...)) %in% "units")){
     if(list(...)$units == "feet"){
-      locations$elev_units <- rep("feet", nrow(locations))
+      locations$elev_units <- rep("feet", nfeature)
     } else {
-      locations$elev_units <- rep("meters", nrow(locations))
+      locations$elev_units <- rep("meters", nfeature)
     }
   } else {
-    locations$elev_units <- rep("meters", nrow(locations))
+    locations$elev_units <- rep("meters", nfeature)
   }
   if(sf_check){locations <- sf::st_as_sf(locations)}
   message(paste("Note: Elevation units are in", units, 
@@ -118,6 +123,12 @@ get_epqs <- function(locations, units = c("meters","feet")){
   
   ll_prj <- "GEOGCRS[\"unknown\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1]],\n        ID[\"EPSG\",6326]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433],\n        ID[\"EPSG\",8901]],\n    CS[ellipsoidal,2],\n        AXIS[\"longitude\",east,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]],\n        AXIS[\"latitude\",north,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]]]"
   
+  if(is.null(nrow(locations))){
+    nfeature <- length(locations) 
+  } else {
+    nfeature <- nrow(locations)
+  }
+  
   base_url <- "https://nationalmap.gov/epqs/pqs.php?"
   if(match.arg(units) == "meters"){
     units <- "Meters"
@@ -129,7 +140,7 @@ get_epqs <- function(locations, units = c("meters","feet")){
                                    sp::CRS(ll_prj))
   units <- paste0("&units=",units)
   pb <- progress::progress_bar$new(format = " Accessing point elevations [:bar] :percent",
-                                   total = nrow(locations), clear = FALSE, 
+                                   total = nfeature, clear = FALSE, 
                                    width= 60)
   for(i in seq_along(locations[,1])){
     x <- sp::coordinates(locations)[i,1]

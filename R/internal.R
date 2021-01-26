@@ -41,17 +41,23 @@ loc_check <- function(locations, prj = NULL){
     locations <- sf::as_Spatial(locations)
   }
   
+  if(is.null(nrow(locations))){
+    nfeature <- length(locations) 
+  } else {
+    nfeature <- nrow(locations)
+  }
+  
   if(class(locations)=="data.frame"){ 
     if(is.na(prj)){
       stop("Please supply a valid crs.")
     }
     if(ncol(locations) > 2){
       df <- data.frame(locations[,3:ncol(locations)],
-                       vector("numeric",nrow(locations)))
+                       vector("numeric",nfeature))
       names(df) <- c(names(locations)[3:ncol(locations)],
                      "elevation")
     } else {
-      df <- data.frame(vector("numeric",nrow(locations)))
+      df <- data.frame(vector("numeric",nfeature))
       names(df) <- "elevation"
     }
     locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
@@ -77,7 +83,7 @@ loc_check <- function(locations, prj = NULL){
       locations <- sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
     }
     locations@data <- data.frame(locations@data,
-                                 elevation = vector("numeric",nrow(locations))) 
+                                 elevation = vector("numeric",nfeature)) 
   } else if(attributes(class(locations)) %in% c("raster","sp")){
     if((is.null(sp::wkt(locations)) | 
        nchar(sp::wkt(locations)) == 0 |
@@ -96,7 +102,7 @@ loc_check <- function(locations, prj = NULL){
             sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
           }
         } else {
-          browser()
+          
           sp::proj4string(locations)<-prj
         }
     } else if(attributes(class(locations)) %in% c("raster")){
@@ -117,13 +123,19 @@ proj_expand <- function(locations,prj,expand){
     grepl("GEODETICCRS",prj) |
     grepl("GEOGRAPHICCRS",prj) 
   
+  if(is.null(nrow(locations))){
+    nfeature <- length(locations) 
+  } else {
+    nfeature <- nrow(locations)
+  }
+  
   if(any(sp::bbox(locations)[2,] == 0) & lll & is.null(expand)){
     # Edge case for lat exactly at the equator - was returning NA
     expand <- 0.01
-  } else if(nrow(locations) == 1 & lll & is.null(expand)){
+  } else if(nfeature == 1 & lll & is.null(expand)){
     # Edge case for single point and lat long
     expand <- 0.01
-  } else if(nrow(locations) == 1 & is.null(expand)){
+  } else if(nfeature == 1 & is.null(expand)){
     # Edge case for single point and projected
     expand <- 1
   }
