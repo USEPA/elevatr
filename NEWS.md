@@ -3,6 +3,8 @@ elevatr 0.3.5.9999 (2021-01-21)
 - Empty rasters were failing as elevatr was using nrow(locations) to get number 
   of features.  It still does that as the default behavior, but if nrow(locations)
   returns a null, it uses length(locations) instead.
+- Skipped testing on R version 3.6.2 as it was throwing an error on CRAN.  All 
+  other platforms passed.
 
 
 elevatr 0.3.4 (2021-01-21)
