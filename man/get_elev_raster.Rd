@@ -8,7 +8,7 @@ get_elev_raster(
   locations,
   z,
   prj = NULL,
-  src = c("aws", "gl3", "gl1", "alos"),
+  src = c("aws", "gl3", "gl1", "alos", "srtm15plus"),
   expand = NULL,
   clip = c("tile", "bbox", "locations"),
   verbose = TRUE,
@@ -33,7 +33,7 @@ string will be taken from that.  This argument is required for a
 \code{data.frame} of locations."}
 
 \item{src}{A character indicating which API to use.  Currently supports "aws" 
-and "gl3", "gl1", or "alos" from the OpenTopography API global 
+and "gl3", "gl1", "alos", or "srtm15plus" from the OpenTopography API global 
 datasets. "aws" is the default.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the

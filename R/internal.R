@@ -85,15 +85,18 @@ loc_check <- function(locations, prj = NULL){
     locations@data <- data.frame(locations@data,
                                  elevation = vector("numeric",nfeature)) 
   } else if(attributes(class(locations)) %in% c("raster","sp")){
-    if((is.null(sp::wkt(locations)) | 
-       nchar(sp::wkt(locations)) == 0 |
-       is.na(sp::wkt(locations))) & is.na(prj)){
-     
+    
+    if(attributes(class(locations)) %in% "raster"){
+      locs <- raster::crs(locations)
+    } else {
+      locs <- sp::wkt(locations)
+    }
+    if((is.null(locs) | 
+       is.na(locs)) & is.na(prj)){
       stop("Please supply a valid crs.")
     }
-    if(is.null(sp::wkt(locations)) | 
-       nchar(sp::wkt(locations)) == 0 |
-       is.na(sp::wkt(locations))){
+    if(is.null(locs) |
+       is.na(locs)){
         if(attributes(class(locations)) == "raster"){
           if(sum(!is.na(raster::getValues(locations))) == 0){
             stop("No distinct points, all values NA.")
@@ -102,7 +105,6 @@ loc_check <- function(locations, prj = NULL){
             sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
           }
         } else {
-          
           sp::proj4string(locations)<-prj
         }
     } else if(attributes(class(locations)) %in% c("raster")){
@@ -204,14 +206,16 @@ estimate_raster_size <- function(locations, src, z = NULL){
                  aws = 32,
                  gl3 = 32,
                  gl1 = 32,
-                 alos = 32)
+                 alos = 32,
+                 srtm15plus = 32)
   if(src == "aws"){
     res <- z_res[z_res$z == z,]$res_dd
   } else{
     res <- switch(src,
                   gl3 = 0.0008333,
                   gl1 = 0.0002778,
-                  alos = 0.0002778) 
+                  alos = 0.0002778,
+                  srtm15plus = 0.004165) 
   }
   num_rows <- (sp::bbox(locations)[1, "max"] - sp::bbox(locations)[1, "min"])/res
   num_cols <- (sp::bbox(locations)[2, "max"] - sp::bbox(locations)[2, "min"])/res
