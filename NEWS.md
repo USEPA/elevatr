@@ -8,7 +8,6 @@ elevatr 0.3.5.9999 (2021-02-01)
 - Added access to OpenTopography Global Bathymetry SRTM15+ V2.1 with src = "srtm15plus" 
 
 
-
 elevatr 0.3.4 (2021-01-21)
 ==========================
 # Errors

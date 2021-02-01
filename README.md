@@ -1,3 +1,4 @@
+
 [![R build
 status](https://github.com/jhollist/elevatr/workflows/R-CMD-check/badge.svg)](https://github.com/jhollist/elevatr/actions)
 [![](https://www.r-pkg.org/badges/version/elevatr)](https://www.r-pkg.org/pkg/elevatr)
@@ -7,8 +8,7 @@ downloads](https://cranlogs.r-pkg.org/badges/elevatr)](https://www.r-pkg.org/pkg
 coverage](https://codecov.io/gh/jhollist/elevatr/branch/master/graph/badge.svg)](https://codecov.io/gh/jhollist/elevatr?branch=master)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4282962.svg)](https://doi.org/10.5281/zenodo.4282962)
 
-elevatr
-=======
+# elevatr
 
 An R package for accessing elevation data from various sources
 
@@ -25,53 +25,51 @@ sources may be added.
 Currently this package includes just two primary functions to access
 elevation web services:
 
--   `get_elev_point()`: Get point elevations using the USGS Elevation
+  - `get_elev_point()`: Get point elevations using the USGS Elevation
     Point Query Service (for the US Only) or using the AWS Terrian Tiles
     (global). This will accept a data frame of x (long) and y (lat), a
     SpatialPoints/SpatialPointsDataFame, or a Simple Features object as
     input. A SpatialPointsDataFrame or Simple Features object is
     returned, depending on the class of the input locations.
--   `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital
+  - `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital
     Elevation Model) from the AWS Open Data Terrain Tiles. Other sources
     may be added later. This will accept a data frame of of x (long) and
     y (lat) or any `sp` or `raster` object as input and will return a
     `raster` object of the elevation tiles that cover the bounding box
     of the input spatial data.
 
-Installation
-------------
+## Installation
 
-Version 0.3.0 of this package is currently available from CRAN and may
+Version 0.3.4 of this package is currently available from CRAN and may
 be installed by:
 
-    install.packages("elevatr")
+``` r
+install.packages("elevatr")
+```
 
 The development version (this repo) may installed with `devtools`:
 
-    library(devtools)
-    install_github("jhollist/elevatr")
+``` r
+library(devtools)
+install_github("jhollist/elevatr")
+```
 
-Attribution
------------
+## Attribution
 
 Mapzen terrain tiles (which supply the AWS source) contain 3DEP, SRTM,
 and GMTED2010 content courtesy of the U.S. Geological Survey and ETOPO1
 content courtesy of U.S. National Oceanic and Atmospheric
 Administration. The Open Topography API provide access to the SRTM and
-the ALOS World 3D datasets. See
-<a href="https://opentopography.org/" class="uri">https://opentopography.org/</a>
-for details.
+the ALOS World 3D datasets. See <https://opentopography.org/> for
+details.
 
-Repositories
-------------
+## Repositories
 
 The source code for this repository is maintained at
-<a href="https://github.com/jhollist/elevatr" class="uri">https://github.com/jhollist/elevatr</a>
-which is also mirrored at
-<a href="https://github.com/usepa/elevatr" class="uri">https://github.com/usepa/elevatr</a>
+<https://github.com/jhollist/elevatr> which is also mirrored at
+<https://github.com/usepa/elevatr>
 
-EPA Disclaimer
---------------
+## EPA Disclaimer
 
 The United States Environmental Protection Agency (EPA) GitHub project
 code is provided on an “as is” basis and the user assumes responsibility
