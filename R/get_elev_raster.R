@@ -45,9 +45,9 @@
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
-#' @return Function returns a \code{SpatialPointsDataFrame} in the projection 
+#' @return Function returns a \code{RasterLayer} in the projection 
 #'         specified by the \code{prj} argument.
-#' @details Currently, the \code{get_elev_raster} function utilizes  the 
+#' @details Currently, the \code{get_elev_raster} function utilizes the 
 #'          Amazon Web Services 
 #'          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
 #'          tiles and the Open Topography Global Datasets API 
