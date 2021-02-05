@@ -20,7 +20,7 @@ API](https://opentopography.org/developers#API) for raster digital
 elevation models. For point elevation data,the [USGS Elevation Point
 Query Service](https://nationalmap.gov/epqs/)) may be used or the point
 elevations may be derived from the AWS Tiles. Additional elevation data
-sources may be added.
+sources may be added as they come available.
 
 Currently this package includes just two primary functions to access
 elevation web services:

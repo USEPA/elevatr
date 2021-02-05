@@ -10,7 +10,7 @@ coverage](https://codecov.io/gh/jhollist/elevatr/branch/master/graph/badge.svg)]
 # elevatr
 An R package for accessing elevation data from various sources
 
-The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) and the Open Topography [Global datasets API](https://opentopography.org/developers#API) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](https://nationalmap.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added.
+The `elevatr` package currently provides access to elevation data from AWS Open Data [Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) and the Open Topography [Global datasets API](https://opentopography.org/developers#API) for raster digital elevation models.  For point elevation data,the [USGS Elevation Point Query Service](https://nationalmap.gov/epqs/)) may be used or the point elevations may be derived from the AWS Tiles. Additional elevation data sources may be added as they come available.
 
 Currently this package includes just two primary functions to access elevation web services:
 
