@@ -37,7 +37,7 @@ loc_check <- function(locations, prj = NULL){
   prj <- st_crs(prj)
   
   #Convert sf locations to SP
-  if("sf" %in% class(locations)){
+  if(("sf" %in% class(locations)) | ("sfc" %in% class(locations))){
     locations <- sf::as_Spatial(locations)
   }
   

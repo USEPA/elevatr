@@ -68,7 +68,7 @@ can be overriden with this argument set to TRUE.}
 \code{\link{get_aws_terrain}} for more details.}
 }
 \value{
-Function returns a \code{SpatialPointsDataFrame} in the projection 
+Function returns a \code{RasterLayer} in the projection 
         specified by the \code{prj} argument.
 }
 \description{
@@ -79,7 +79,7 @@ of x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  A
 \code{raster} object is returned.
 }
 \details{
-Currently, the \code{get_elev_raster} function utilizes  the 
+Currently, the \code{get_elev_raster} function utilizes the 
          Amazon Web Services 
          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
          tiles and the Open Topography Global Datasets API 

@@ -26,6 +26,8 @@ Imports:
     jsonlite,
     progress,
     sf,
+    future,
+    furrr,
     methods
 License: CC0
 Encoding: UTF-8

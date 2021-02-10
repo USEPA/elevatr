@@ -4,7 +4,11 @@
 \alias{get_epqs}
 \title{Get point elevation data from the USGS Elevation Point Query Service}
 \usage{
-get_epqs(locations, units = c("meters", "feet"))
+get_epqs(
+  locations,
+  units = c("meters", "feet"),
+  ncpu = future::availableCores() - 1
+)
 }
 \arguments{
 \item{locations}{A SpatialPointsDataFrame of the location(s) for which you 
@@ -13,6 +17,8 @@ the second column is Latitude.}
 
 \item{units}{Character string of either meters or feet. Conversions for 
 'epqs' are handled by the API itself.}
+
+\item{ncpu}{Number of CPU's to use when downloading epqs data.}
 }
 \value{
 a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 

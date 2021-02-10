@@ -65,7 +65,7 @@
 get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
   
   src <- match.arg(src)
-  sf_check <- "sf" %in% class(locations)
+  sf_check <- ("sf" %in% class(locations)) | ("sfc" %in% class(locations))
   # Check location type and if sp or raster, set prj.  If no prj (for either) then error
   
   locations <- loc_check(locations,prj)
@@ -115,11 +115,13 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), ...){
 #'                  the second column is Latitude.  
 #' @param units Character string of either meters or feet. Conversions for 
 #'              'epqs' are handled by the API itself.
+#' @param ncpu Number of CPU's to use when downloading epqs data.
 #' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
 #'         elevation added to the data slot and a character of the elevation units
 #' @export
 #' @keywords internal
-get_epqs <- function(locations, units = c("meters","feet")){
+get_epqs <- function(locations, units = c("meters","feet"), 
+                     ncpu = future::availableCores() - 1){
   
   ll_prj <- "GEOGCRS[\"unknown\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1]],\n        ID[\"EPSG\",6326]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433],\n        ID[\"EPSG\",8901]],\n    CS[ellipsoidal,2],\n        AXIS[\"longitude\",east,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]],\n        AXIS[\"latitude\",north,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]]]"
   
@@ -142,22 +144,42 @@ get_epqs <- function(locations, units = c("meters","feet")){
   pb <- progress::progress_bar$new(format = " Accessing point elevations [:bar] :percent",
                                    total = nfeature, clear = FALSE, 
                                    width= 60)
-  for(i in seq_along(locations[,1])){
-    x <- sp::coordinates(locations)[i,1]
-    y <- sp::coordinates(locations)[i,2]
+  
+  
+  get_epqs_resp <- function(coords, base_url, units) {
+    
+    x <- coords[1]
+    y <- coords[2]
     loc <- paste0("x=",x, "&y=", y)
     url <- paste0(base_url,loc,units,"&output=json")
     resp <- httr::GET(url)
     if (httr::http_type(resp) != "application/json") {
-      stop("API did not return json", call. = FALSE)
+      # Hit it again to test as most times this is a unexplained timeout that
+      # Corrects on next hit
+      resp <- httr::GET(url)
+      if (httr::http_type(resp) != "application/json") {
+        warning("API did not return json, NA returned for elevation", 
+                call. = FALSE)
+        return(NA)
+      }
     } 
     resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
-                               simplifyVector = FALSE
-                                )
-    locations$elevation[i] <- as.numeric(resp[[1]][[1]]$Elevation)
-    pb$tick()
-    Sys.sleep(1 / 100)
+                               simplifyVector = FALSE)
+    as.numeric(resp[[1]][[1]]$Elevation)
   }
+  coords_df <- split(data.frame(sp::coordinates(locations)), 
+                     seq_along(locations[,1]))   
+  future::plan(future::multiprocess, workers = ncpu)
+  locations$elevation <- furrr::future_map_dbl(coords_df,
+                                               function(x) {
+                                                 get_epqs_resp(x, base_url, 
+                                                               units)}, 
+                                               .progress = TRUE, 
+                                               .options = 
+                                                 furrr::furrr_options(seed = TRUE))
+  
+  #locations$elevation <- purrr::map_dbl(coords_df,
+  #                                      function(x) {get_epqs_resp(x, base_url, units)})
   
   # For areas without epqs values that return -1000000, switch to NA
   locations[locations$elevation == -1000000] <- NA
