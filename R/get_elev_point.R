@@ -141,13 +141,8 @@ get_epqs <- function(locations, units = c("meters","feet"),
   locations <- sp::spTransform(locations,
                                    sp::CRS(ll_prj))
   units <- paste0("&units=",units)
-  pb <- progress::progress_bar$new(format = " Accessing point elevations [:bar] :percent",
-                                   total = nfeature, clear = FALSE, 
-                                   width= 60)
-  
   
   get_epqs_resp <- function(coords, base_url, units) {
-    
     x <- coords[1]
     y <- coords[2]
     loc <- paste0("x=",x, "&y=", y)
@@ -167,19 +162,28 @@ get_epqs <- function(locations, units = c("meters","feet"),
                                simplifyVector = FALSE)
     as.numeric(resp[[1]][[1]]$Elevation)
   }
+  
   coords_df <- split(data.frame(sp::coordinates(locations)), 
                      seq_along(locations[,1]))   
-  future::plan(future::multiprocess, workers = ncpu)
-  locations$elevation <- furrr::future_map_dbl(coords_df,
+  
+  if(length(coords_df) < 35) {
+    message("Accessing point elevation...")
+    #TODO Figure out progress bar!
+    locations$elevation <- purrr::map_dbl(coords_df,
+                                          function(x) {get_epqs_resp(x, 
+                                                                     base_url, 
+                                                                     units)})
+  } else {
+    message("Accessing point elevation...")
+    future::plan(future::multiprocess, workers = ncpu)
+    locations$elevation <-furrr::future_map_dbl(coords_df,
                                                function(x) {
                                                  get_epqs_resp(x, base_url, 
                                                                units)}, 
                                                .progress = TRUE, 
                                                .options = 
                                                  furrr::furrr_options(seed = TRUE))
-  
-  #locations$elevation <- purrr::map_dbl(coords_df,
-  #                                      function(x) {get_epqs_resp(x, base_url, units)})
+  }
   
   # For areas without epqs values that return -1000000, switch to NA
   locations[locations$elevation == -1000000] <- NA
