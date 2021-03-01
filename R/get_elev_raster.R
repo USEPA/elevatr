@@ -41,7 +41,7 @@
 #'                            between 100 Mb and 500Mb report a message but
 #'                            continue.  Between 500Mb and 3000Mb requires 
 #'                            interaction and greater than 3000Mb fails.  These
-#'                            can be overriden with this argument set to TRUE.                  
+#'                            can be overriden with this argument set to TRUE.    
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
@@ -89,17 +89,17 @@ get_elev_raster <- function(locations, z, prj = NULL,
   
   # Check download size and provide feedback, stop if too big!
   dl_size <- estimate_raster_size(locations, src, z)
-  if(dl_size > 100 & dl_size < 500){
+  if(dl_size > 500 & dl_size < 1000){
     message(paste0("Note: Your request will download approximately ", 
                    round(dl_size, 1), "Mb."))
-  } else if(dl_size > 500 & dl_size <= 2000){
+  } else if(dl_size > 1000 & dl_size <= 3000){
     message(paste0("Your request will download approximately ",
                    round(dl_size, 1), "Mb."))
     if(!override_size_check){
       y <- readline(prompt = "Press [y] to continue with this request.")
       if(tolower(y) != "y"){return()}
     }
-  } else if(!override_size_check & dl_size > 2000){
+  } else if(!override_size_check & dl_size > 3000){
     stop(paste0("Your request will download approximately ",
                    round(dl_size, 1), "Mb. That's probably too big. If you 
                    really want to do this, set override_size_check = TRUE. Note
@@ -108,7 +108,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
   
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
-    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand)
+    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand, ...)
   } else if(src %in% c("gl3", "gl1", "alos", "srtm15plus")){
     raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, ...)
   }
@@ -152,15 +152,21 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
 #'               additional area around the feature is desired. Default is NULL.
+#' @param ncpu Number of CPU's to use when downloading aws tiles.
+#' @param serial Logical to determine if API should be hit in serial or in 
+#'               parallel.  TRUE will use purrr, FALSE will use furrr. 
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
 #'            usage is to adjust timeout.  This is done as 
 #'            \code{config=timeout(x)} where \code{x} is a numeric value in 
 #'            seconds.  Multiple configuration functions may be passed as a 
 #'            vector.              
 #' @export
+#' @importFrom progressr handlers progressor with_progress
 #' @keywords internal
 
-get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
+get_aws_terrain <- function(locations, z, prj, expand=NULL, 
+                            ncpu = future::availableCores() - 1,
+                            serial = NULL, ...){
   # Expand (if needed) and re-project bbx to dd
   
   bbx <- proj_expand(locations,prj,expand)
@@ -171,32 +177,62 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL, ...){
   
   urls  <-  sprintf("%s/%s/%s/%s.tif", base_url, z, tiles[,1], tiles[,2])
   
-  dem_list <- vector("list",length = nrow(tiles))
+  #dem_list <- vector("list",length = nrow(tiles))
   
   dir <- tempdir()
   
-  pb <- progress::progress_bar$new(
-    format = "Downloading DEMs [:bar] :percent eta: :eta",
-    total = length(urls), clear = FALSE, width= 60)
-  
-  for(i in seq_along(urls)){
-    pb$tick()
-    Sys.sleep(1/1000)
-    tmpfile <- tempfile(fileext = ".tif")
-
-    resp <- httr::GET(urls[i], 
-                      httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
-                      httr::write_disk(tmpfile,overwrite=TRUE))
-    
-    if (!grepl("image/tif", httr::http_type(resp))) {
-      stop(paste("This url:", urls[i],"did not return a tif"), call. = FALSE)
-    } 
-    
-    dem_list[[i]] <- tmpfile
+  nurls <- length(urls)
+  if(is.null(serial)){
+    if(nurls < 175){
+      serial <- TRUE
+    } else {
+      serial <- FALSE
+    }
   }
+  
+  progressr::handlers(
+    progressr::handler_progress(
+      format = " Accessing point elevations [:bar] :percent",
+      clear = FALSE, 
+      width= 60
+    ))
+  
+  progressr::with_progress({
+  if(serial){
+    p <- progressr::progressor(along = urls)
+    dem_list <- purrr::map(urls,
+                           function(x){
+                             p()
+                             tmpfile <- tempfile(fileext = ".tif")
+                             resp <- httr::GET(x, 
+                                               httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
+                                               httr::write_disk(tmpfile,overwrite=TRUE), ...)
+                             if (!grepl("image/tif", httr::http_type(resp))) {
+                               stop(paste("This url:", x,"did not return a tif"), call. = FALSE)
+                             } 
+                             tmpfile
+                           })
+  } else {
+    future::plan(future::multiprocess, workers = ncpu)
+    p <- progressr::progressor(along = urls)
+    dem_list <- furrr::future_map(urls,
+                                  function(x){
+                                    p()
+                                    tmpfile <- tempfile(fileext = ".tif")
+                                    resp <- httr::GET(x, 
+                                                      httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
+                                                      httr::write_disk(tmpfile,overwrite=TRUE), ...)
+                                    if (!grepl("image/tif", httr::http_type(resp))) {
+                                      stop(paste("This url:", x,"did not return a tif"), call. = FALSE)
+                                    } 
+                                    tmpfile
+                                  })
+  }
+  })
+  
   merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
   
-  return(merged_elevation_grid)
+  merged_elevation_grid
 }
 
 #' Merge Rasters

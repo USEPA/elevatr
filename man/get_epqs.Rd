@@ -7,7 +7,8 @@
 get_epqs(
   locations,
   units = c("meters", "feet"),
-  ncpu = future::availableCores() - 1
+  ncpu = future::availableCores() - 1,
+  serial = NULL
 )
 }
 \arguments{
@@ -19,6 +20,9 @@ the second column is Latitude.}
 'epqs' are handled by the API itself.}
 
 \item{ncpu}{Number of CPU's to use when downloading epqs data.}
+
+\item{serial}{Logical to determine if API should be hit in serial or in 
+parallel.  TRUE will use purrr, FALSE will use furrr.}
 }
 \value{
 a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 

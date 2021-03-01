@@ -4,7 +4,13 @@
 \alias{get_elev_point}
 \title{Get Point Elevation}
 \usage{
-get_elev_point(locations, prj = NULL, src = c("epqs", "aws"), ...)
+get_elev_point(
+  locations,
+  prj = NULL,
+  src = c("epqs", "aws"),
+  overwrite = FALSE,
+  ...
+)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the 
@@ -25,6 +31,11 @@ of points (e.g. > 500).  The "aws" source may be quicker in these
 cases provided the points are in a similar geographic area.  The 
 "aws" source downloads a DEM using \code{get_elev_raster} and then
 extracts the elevation for each point.}
+
+\item{overwrite}{A logical indicating that existing \code{elevation} and 
+\code{elev_units} columns should be overwritten.  Default is 
+FALSE and \code{get_elev_point} will error if these columns 
+already exist.}
 
 \item{...}{Additional arguments passed to get_epqs or get_aws_points.  When 
 using "aws" as the source, pay attention to the `z` argument.  A 

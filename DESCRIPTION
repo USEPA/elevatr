@@ -24,10 +24,11 @@ Imports:
     raster,
     httr,
     jsonlite,
-    progress,
+    progressr,
     sf,
     future,
     furrr,
+    purrr,
     methods
 License: CC0
 Encoding: UTF-8

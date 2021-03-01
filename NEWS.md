@@ -6,14 +6,24 @@ elevatr 0.3.5.9999 (2021-02-01)
   returns a null, it uses length(locations) instead.
 - Skipped testing on R version 3.6.2 as it was throwing an error on CRAN.  All 
   other platforms passed.
-- Added access to OpenTopography Global Bathymetry SRTM15+ V2.1 with src = "srtm15plus" 
+- Added access to OpenTopography Global Bathymetry SRTM15+ V2.1 with 
+  src = "srtm15plus" 
 - Documentation fix on get_elev_raster, now correctly reports that the function 
   returns a raster, not points.  Thanks @AndyBunn!
 - sfc objects getting missing in coercion in loc_check.  Not anymore!
 - serial loop for get_epqs was taking a long time (API returns are slow), so use
-furrr::future_map_dbl to paralellize the gets.  Defaults to 1 minus available cores.
-- epqs occasionally times out, but subesequent hits work fine.  Added a second hit when that happens and if that second one doesn't work then it assigns elevation 
-to NA and throws a warning, instead of erroring
+  furrr::future_map_dbl to paralellize the gets.  Defaults to 1 minus available 
+  cores.
+- Added argument to get_eqps to control serial vs parallel API calls.  Defaults 
+  to serial for 35 or fewer points, but can be set to TRUE for force serial.
+- epqs occasionally times out, but subsequent hits usually work fine.  Added a second
+  hit when that happens and if that second one doesn't work then it assigns 
+  elevation to NA and throws a warning, instead of erroring
+- Was suppressing messages (and thus progress bar) on get_elev_pt src = "aws".
+  Turned that off so progress of building the DEM is tracked.
+- Added overwrite argument to get_elev_point() to check for existence of elevation
+  and elev_units columns.  If either exist and overwrite not TRUE then errors.
+- Updated progress bars to use the progressr package.
 
 elevatr 0.3.4 (2021-01-21)
 ==========================

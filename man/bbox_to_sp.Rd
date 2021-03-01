@@ -6,13 +6,10 @@
 Assumes geographic projection
 sp bbox to poly}
 \usage{
-bbox_to_sp(
-  bbox,
-  prj = sp::wkt(sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
-)
+bbox_to_sp(bbox, prj = sp::wkt(sp::CRS(SRS_string = "EPSG:4326")))
 }
 \arguments{
-\item{prj}{defaults to "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"}
+\item{prj}{defaults to "EPSG:4326"}
 
 \item{bbx}{an sp bbox object}
 }

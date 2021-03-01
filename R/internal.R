@@ -171,10 +171,10 @@ clip_it <- function(rast, loc, expand, clip){
 #' Assumes geographic projection
 #' sp bbox to poly
 #' @param bbx an sp bbox object
-#' @param prj defaults to "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+#' @param prj defaults to "EPSG:4326"
 #' @keywords internal
 #' @importFrom sp wkt
-bbox_to_sp <- function(bbox, prj = sp::wkt(sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))) {
+bbox_to_sp <- function(bbox, prj = sp::wkt(sp::CRS(SRS_string = "EPSG:4326"))) {
   x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
   y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
   p <- sp::Polygon(cbind(x, y))
@@ -193,7 +193,7 @@ estimate_raster_size <- function(locations, src, z = NULL){
   
   locations <- bbox_to_sp(sp::bbox(locations), 
                           prj = sp::wkt(locations))
-  locations <- sp::spTransform(locations, sp::CRS("+init=EPSG:4326"))
+  locations <- sp::spTransform(locations, sp::CRS(SRS_string = "EPSG:4326"))
   # Estimated cell size from zoom level source
   # https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#sources-native-resolution
   z_res <- data.frame(z = 0:14, res_dd = c(0.54905236, 0.27452618, 0.15455633, 

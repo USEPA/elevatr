@@ -10,7 +10,15 @@ Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010
         \url{https://github.com/tilezen/joerd/tree/master/docs}
 }
 \usage{
-get_aws_terrain(locations, z, prj, expand = NULL, ...)
+get_aws_terrain(
+  locations,
+  z,
+  prj,
+  expand = NULL,
+  ncpu = future::availableCores() - 1,
+  serial = NULL,
+  ...
+)
 }
 \arguments{
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
@@ -24,6 +32,11 @@ details on zoom and resolution see the documentation from Mapzen at
 bounding box that is used to fetch the terrain tiles. This can 
 be used for features that fall close to the edge of a tile and 
 additional area around the feature is desired. Default is NULL.}
+
+\item{ncpu}{Number of CPU's to use when downloading aws tiles.}
+
+\item{serial}{Logical to determine if API should be hit in serial or in 
+parallel.  TRUE will use purrr, FALSE will use furrr.}
 
 \item{...}{Extra configuration parameters to be passed to httr::GET.  Common 
 usage is to adjust timeout.  This is done as 
