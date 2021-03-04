@@ -218,13 +218,14 @@ get_epqs <- function(locations, units = c("meters","feet"),
                                             })
   } else {
     
-    future::plan(future::multiprocess, workers = ncpu)
+    future::plan(future::multisession, workers = ncpu)
     p <- progressor(along = coords_df)
     locations[[elev_column_name]] <-furrr::future_map_dbl(coords_df,
                                                function(x) {
                                                  p()
                                                  get_epqs_resp(x, base_url, 
                                                                units)})
+    future:::ClusterRegistry("stop")
   }
   })
   

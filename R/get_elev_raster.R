@@ -213,7 +213,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                              tmpfile
                            })
   } else {
-    future::plan(future::multiprocess, workers = ncpu)
+    future::plan(future::multisession, workers = ncpu)
     p <- progressr::progressor(along = urls)
     dem_list <- furrr::future_map(urls,
                                   function(x){
@@ -227,6 +227,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                                     } 
                                     tmpfile
                                   })
+    future:::ClusterRegistry("stop")
   }
   })
   
