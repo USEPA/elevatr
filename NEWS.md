@@ -24,7 +24,7 @@ elevatr 0.3.5.9999 (2021-02-01)
 - Added overwrite argument to get_elev_point() to check for existence of elevation
   and elev_units columns.  If either exist and overwrite not TRUE then errors.
 - Updated progress bars to use the progressr package.
-- proj_expand was using buffers to expand.  Not great for geographic projections.  Now it adds the expansion to the max and subtracts from the min to expand the bbox by the expand value.  For raster retrievals with a single point the resultant raster will be significant smaller than previous.  Multiple points should see no difference.
+- proj_expand was using buffers to expand.  Not great for geographic projections.  Now it adds the expansion to the max and subtracts from the min to expand the bbox by the expand value.  For raster retrievals with a single point the resultant raster will be significant smaller than previous (approximate 1km by 1km).  Multiple points should see no difference.
 
 elevatr 0.3.4 (2021-01-21)
 ==========================

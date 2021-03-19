@@ -141,17 +141,23 @@ proj_expand <- function(locations,prj,expand){
     expand <- 0.01
   } else if(nfeature == 1 & is.null(expand)){
     # Edge case for single point and projected
-    expand <- 1
+    # set to 1000 meters
+    unit <- st_crs(sf::st_as_sf(locations), parameters = TRUE)$ud_unit
+    expand <- units::set_units(units::set_units(1000, "m"), unit, 
+                               mode = "standard")
+    expand <- as.numeric(expand)
   }
  
   #bbx <- bbox_to_sp(sp::bbox(locations), prj = prj)
   
   if(!is.null(expand)){
     #bbx <- methods::as(sf::st_buffer(sf::st_as_sf(bbx), expand), "Spatial")
-    bbx <- slot(locations, name = "bbox") + c(-expand, -expand, expand, expand)
+    bbx <- sp::bbox(locations) + c(-expand, -expand, expand, expand)
   }
   
   #bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
+  bbx <- bbox_to_sp(bbx, prj = prj)
+  bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
   bbx
   
   #sf expand - save for later

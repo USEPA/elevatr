@@ -38,8 +38,10 @@ datasets. "aws" is the default.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 
-be used for features that fall close to the edge of a tile and 
-additional area around the feature is desired. Default is NULL.}
+be used for features that fall close to the edge of a tile or 
+for retrieving additional area around the feature. If the 
+feature is a single point, the area it returns will be small if 
+clip is set to "bbox". Default is NULL.}
 
 \item{clip}{A character value used to determine clipping of returned DEM.
 The default value is "tile" which returns the full tiles.  Other 
