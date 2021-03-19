@@ -119,11 +119,13 @@ locations
 #' function to project bounding box and if needed expand it
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
-
+  
   lll <- grepl("GEOGCRS",prj) |
     grepl("GEODCRS",prj) |
     grepl("GEODETICCRS",prj) |
-    grepl("GEOGRAPHICCRS",prj) 
+    grepl("GEOGRAPHICCRS",prj) |
+    grepl("longlat", prj) |
+    grepl("latlong", prj)
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
@@ -142,20 +144,29 @@ proj_expand <- function(locations,prj,expand){
     expand <- 1
   }
  
-  bbx <- bbox_to_sp(sp::bbox(locations), prj = prj)
+  #bbx <- bbox_to_sp(sp::bbox(locations), prj = prj)
   
   if(!is.null(expand)){
-    bbx <- methods::as(sf::st_buffer(sf::st_as_sf(bbx), expand), "Spatial")
+    #bbx <- methods::as(sf::st_buffer(sf::st_as_sf(bbx), expand), "Spatial")
+    bbx <- slot(locations, name = "bbox") + c(-expand, -expand, expand, expand)
   }
   
-  bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
+  #bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
   bbx
   
+  #sf expand - save for later
+  #loc_sf <- sf::st_as_sf(locations)
+  #loc_bbx <- sf::st_bbox(loc_sf)
+  #bbx_sf <- loc_bbx + c(-expand,-expand,expand,expand)
+  #names(bbx_sf) <- c("xmin", "ymin", "xmax", "ymax")
+  #attr(bbx_sf, "class") <- "bbox"
+  #bbx_sf
 }
 
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
+  
   loc_wm <- sp::spTransform(loc, raster::crs(rast))
   if(clip == "locations" & !grepl("Points", class(loc_wm))){
     dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
