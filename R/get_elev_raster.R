@@ -194,7 +194,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
   
   progressr::handlers(
     progressr::handler_progress(
-      format = " Accessing point elevations [:bar] :percent",
+      format = " Accessing raster elevation [:bar] :percent",
       clear = FALSE, 
       width= 60
     ))

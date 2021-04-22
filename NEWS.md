@@ -2,8 +2,7 @@ elevatr 0.3.5.9999 (2021-02-01)
 ==========================
 - Empty rasters were failing as elevatr was using nrow(locations) to get number 
   of features.  It still does that as the default behavior, but if nrow(locations).  
-  Thanks for the catch, Gengping Zhu!
-  returns a null, it uses length(locations) instead.
+  returns a null, it uses length(locations) instead. Thanks for the catch, Gengping Zhu!
 - Skipped testing on R version 3.6.2 as it was throwing an error on CRAN.  All 
   other platforms passed.
 - Added access to OpenTopography Global Bathymetry SRTM15+ V2.1 with 

@@ -211,13 +211,19 @@ estimate_raster_size <- function(locations, src, z = NULL){
   locations <- bbox_to_sp(sp::bbox(locations), 
                           prj = sp::wkt(locations))
   locations <- sp::spTransform(locations, sp::CRS(SRS_string = "EPSG:4326"))
-  # Estimated cell size from zoom level source
+  # Estimated cell size (at equator) from zoom level source
   # https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#sources-native-resolution
-  z_res <- data.frame(z = 0:14, res_dd = c(0.54905236, 0.27452618, 0.15455633, 
-                                           0.07145545, 0.03719130, 0.01901903, 
-                                           0.00962056, 0.00483847, 0.00241219, 
-                                           0.00120434, 0.00060173, 0.00030075, 
-                                           0.00015035, 0.00007517, 0.00003758))
+  # Each degree at equator = 111319.9 meters
+  # Convert ground res to dd
+  # zoom level 0 = 156543 meters 156543/111319.9
+  # old resolution (no idea how I calculated these...)
+  # c(0.54905236, 0.27452618, 0.15455633, 0.07145545, 0.03719130, 0.01901903, 
+  # 0.00962056, 0.00483847, 0.00241219, 0.00120434, 0.00060173, 0.00030075, 
+  #  0.00015035, 0.00007517, 0.00003758)
+  m_at_equator <- c(156543.0, 78271.5, 39135.8, 19567.9, 9783.9, 4892.0, 2446.0, 
+                    1223.0, 611.5, 305.7, 152.9, 76.4, 38.2, 19.1, 9.6, 4.8, 
+                    2.4)
+  z_res <- data.frame(z = 0:16, res_dd = m_at_equator/111319.9)
 
   bits <- switch(src,
                  aws = 32,
