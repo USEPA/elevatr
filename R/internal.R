@@ -30,7 +30,7 @@ get_tilexy <- function(bbx,z){
 #' function to check input type and projection.  All input types convert to a
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
 #' @importFrom sp wkt
-#' @importFrom sf st_crs
+#' @importFrom sf st_crs st_as_sf
 #' @keywords internal
 loc_check <- function(locations, prj = NULL){
   
@@ -64,23 +64,29 @@ loc_check <- function(locations, prj = NULL){
                              proj4string = sp::CRS(SRS_string = prj$wkt),
                              data = df)
   } else if(class(locations) == "SpatialPoints"){
-    if(is.null(sp::wkt(locations))& is.na(prj)){
+    crs_check <- is.na(st_crs(st_as_sf(locations)))
+    if(crs_check & is.na(prj)){
       stop("Please supply a valid crs.")
     }
     
-    if(is.null(sp::wkt(locations))){
-      locations <- sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
+    if(crs_check){
+      locations <- sp::SpatialPoints(locations, 
+                                     proj4string = sp::CRS(SRS_string = prj$wkt))
     }
-    locations<-sp::SpatialPointsDataFrame(locations,
-                                          data = data.frame(elevation = 
-                                                              vector("numeric",
-                                                                     nrow(sp::coordinates(locations)))))
+    
+    locations<-sp::SpatialPointsDataFrame(locations, 
+                    data = data.frame(
+                      elevation = vector("numeric", nrow(
+                        sp::coordinates(locations)))))
+    
   } else if(class(locations) == "SpatialPointsDataFrame"){
-    if(is.null(sp::wkt(locations)) & is.na(prj)) {
+    crs_check <- is.na(st_crs(st_as_sf(locations)))
+    if(crs_check & is.na(prj)) {
       stop("Please supply a valid crs.")
     }
-    if(is.null(sp::wkt(locations))){
-      locations <- sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$wkt))
+    if(crs_check){
+      locations <- sp::SpatialPoints(locations, 
+                                     proj4string = sp::CRS(SRS_string = prj$wkt))
     }
     locations@data <- data.frame(locations@data,
                                  elevation = vector("numeric",nfeature)) 
@@ -148,14 +154,14 @@ proj_expand <- function(locations,prj,expand){
     expand <- as.numeric(expand)
   }
  
-  #bbx <- bbox_to_sp(sp::bbox(locations), prj = prj)
+  #
   
   if(!is.null(expand)){
     #bbx <- methods::as(sf::st_buffer(sf::st_as_sf(bbx), expand), "Spatial")
     bbx <- sp::bbox(locations) + c(-expand, -expand, expand, expand)
+  } else {
+    bbx <- sp::bbox(locations)
   }
-  
-  #bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
   bbx <- bbox_to_sp(bbx, prj = prj)
   bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
   bbx
