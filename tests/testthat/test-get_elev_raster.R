@@ -12,10 +12,11 @@ if(R.version$major == "3" & R.version$minor == "6.2"){
 ll_prj  <- st_crs(4326)
 aea_prj <- st_crs(5072)
 
-sp_sm <- SpatialPoints(coordinates(pt_df),CRS(SRS_string = ll_prj$wkt))
-sp_sm_prj <- spTransform(sp_sm,CRS(SRS_string = aea_prj$wkt))
+sp_sm <- SpatialPoints(coordinates(pt_df),
+                       CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
+sp_sm_prj <- spTransform(sp_sm, CRS(SRS_string = paste0("EPSG:", aea_prj$epsg)))
 bad_sp <- SpatialPoints(coordinates(data.frame(x = 1000, y = 1000)),
-                        CRS(SRS_string = ll_prj$wkt))
+                        CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
 
 test_that("get_elev_raster returns correctly", {
   skip_on_cran()

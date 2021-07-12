@@ -63,7 +63,7 @@ Example usage of each is included below.  For these examples, we can create a da
 set.seed(65.7)
 examp_df <- data.frame(x = runif(3, min = -73, max = -72.5), 
                        y = runif(3, min = 42 , max = 43))
-prj_dd <- "+init=EPSG:4326"
+prj_dd <- "EPSG:4326"
 
 # Create and example data.frame with additional columns
 cats <- data.frame(category = c("H", "M", "L"))

@@ -81,7 +81,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   
   # Check location type and if sp or raster, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
-  prj <- sp::wkt(locations)
+  #prj <- st_crs(locations)
   
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if (src == "epqs"){
@@ -97,7 +97,8 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   }
 
   # Re-project back to original, add in units, and return
-  locations <- sp::spTransform(locations_prj,sp::CRS(prj))
+  locations <- as(st_transform(st_as_sf(locations_prj), st_crs(locations)), 
+                  "Spatial")
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
   } else {
@@ -118,8 +119,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
     locations[[unit_column_name]] <- rep("meters", nfeature)
   }
   if(sf_check){locations <- sf::st_as_sf(locations)}
-  message(paste("Note: Elevation units are in", units, 
-                "\nNote: The coordinate reference system is:\n", prj))
+  message(paste("Note: Elevation units are in", strsplit(units, "=")[[1]][2]))
   locations
 }
 
@@ -145,7 +145,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
                      ncpu = future::availableCores() - 1,
                      serial = NULL){
   
-  ll_prj <- "GEOGCRS[\"unknown\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1]],\n        ID[\"EPSG\",6326]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433],\n        ID[\"EPSG\",8901]],\n    CS[ellipsoidal,2],\n        AXIS[\"longitude\",east,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]],\n        AXIS[\"latitude\",north,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]]]"
+  ll_prj  <- sf::st_crs(4326)
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
@@ -169,7 +169,8 @@ get_epqs <- function(locations, units = c("meters","feet"),
   }
   
   locations <- sp::spTransform(locations,
-                                   sp::CRS(ll_prj))
+                                   sp::CRS(SRS_string = 
+                                             paste0("EPSG:", ll_prj$epsg)))
   units <- paste0("&units=",units)
   
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {

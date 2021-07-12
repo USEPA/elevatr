@@ -24,6 +24,7 @@ elevatr 0.3.5.9999 (2021-02-01)
   and elev_units columns.  If either exist and overwrite not TRUE then errors.
 - Updated progress bars to use the progressr package.
 - proj_expand was using buffers to expand.  Not great for geographic projections.  Now it adds the expansion to the max and subtracts from the min to expand the bbox by the expand value.  For raster retrievals with a single point the resultant raster will be significant smaller than previous (approximate 1km by 1km).  Multiple points should see no difference. Thanks to WithRegards on SO for helping me find this.
+- In tests with spTransform, changed SRS_string to CRS(SRS_string=paste0("EPSG:", ll_prj$epsg)).  Details in https://github.com/jhollist/elevatr/issues/56.  Thanks to rsbivand and Fonteh-Bonaventure for helping me with this. 
 
 elevatr 0.3.4 (2021-01-21)
 ==========================
