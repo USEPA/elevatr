@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
           - {os: windows-latest, r: 'release'}
-          - {os: macos-latest, r: 'release', args: "--install-args='--configure-args=--with-proj-lib=/usr/local/lib/'", build_args: "--no-build-vignettes"}
+          - {os: macos-latest, r: 'release'}
           - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-20.04, r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
@@ -59,7 +59,7 @@ jobs:
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
       - name: Install dependencies
         run: |
-          remotes::install_deps(dependencies = TRUE)
+          remotes::install_deps(dependencies = TRUE, upgrade = "always")
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
