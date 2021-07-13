@@ -40,5 +40,6 @@ Suggests:
     knitr,
     rmarkdown,
     formatR,
-    rgdal
+    rgdal,
+    progress
 VignetteBuilder: knitr
