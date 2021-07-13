@@ -25,7 +25,6 @@ Imports:
     httr,
     jsonlite,
     progressr,
-    progress,
     sf,
     future,
     furrr,

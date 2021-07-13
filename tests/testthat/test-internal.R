@@ -7,18 +7,19 @@ library(elevatr)
 data("pt_df")
 data("sp_big")
 data("lake")
-skip_on_os(os = "solaris")
+#skip_on_os(os = "solaris")
 
-if(R.version$major == "3" & R.version$minor == "6.2"){
-  skip("Skipping on R Version 3.6.2")
-}
+#if(R.version$major == "3" & R.version$minor == "6.2"){
+#  skip("Skipping on R Version 3.6.2")
+#}
 
 
 ll_prj  <- st_crs(4326)
 aea_prj <- st_crs(5072)
 
-sp_sm <- SpatialPoints(coordinates(pt_df),CRS(SRS_string = ll_prj$wkt))
-sp_sm_prj <- spTransform(sp_sm,CRS(SRS_string = aea_prj$wkt))
+sp_sm <- SpatialPoints(coordinates(pt_df),
+                       CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
+sp_sm_prj <- spTransform(sp_sm, CRS(SRS_string = paste0("EPSG:", aea_prj$epsg)))
 
 sp::proj4string(sp_sm) <- ""
 spdf_sm <- SpatialPointsDataFrame(sp_sm, data.frame(1:nrow(coordinates(sp_sm))))
@@ -44,12 +45,12 @@ test_that("proj_expand works",{
   
   suppressWarnings({
   mans_sp <- SpatialPoints(coordinates(data.frame(x = -72.8145, y = 44.5438)),
-                           CRS(SRS_string = ll_prj$wkt))
+                           CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
   mans <- get_elev_raster(locations =  mans_sp, z = 6)
   mans_exp <- get_elev_raster(locations = mans_sp, z = 6, expand = 2)
   
   origin_sp <- SpatialPoints(coordinates(data.frame(x = 0, y = 0)),
-                             CRS(SRS_string = ll_prj$wkt))
+                             CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
   origins <- get_elev_raster(locations = origin_sp, z = 6)
   })
   expect_gt(ncell(mans_exp),ncell(mans))

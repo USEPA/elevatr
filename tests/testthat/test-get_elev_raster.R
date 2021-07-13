@@ -4,10 +4,10 @@ library(elevatr)
 data("pt_df")
 data("sp_big")
 data("lake")
-skip_on_os(os = "solaris")
-if(R.version$major == "3" & R.version$minor == "6.2"){
-  skip("Skipping on R Version 3.6.2")
-}
+#skip_on_os(os = "solaris")
+#if(R.version$major == "3" & R.version$minor == "6.2"){
+#  skip("Skipping on R Version 3.6.2")
+#}
 
 ll_prj  <- st_crs(4326)
 aea_prj <- st_crs(5072)

@@ -97,8 +97,8 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   }
 
   # Re-project back to original, add in units, and return
-  locations <- as(st_transform(st_as_sf(locations_prj), st_crs(locations)), 
-                  "Spatial")
+  locations <- methods::as(sf::st_transform(sf::st_as_sf(locations_prj), 
+                                            sf::st_crs(locations)), "Spatial")
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
   } else {
@@ -226,7 +226,8 @@ get_epqs <- function(locations, units = c("meters","feet"),
                                                  p()
                                                  get_epqs_resp(x, base_url, 
                                                                units)})
-    future:::ClusterRegistry("stop")
+    future::plan(future::sequential)
+    #future:::ClusterRegistry("stop")
   }
   })
   

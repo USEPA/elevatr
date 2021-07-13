@@ -229,7 +229,8 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                                     } 
                                     tmpfile
                                   })
-    future:::ClusterRegistry("stop")
+    future::plan(future::sequential)
+    #future:::ClusterRegistry("stop")
   }
   })
   
