@@ -6,7 +6,7 @@
 Assumes geographic projection
 sp bbox to poly}
 \usage{
-bbox_to_sp(bbox, prj = sp::wkt(sp::CRS(SRS_string = "EPSG:4326")))
+bbox_to_sp(bbox, prj = "EPSG:4326")
 }
 \arguments{
 \item{prj}{defaults to "EPSG:4326"}

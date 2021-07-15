@@ -197,12 +197,13 @@ clip_it <- function(rast, loc, expand, clip){
 #' @param prj defaults to "EPSG:4326"
 #' @keywords internal
 #' @importFrom sp wkt
-bbox_to_sp <- function(bbox, prj = sp::wkt(sp::CRS(SRS_string = "EPSG:4326"))) {
+bbox_to_sp <- function(bbox, prj = "EPSG:4326") {
   x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
   y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
   p <- sp::Polygon(cbind(x, y))
   ps <- sp::Polygons(list(p), "p1")
-  sp_bbx <- sp::SpatialPolygons(list(ps), 1L, proj4string = sp::CRS(prj))
+  sp_bbx <- sp::SpatialPolygons(list(ps), 1L, 
+                                proj4string = sp::CRS(SRS_string = prj))
   sp_bbx
 }
 
@@ -214,8 +215,14 @@ bbox_to_sp <- function(bbox, prj = sp::wkt(sp::CRS(SRS_string = "EPSG:4326"))) {
 #' @importFrom sp wkt
 estimate_raster_size <- function(locations, src, z = NULL){
   
+  if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
+    prj <- sp::wkt(locations)
+  } else {
+    prj <- sp::proj4string(locations)
+  }
+  
   locations <- bbox_to_sp(sp::bbox(locations), 
-                          prj = sp::wkt(locations))
+                          prj = prj)
   locations <- sp::spTransform(locations, sp::CRS(SRS_string = "EPSG:4326"))
   # Estimated cell size (at equator) from zoom level source
   # https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#sources-native-resolution
