@@ -94,9 +94,12 @@ loc_check <- function(locations, prj = NULL){
     
     if(attributes(class(locations)) %in% "raster"){
       locs <- raster::crs(locations)
-    } else {
+    } else if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
       locs <- sp::wkt(locations)
-    }
+    } else {
+      locs <- sp::proj4string(locations)
+    } 
+    
     if((is.null(locs) | 
        is.na(locs)) & is.na(prj)){
       stop("Please supply a valid crs.")

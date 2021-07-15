@@ -68,7 +68,8 @@
 #'                                max=sp::bbox(lake)[1,2]),
 #'                      y = runif(6,min=sp::bbox(lake)[2,1], 
 #'                                max=sp::bbox(lake)[2,2]))
-#' x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake), z=10)
+#' # Example for PROJ > 5.2.0
+#' x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
 #' 
 #' data(lake)
 #' x <- get_elev_raster(lake, z = 12)
@@ -86,7 +87,11 @@ get_elev_raster <- function(locations, z, prj = NULL,
   
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
-  prj       <- sp::wkt(locations)
+  if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
+    prj <- sp::wkt(locations)
+  } else {
+    prj <- sp::proj4string(locations)
+  }
   
   
   # Check download size and provide feedback, stop if too big!
