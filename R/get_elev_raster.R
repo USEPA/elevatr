@@ -93,15 +93,17 @@ get_elev_raster <- function(locations, z, prj = NULL,
   
   # Check location type and if sp, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
-  if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-    prj <- sp::wkt(locations)
-  } else {
-    prj <- sp::proj4string(locations)
+  
+  if(is.null(prj)){
+    if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
+      prj <- sp::wkt(locations)
+    } else {
+      prj <- sp::proj4string(locations)
+    }
   }
-  
-  
+   #need to check what is going on with PRJ when no prj passed.
   # Check download size and provide feedback, stop if too big!
-  dl_size <- estimate_raster_size(locations, src, z)
+  dl_size <- estimate_raster_size(locations, prj, src, z)
   if(dl_size > 500 & dl_size < 1000){
     message(paste0("Note: Your request will download approximately ", 
                    round(dl_size, 1), "Mb."))

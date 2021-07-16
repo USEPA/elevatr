@@ -89,6 +89,13 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   # Check location type and if sp or raster, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   
+  if(is.null(prj)){
+    if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
+      prj <- sp::wkt(locations)
+    } else {
+      prj <- sp::proj4string(locations)
+    }
+  }
   
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if (src == "epqs"){

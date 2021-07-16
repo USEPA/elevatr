@@ -4,10 +4,12 @@
 \alias{estimate_raster_size}
 \title{Estimate download size of DEMs}
 \usage{
-estimate_raster_size(locations, src, z = NULL)
+estimate_raster_size(locations, prj, src, z = NULL)
 }
 \arguments{
 \item{locations}{the locations}
+
+\item{prj}{prj string as set earlier by get_elev_point or get_elev_raster}
 
 \item{src}{the src}
 

@@ -60,9 +60,15 @@ loc_check <- function(locations, prj = NULL){
       df <- data.frame(vector("numeric",nfeature))
       names(df) <- "elevation"
     }
-    locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
-                             proj4string = sp::CRS(SRS_string = prj),
-                             data = df)
+    if(grepl("+proj", prj)){
+      locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
+                                            proj4string = sp::CRS(prj),
+                                            data = df)
+    } else {  
+      locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
+                               proj4string = sp::CRS(SRS_string = prj),
+                               data = df)
+    }
   } else if(class(locations) == "SpatialPoints"){
     
     crs_check <- is.na(st_crs(st_as_sf(locations)))
@@ -71,8 +77,13 @@ loc_check <- function(locations, prj = NULL){
     }
     
     if(crs_check){
-      locations <- sp::SpatialPoints(locations, 
-                                     proj4string = sp::CRS(SRS_string = prj))
+      if(grepl("+proj", prj)){
+        locations <- sp::SpatialPoints(locations, 
+                                       proj4string = sp::CRS(prj))
+      } else {  
+        locations <- sp::SpatialPoints(locations, 
+                                       proj4string = sp::CRS(SRS_string = prj))
+      }
     }
     
     locations<-sp::SpatialPointsDataFrame(locations, 
@@ -86,8 +97,13 @@ loc_check <- function(locations, prj = NULL){
       stop("Please supply a valid crs via locations or prj.")
     }
     if(crs_check){
-      locations <- sp::SpatialPoints(locations, 
-                                     proj4string = sp::CRS(SRS_string = prj))
+      if(grepl("+proj", prj)){
+        locations <- sp::SpatialPoints(locations, 
+                                       proj4string = sp::CRS(prj))
+      } else {
+        locations <- sp::SpatialPoints(locations, 
+                                       proj4string = sp::CRS(SRS_string = prj))
+      }
     }
     locations@data <- data.frame(locations@data,
                                  elevation = vector("numeric",nfeature)) 
@@ -215,24 +231,24 @@ bbox_to_sp <- function(bbox, prj = "EPSG:4326") {
   y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
   p <- sp::Polygon(cbind(x, y))
   ps <- sp::Polygons(list(p), "p1")
-  sp_bbx <- sp::SpatialPolygons(list(ps), 1L, 
-                                proj4string = sp::CRS(SRS_string = prj))
+  if(grepl("+proj", prj)){
+    sp_bbx <- sp::SpatialPolygons(list(ps), 1L, 
+                                  proj4string = sp::CRS(prj))
+  } else {
+    sp_bbx <- sp::SpatialPolygons(list(ps), 1L, 
+                                  proj4string = sp::CRS(SRS_string = prj))
+  }
   sp_bbx
 }
 
 #' Estimate download size of DEMs
 #' @param locations the locations
+#' @param prj prj string as set earlier by get_elev_point or get_elev_raster
 #' @param src the src
 #' @param z zoom level if source is aws
 #' @keywords internal
 #' @importFrom sp wkt
-estimate_raster_size <- function(locations, src, z = NULL){
-  
-  if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-    prj <- sp::wkt(locations)
-  } else {
-    prj <- sp::proj4string(locations)
-  }
+estimate_raster_size <- function(locations, prj, src, z = NULL){
   
   locations <- bbox_to_sp(sp::bbox(locations), 
                           prj = prj)
