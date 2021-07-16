@@ -13,7 +13,12 @@ get_opentopo(locations, src, prj, expand = NULL, ...)
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
 \code{sp}, an \code{sf}, or \code{raster} object as input.}
 
-\item{prj}{PROJ.4 string for input bbox}
+\item{prj}{A string defining the projection of the locations argument. The 
+string needs to be an acceptable SRS_string for 
+\code{\link[spp]{CRS}} for your version of PROJ. If a \code{sf} 
+object, a \code{sp} object or a \code{raster} object 
+is provided, the string will be taken from that.  This 
+argument is required for a \code{data.frame} of locations.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the SRTM data.}

@@ -34,7 +34,7 @@ get_tilexy <- function(bbx,z){
 #' @keywords internal
 loc_check <- function(locations, prj = NULL){
   
-  prj <- st_crs(prj)
+  #prj <- st_crs(prj)
   
   #Convert sf locations to SP
   if(("sf" %in% class(locations)) | ("sfc" %in% class(locations))){
@@ -48,8 +48,8 @@ loc_check <- function(locations, prj = NULL){
   }
   
   if(class(locations)=="data.frame"){ 
-    if(is.na(prj)){
-      stop("Please supply a valid crs.")
+    if(is.null(prj)){
+      stop("Please supply a valid crs via locations or prj.")
     }
     if(ncol(locations) > 2){
       df <- data.frame(locations[,3:ncol(locations)],
@@ -61,17 +61,18 @@ loc_check <- function(locations, prj = NULL){
       names(df) <- "elevation"
     }
     locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
-                             proj4string = sp::CRS(SRS_string = prj$input),
+                             proj4string = sp::CRS(SRS_string = prj),
                              data = df)
   } else if(class(locations) == "SpatialPoints"){
+    
     crs_check <- is.na(st_crs(st_as_sf(locations)))
-    if(crs_check & is.na(prj)){
-      stop("Please supply a valid crs.")
+    if(crs_check &  is.null(prj)){
+      stop("Please supply a valid crs via locations or prj.")
     }
     
     if(crs_check){
       locations <- sp::SpatialPoints(locations, 
-                                     proj4string = sp::CRS(SRS_string = prj$input))
+                                     proj4string = sp::CRS(SRS_string = prj))
     }
     
     locations<-sp::SpatialPointsDataFrame(locations, 
@@ -81,12 +82,12 @@ loc_check <- function(locations, prj = NULL){
     
   } else if(class(locations) == "SpatialPointsDataFrame"){
     crs_check <- is.na(st_crs(st_as_sf(locations)))
-    if(crs_check & is.na(prj)) {
-      stop("Please supply a valid crs.")
+    if(crs_check & is.null(prj)) {
+      stop("Please supply a valid crs via locations or prj.")
     }
     if(crs_check){
       locations <- sp::SpatialPoints(locations, 
-                                     proj4string = sp::CRS(SRS_string = prj$input))
+                                     proj4string = sp::CRS(SRS_string = prj))
     }
     locations@data <- data.frame(locations@data,
                                  elevation = vector("numeric",nfeature)) 
@@ -101,23 +102,32 @@ loc_check <- function(locations, prj = NULL){
     } 
     
     if((is.null(locs) | 
-       is.na(locs)) & is.na(prj)){
-      stop("Please supply a valid crs.")
+       is.na(locs)) & is.null(prj)){
+      stop("Please supply a valid crs via locations or prj.")
     }
-    if(is.null(locs) |
-       is.na(locs)){
+    if(is.null(locs) | is.na(locs)){
         if(attributes(class(locations)) == "raster"){
+          
           if(sum(!is.na(raster::getValues(locations))) == 0){
             stop("No distinct points, all values NA.")
           } else {
             locations <- raster::rasterToPoints(locations,spatial = TRUE)
-            sp::SpatialPoints(locations, proj4string = sp::CRS(SRS_string = prj$input))
+            locations<-sp::SpatialPointsDataFrame(locations, 
+                                                 data = data.frame(
+                                                   elevation = vector("numeric", nrow(
+                                                     sp::coordinates(locations)))))
           }
+        } else if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
+          locs <- sp::wkt(locations)
         } else {
-          sp::proj4string(locations)<-prj
-        }
+          locs <- sp::proj4string(locations)
+        } 
     } else if(attributes(class(locations)) %in% c("raster")){
       locations <- raster::rasterToPoints(locations,spatial = TRUE)
+      locations<-sp::SpatialPointsDataFrame(locations, 
+                                            data = data.frame(
+                                              elevation = vector("numeric", nrow(
+                                                sp::coordinates(locations)))))
     }
   }
 locations
@@ -226,6 +236,7 @@ estimate_raster_size <- function(locations, src, z = NULL){
   
   locations <- bbox_to_sp(sp::bbox(locations), 
                           prj = prj)
+
   locations <- sp::spTransform(locations, sp::CRS(SRS_string = "EPSG:4326"))
   # Estimated cell size (at equator) from zoom level source
   # https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#sources-native-resolution

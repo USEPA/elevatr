@@ -26,7 +26,12 @@ of the resultant raster is determined by the zoom and latitude.  For
 details on zoom and resolution see the documentation from Mapzen at 
 \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}}
 
-\item{prj}{PROJ.4 string for input bbox}
+\item{prj}{A string defining the projection of the locations argument. The 
+string needs to be an acceptable SRS_string for 
+\code{\link[spp]{CRS}} for your version of PROJ. If a \code{sf} 
+object, a \code{sp} object or a \code{raster} object 
+is provided, the string will be taken from that.  This 
+argument is required for a \code{data.frame} of locations.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the terrain tiles. This can 

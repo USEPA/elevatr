@@ -4,19 +4,15 @@ library(elevatr)
 data("pt_df")
 data("sp_big")
 data("lake")
-#skip_on_os(os = "solaris")
-#if(R.version$major == "3" & R.version$minor == "6.2"){
-#  skip("Skipping on R Version 3.6.2")
-#}
 
-ll_prj  <- st_crs(4326)
-aea_prj <- st_crs(5072)
+ll_prj  <- "EPSG:4326"
+aea_prj <- "EPSG:5072"
 
 sp_sm <- SpatialPoints(coordinates(pt_df),
-                       CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
-sp_sm_prj <- spTransform(sp_sm, CRS(SRS_string = paste0("EPSG:", aea_prj$epsg)))
+                       CRS(SRS_string = ll_prj))
+sp_sm_prj <- spTransform(sp_sm, CRS(SRS_string = aea_prj))
 bad_sp <- SpatialPoints(coordinates(data.frame(x = 1000, y = 1000)),
-                        CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
+                        CRS(SRS_string = ll_prj))
 
 test_that("get_elev_raster returns correctly", {
   skip_on_cran()
@@ -74,3 +70,4 @@ test_that("A resp that isn't a tiff or octet-stream works",{
   expect_error(suppressWarnings(get_elev_raster(bad_sp, z = 6)))
   expect_error(suppressWarnings(get_elev_raster(bad_sp, src = "gl3")))
 })
+

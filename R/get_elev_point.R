@@ -14,9 +14,11 @@
 #'                  \code{sf} \code{POINT} or \code{MULTIPOINT} object.   
 #'                  Elevation for these points will be returned in the 
 #'                  originally supplied class.
-#' @param prj A PROJ.4 string defining the projection of the locations argument. 
-#'            If a \code{SpatialPoints} or \code{SpatialPointsDataFrame} is 
-#'            provided, the PROJ.4 string will be taken from that.  This 
+#' @param prj A string defining the projection of the locations argument. The 
+#'            string needs to be an acceptable SRS_string for 
+#'            \code{\link[sp]{CRS}} for your version of PROJ. If a \code{sf} 
+#'            object, a \code{sp} object or a \code{raster} object 
+#'            is provided, the string will be taken from that.  This 
 #'            argument is required for a \code{data.frame} of locations.
 #' @param src A character indicating which API to use, either "epqs" or "aws" 
 #'            accepted. The "epqs" source is relatively slow for larger numbers 
@@ -46,11 +48,16 @@
 #' mts <- rbind(mt_wash,mt_mans)
 #' ll_prj <- "EPSG:4326"
 #' mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
-#'                             proj4string = sp::CRS(ll_prj)) 
+#'                             proj4string = sp::CRS(ll_prj))
+#' mts_spdf <- sp::SpatialPointsDataFrame(mts_sp, data = data.frame(name = 
+#'             c("Mt. Washington", "Mt. Mansfield"))) 
+#' mts_raster <- raster::raster(mts_sp)             
 #' get_elev_point(locations = mt_wash, prj = ll_prj)
 #' get_elev_point(locations = mt_wash, units="feet", prj = ll_prj)
 #' get_elev_point(locations = mt_wash, units="meters", prj = ll_prj)
 #' get_elev_point(locations = mts_sp)
+#' get_elev_point(locations = mts_spdf)
+#' get_elev_point(locations = mts_raster)
 #' 
 #' # Code to split into a loop and grab point at a time.
 #' # This is usually faster for points that are spread apart 
@@ -81,7 +88,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   
   # Check location type and if sp or raster, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
-  #prj <- st_crs(locations)
+  
   
   # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
   if (src == "epqs"){
@@ -145,7 +152,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
                      ncpu = future::availableCores() - 1,
                      serial = NULL){
   
-  ll_prj  <- sf::st_crs(4326)
+  ll_prj  <- "EPSG:4326"
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
@@ -169,8 +176,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
   }
   
   locations <- sp::spTransform(locations,
-                                   sp::CRS(SRS_string = 
-                                             paste0("EPSG:", ll_prj$epsg)))
+                                   sp::CRS(SRS_string = ll_prj))
   units <- paste0("&units=",units)
   
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {

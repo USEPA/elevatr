@@ -4,19 +4,15 @@ library(sf)
 library(elevatr)
 data("pt_df")
 data("sp_big")
-#skip_on_os(os = "solaris")
-#if(R.version$major == "3" & R.version$minor == "6.2"){
-#  skip("Skipping on R Version 3.6.2")
-#}
 
-ll_prj  <- st_crs(4326)
-aea_prj <- st_crs(5072)
+ll_prj  <- "EPSG:4326"
+aea_prj <- "EPSG:5072"
 
 sp_sm <- SpatialPoints(coordinates(pt_df),
-                       CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
-sp_sm_prj <- spTransform(sp_sm, CRS(SRS_string = paste0("EPSG:", aea_prj$epsg)))
+                       CRS(SRS_string = ll_prj))
+sp_sm_prj <- spTransform(sp_sm, CRS(SRS_string = aea_prj))
 bad_sp <- SpatialPoints(coordinates(data.frame(x = 1000, y = 1000)),
-                        CRS(SRS_string = paste0("EPSG:", ll_prj$epsg)))
+                        CRS(SRS_string = ll_prj))
 sf_sm <- st_as_sf(sp_sm)
 
 test_that("get_elev_point returns correctly", {
@@ -44,9 +40,9 @@ test_that("get_elev_point returns correctly", {
   expect_is(epqs_sf, "sf")
   
   #proj
-  expect_equal(wkt(sp_sm),wkt(epqs_sp))
-  expect_equal(wkt(sp_sm_prj),wkt(epqs_sp_prj))
-  expect_equal(wkt(sp_sm),wkt(epqs_sp_aws))
+  expect_equal(st_crs(sp_sm),st_crs(epqs_sp))
+  expect_equal(st_crs(sp_sm_prj),st_crs(epqs_sp_prj))
+  expect_equal(st_crs(sp_sm),st_crs(epqs_sp_aws))
   
   #units
   expect_equal(epqs_ft$elev_units[1],"feet")

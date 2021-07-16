@@ -1,4 +1,4 @@
-elevatr 0.3.5.9999 (2021-02-01)
+elevatr 0.3.7.9999 (2021-02-01)
 ==========================
 - Empty rasters were failing as elevatr was using nrow(locations) to get number 
   of features.  It still does that as the default behavior, but if nrow(locations).  
@@ -25,6 +25,9 @@ elevatr 0.3.5.9999 (2021-02-01)
 - Updated progress bars to use the progressr package.
 - proj_expand was using buffers to expand.  Not great for geographic projections.  Now it adds the expansion to the max and subtracts from the min to expand the bbox by the expand value.  For raster retrievals with a single point the resultant raster will be significant smaller than previous (approximate 1km by 1km).  Multiple points should see no difference. Thanks to WithRegards on SO for helping me find this.
 - In tests with spTransform, changed SRS_string to CRS(SRS_string=paste0("EPSG:", ll_prj$epsg)).  Details in https://github.com/jhollist/elevatr/issues/56.  Thanks to rsbivand and Fonteh-Bonaventure for helping me with this. 
+- Converted all coordinate reference system handling to pull from locations or an SRS string.  Should take care of running on older versions of PROJ
+- Raster locations were not returning correctly, that is now fixed.
+- Removed message that reported out CRS, was too verbose and not necessarily useful.
 
 elevatr 0.3.4 (2021-01-21)
 ==========================
