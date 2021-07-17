@@ -4,7 +4,13 @@
 \alias{get_aws_points}
 \title{Get point elevation data from the AWS Terrain Tiles}
 \usage{
-get_aws_points(locations, z = 5, units = c("meters", "feet"), ...)
+get_aws_points(
+  locations,
+  z = 5,
+  units = c("meters", "feet"),
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the 
@@ -23,6 +29,8 @@ default value is 5 is supplied.}
 \item{units}{Character string of either meters or feet. Conversions for 
 'aws' are handled in R as the AWS terrain tiles are served in 
 meters.}
+
+\item{verbose}{Report back messages.}
 
 \item{...}{Arguments to be passed to \code{get_elev_raster}}
 }

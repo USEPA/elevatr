@@ -40,9 +40,9 @@ test_that("get_elev_point returns correctly", {
   expect_is(epqs_sf, "sf")
   
   #proj
-  expect_equal(st_crs(sp_sm),st_crs(epqs_sp))
-  expect_equal(st_crs(sp_sm_prj),st_crs(epqs_sp_prj))
-  expect_equal(st_crs(sp_sm),st_crs(epqs_sp_aws))
+  expect_equal(st_crs(sp_sm)$input,st_crs(epqs_sp)$input)
+  expect_equal(st_crs(sp_sm_prj)$input,st_crs(epqs_sp_prj)$input)
+  expect_equal(st_crs(sp_sm)$input,st_crs(epqs_sp_aws)$input)
   
   #units
   expect_equal(epqs_ft$elev_units[1],"feet")

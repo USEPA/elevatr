@@ -28,7 +28,7 @@ details on zoom and resolution see the documentation from Mapzen at
 
 \item{prj}{A string defining the projection of the locations argument. The 
 string needs to be an acceptable SRS_string for 
-\code{\link[sp]{CRS}} for your version of PROJ. If a \code{sf} 
+\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
 object, a \code{sp} object or a \code{raster} object 
 is provided, the string will be taken from that.  This 
 argument is required for a \code{data.frame} of locations.}

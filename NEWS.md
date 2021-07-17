@@ -28,6 +28,7 @@ elevatr 0.3.7.9999 (2021-02-01)
 - Converted all coordinate reference system handling to pull from locations or an SRS string.  Should take care of running on older versions of PROJ
 - Raster locations were not returning correctly, that is now fixed.
 - Removed message that reported out CRS, was too verbose and not necessarily useful.
+- Cleaned up message on units.
 
 elevatr 0.3.4 (2021-01-21)
 ==========================

@@ -16,7 +16,7 @@
 #'                  originally supplied class.
 #' @param prj A string defining the projection of the locations argument. The 
 #'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS}} for your version of PROJ. If a \code{sf} 
+#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
 #'            object, a \code{sp} object or a \code{raster} object 
 #'            is provided, the string will be taken from that.  This 
 #'            argument is required for a \code{data.frame} of locations.
@@ -105,7 +105,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   } 
   
   if(src == "aws"){
-    locations_prj <- get_aws_points(locations, ...)
+    locations_prj <- get_aws_points(locations, verbose = FALSE, ...)
     units <- locations_prj[[2]]
     locations_prj <- locations_prj[[1]]
   }
@@ -133,7 +133,13 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
     locations[[unit_column_name]] <- rep("meters", nfeature)
   }
   if(sf_check){locations <- sf::st_as_sf(locations)}
-  message(paste("Note: Elevation units are in", strsplit(units, "=")[[1]][2]))
+  
+  if(src == "aws") {
+    message(paste("Note: Elevation units are in", units))
+  } else {
+    message(paste("Note: Elevation units are in", 
+                  tolower(strsplit(units, "=")[[1]][2])))
+  }
   locations
 }
 
@@ -267,15 +273,17 @@ get_epqs <- function(locations, units = c("meters","feet"),
 #'           default value is 5 is supplied.   
 #' @param units Character string of either meters or feet. Conversions for 
 #'              'aws' are handled in R as the AWS terrain tiles are served in 
-#'              meters.               
+#'              meters.
+#' @param verbose Report back messages.                             
 #' @param ... Arguments to be passed to \code{get_elev_raster}
 #' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
 #'         elevation added to the data slot and a character of the elevation units
 #' @export
 #' @keywords internal
-get_aws_points <- function(locations, z=5, units = c("meters", "feet"), ...){
+get_aws_points <- function(locations, z=5, units = c("meters", "feet"), 
+                           verbose = TRUE, ...){
   units <- match.arg(units)
-  dem <- get_elev_raster(locations, z, ...)
+  dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
   elevation <- raster::extract(dem, locations)
   if(units == "feet") {elevation <- elevation * 3.28084}
   locations$elevation <- round(elevation, 2)

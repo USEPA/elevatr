@@ -15,7 +15,7 @@
 #'           The z is not required for the OpenTopography data sources. 
 #' @param prj A string defining the projection of the locations argument. The 
 #'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS}} for your version of PROJ. If a \code{sf} 
+#'            \code{\link[sp]{CRS-clas}} for your version of PROJ. If a \code{sf} 
 #'            object, a \code{sp} object or a \code{raster} object 
 #'            is provided, the string will be taken from that.  This 
 #'            argument is required for a \code{data.frame} of locations.
@@ -164,7 +164,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'          \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
 #' @param prj A string defining the projection of the locations argument. The 
 #'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS}} for your version of PROJ. If a \code{sf} 
+#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
 #'            object, a \code{sp} object or a \code{raster} object 
 #'            is provided, the string will be taken from that.  This 
 #'            argument is required for a \code{data.frame} of locations. 
@@ -306,7 +306,7 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
 #'                  \code{sp}, an \code{sf}, or \code{raster} object as input. 
 #' @param prj A string defining the projection of the locations argument. The 
 #'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS}} for your version of PROJ. If a \code{sf} 
+#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
 #'            object, a \code{sp} object or a \code{raster} object 
 #'            is provided, the string will be taken from that.  This 
 #'            argument is required for a \code{data.frame} of locations. 
