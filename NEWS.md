@@ -1,33 +1,57 @@
-elevatr 0.3.7.9999 (2021-02-01)
+elevatr 0.4.0 (2021-07-19)
 ==========================
+
+# Biggest Changes To Note
+- The prj argument relied on proj4string in the past.  That support is going 
+  away in order to keep up with changes in PROJ and the rest of R Spatial
+  ecosystem.  Spatial reference will be pulled form "locations" if they have it
+  defined or will be pulled from an acceptable SRS_string.  EPSG codes in the 
+  form or "EPSG:4326" are a pretty safe bet. 
+
+
+# Bug Fixes
 - Empty rasters were failing as elevatr was using nrow(locations) to get number 
-  of features.  It still does that as the default behavior, but if nrow(locations).  
-  returns a null, it uses length(locations) instead. Thanks for the catch, Gengping Zhu!
-- Skipped testing on R version 3.6.2 as it was throwing an error on CRAN.  All 
-  other platforms passed.
-- Added access to OpenTopography Global Bathymetry SRTM15+ V2.1 with 
-  src = "srtm15plus" 
+  of features.  It still does that as the default behavior, but if 
+  nrow(locations) returns a null, it uses length(locations) instead. Thanks for 
+  the catch, Gengping Zhu!
 - Documentation fix on get_elev_raster, now correctly reports that the function 
   returns a raster, not points.  Thanks @AndyBunn!
 - sfc objects getting missing in coercion in loc_check.  Not anymore!
+- epqs occasionally times out, but subsequent hits usually work fine.  Added a 
+  second hit when that happens and if that second one doesn't work then it 
+  assigns elevation to NA and throws a warning, instead of erroring
+- Was suppressing messages (and thus progress bar) on get_elev_pt src = "aws".
+  Turned that off so progress of building the DEM is tracked.
+- proj_expand was using buffers to expand.  Not great for geographic 
+  projections.Now it adds the expansion to the max and subtracts from the min to
+  expand the bbox by the expand value.  For raster retrievals with a single 
+  point the resultant raster will be significant smaller than previous 
+  (approximate 1km by 1km).  Multiple points should see no difference. Thanks to
+  WithRegards on SO for helping me find this.
+- In tests with spTransform, changed SRS_string to 
+  CRS(SRS_string=paste0("EPSG:", ll_prj$epsg)).  Details in 
+  https://github.com/jhollist/elevatr/issues/56.  Thanks to rsbivand and 
+  Fonteh-Bonaventure for helping me with this. 
+- Raster locations were not returning correctly, that is now fixed.
+
+# Added Functionality
+- Added access to OpenTopography Global Bathymetry SRTM15+ V2.1 with 
+  src = "srtm15plus" 
 - serial loop for get_epqs was taking a long time (API returns are slow), so use
   furrr::future_map_dbl to paralellize the gets.  Defaults to 1 minus available 
   cores.
 - Added argument to get_eqps to control serial vs parallel API calls.  Defaults 
   to serial for 35 or fewer points, but can be set to TRUE for force serial.
-- epqs occasionally times out, but subsequent hits usually work fine.  Added a second
-  hit when that happens and if that second one doesn't work then it assigns 
-  elevation to NA and throws a warning, instead of erroring
-- Was suppressing messages (and thus progress bar) on get_elev_pt src = "aws".
-  Turned that off so progress of building the DEM is tracked.
-- Added overwrite argument to get_elev_point() to check for existence of elevation
-  and elev_units columns.  If either exist and overwrite not TRUE then errors.
+- Added overwrite argument to get_elev_point() to check for existence of 
+  elevation and elev_units columns.  If either exist and overwrite not TRUE then
+  errors.
 - Updated progress bars to use the progressr package.
-- proj_expand was using buffers to expand.  Not great for geographic projections.  Now it adds the expansion to the max and subtracts from the min to expand the bbox by the expand value.  For raster retrievals with a single point the resultant raster will be significant smaller than previous (approximate 1km by 1km).  Multiple points should see no difference. Thanks to WithRegards on SO for helping me find this.
-- In tests with spTransform, changed SRS_string to CRS(SRS_string=paste0("EPSG:", ll_prj$epsg)).  Details in https://github.com/jhollist/elevatr/issues/56.  Thanks to rsbivand and Fonteh-Bonaventure for helping me with this. 
-- Converted all coordinate reference system handling to pull from locations or an SRS string.  Should take care of running on older versions of PROJ
-- Raster locations were not returning correctly, that is now fixed.
-- Removed message that reported out CRS, was too verbose and not necessarily useful.
+- Converted all coordinate reference system handling to pull from locations or 
+  an SRS string.  Should take care of running on older versions of PROJ
+
+# Other Minor changes
+- Removed message that reported out CRS, was too verbose and not necessarily 
+  useful.
 - Cleaned up message on units.
 
 elevatr 0.3.4 (2021-01-21)

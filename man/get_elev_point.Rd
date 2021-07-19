@@ -67,9 +67,10 @@ mts <- rbind(mt_wash,mt_mans)
 ll_prj <- "EPSG:4326"
 mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
                             proj4string = sp::CRS(ll_prj))
-mts_spdf <- sp::SpatialPointsDataFrame(mts_sp, data = data.frame(name = 
-            c("Mt. Washington", "Mt. Mansfield"))) 
-mts_raster <- raster::raster(mts_sp)             
+mts_spdf <- sp::SpatialPointsDataFrame(mts_sp, 
+                                       data = data.frame(name = 
+                                       c("Mt. Washington", "Mt. Mansfield"))) 
+mts_raster <- raster::raster(mts_sp, ncol = 2, nrow = 2)
 get_elev_point(locations = mt_wash, prj = ll_prj)
 get_elev_point(locations = mt_wash, units="feet", prj = ll_prj)
 get_elev_point(locations = mt_wash, units="meters", prj = ll_prj)
