@@ -1,5 +1,6 @@
 ## Comments
-Several bug fixes, switched to using SRS_string for spatial reference handling, added new data source, added parallel api requests, and updated progress bars.
+Several bug fixes, switched to using SRS_string for spatial reference handling, 
+added new data source, added parallel api requests, and updated progress bars.
 
 ## Test Environments
 - Github Actions, Ubuntu 20.04 LTS, R version 4.1.0
@@ -20,4 +21,5 @@ There are currently two downstream dependencies
 - movecost 1.2
 - sharpshootR 1.8.1.
 
-I've checked the two reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package and saw 0 new problems or failures.
+I've checked the two reverse dependencies, comparing R CMD check results across 
+CRAN and dev versions of this package and saw 0 new problems or failures.
