@@ -1,14 +1,14 @@
 ## Comments
-Fixed build errors on CRAN, updated handling of crs
+Several bug fixes, switched to using SRS_string for spatial reference handling, added new data source, added parallel api requests, and updated progress bars.
 
 ## Test Environments
 - Github Actions, Ubuntu 20.04 LTS, R version 4.1.0
-- Github Actions, Ubuntu 20.04 LTS, R version 3.6.3
+- Github Actions, Ubuntu 20.04 LTS, R version 4.0.5
 - Github Actions, Ubuntu 20.04 LTS, R development
 - Github Actions, Microsoft Windows Server 2019, R Version 4.1.0
-- Github Actions, Microsoft Windows Server 2019, R Version 3.6
-- Github Actions, Microsoft Windows Server 2019, R Version 3.5
-- Github Actions, Mac OS 10.15, R Version 4.0.3
+- Github Actions, Microsoft Windows Server 2019, R Version 3.6.3
+- Github Actions, Microsoft Windows Server 2019, R Version 3.5.3
+- Github Actions, Mac OS 10.15, R Version 4.1.0
 - Local, Windows 10, R version 4.1.0
 
 ## R CMD check results

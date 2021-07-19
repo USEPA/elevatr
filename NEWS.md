@@ -6,8 +6,8 @@ elevatr 0.4.0 (2021-07-19)
   away in order to keep up with changes in PROJ and the rest of R Spatial
   ecosystem.  Spatial reference will be pulled form "locations" if they have it
   defined or will be pulled from an acceptable SRS_string.  EPSG codes in the 
-  form or "EPSG:4326" are a pretty safe bet. 
-
+  form of "EPSG:4326" are a pretty safe bet. WKT strings work well on 
+  PROJ > 5.2.0.
 
 # Bug Fixes
 - Empty rasters were failing as elevatr was using nrow(locations) to get number 
