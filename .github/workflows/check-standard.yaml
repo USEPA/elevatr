@@ -61,7 +61,7 @@ jobs:
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
       - name: Install dependencies
         run: |
-          remotes::install_deps(dependencies = TRUE, upgrade = "always")
+          remotes::install_deps(dependencies = TRUE, type = "binary")
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
