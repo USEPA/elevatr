@@ -17,7 +17,7 @@ sf_sm <- st_as_sf(sp_sm)
 
 test_that("get_elev_point returns correctly", {
   skip_on_cran()
-  #skip_on_ci()
+  
   epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
   epqs_sp <- get_elev_point(locations = sp_sm, src = "epqs")
   epqs_sf <- get_elev_point(locations = sf_sm, src = "epqs")
@@ -32,19 +32,22 @@ test_that("get_elev_point returns correctly", {
   
   
   
-  #class
+  # class
   expect_is(epqs_df, "SpatialPointsDataFrame")
   expect_is(epqs_sp, "SpatialPointsDataFrame")
   expect_is(epqs_sp_prj, "SpatialPointsDataFrame")
   expect_is(epqs_sp_prj, "SpatialPointsDataFrame")
   expect_is(epqs_sf, "sf")
   
-  #proj
-  expect_equal(st_crs(sp_sm)$input,st_crs(epqs_sp)$input)
-  expect_equal(st_crs(sp_sm_prj)$input,st_crs(epqs_sp_prj)$input)
-  expect_equal(st_crs(sp_sm)$input,st_crs(epqs_sp_aws)$input)
+  # proj
+  # Skip this on older PROJ
+  if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){ 
+    expect_equal(st_crs(sp_sm)$input,st_crs(epqs_sp)$input)
+    expect_equal(st_crs(sp_sm_prj)$input,st_crs(epqs_sp_prj)$input)
+    expect_equal(st_crs(sp_sm)$input,st_crs(epqs_sp_aws)$input)
+  }
   
-  #units
+  # units
   expect_equal(epqs_ft$elev_units[1],"feet")
   expect_equal(epqs_m$elev_units[1],"meters")
   expect_equal(epqs_ft_aws$elev_units[1],"feet")
