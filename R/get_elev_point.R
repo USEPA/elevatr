@@ -88,6 +88,8 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   }
   
   # Check location type and if sp or raster, set prj.  If no prj (for either) then error
+  
+  if(is.numeric(prj)){prj <- paste0("EPSG:", prj)}
   locations <- loc_check(locations,prj)
   
   if(is.null(prj)){
@@ -252,7 +254,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
   })
   
   # For areas without epqs values that return -1000000, switch to NA
-  locations[locations[[elev_column_name]] == -1000000] <- NA
+  locations$elevation[locations[[elev_column_name]] == -1000000] <- NA
   location_list <- list(locations, units)
   location_list
 }
