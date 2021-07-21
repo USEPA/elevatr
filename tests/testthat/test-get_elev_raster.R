@@ -4,7 +4,7 @@ library(elevatr)
 data("pt_df")
 data("sp_big")
 data("lake")
-
+skip_on_os("solaris")
 ll_prj  <- "EPSG:4326"
 aea_prj <- "EPSG:5072"
 
