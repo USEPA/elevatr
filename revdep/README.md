@@ -10,13 +10,13 @@
 |collate  |English_United States.1252   |
 |ctype    |English_United States.1252   |
 |tz       |America/New_York             |
-|date     |2021-07-19                   |
+|date     |2021-07-21                   |
 
 # Dependencies
 
-|package |old   |new        |<U+0394>  |
-|:-------|:-----|:----------|:--|
-|elevatr |0.3.4 |0.3.7.9999 |*  |
+|package |old   |new   |<U+0394>  |
+|:-------|:-----|:-----|:--|
+|elevatr |0.4.0 |0.4.1 |*  |
 
 # Revdeps
 

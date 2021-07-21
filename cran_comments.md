@@ -1,6 +1,6 @@
 ## Comments
-Several bug fixes, switched to using SRS_string for spatial reference handling, 
-added new data source, added parallel api requests, and updated progress bars.
+Version 0.4.0 was erroring on solaris.  Also, updated citation and included one 
+bug fix
 
 ## Test Environments
 - Github Actions, Ubuntu 20.04 LTS, R version 4.1.0
@@ -8,7 +8,6 @@ added new data source, added parallel api requests, and updated progress bars.
 - Github Actions, Ubuntu 20.04 LTS, R development
 - Github Actions, Microsoft Windows Server 2019, R Version 4.1.0
 - Github Actions, Microsoft Windows Server 2019, R Version 3.6.3
-- Github Actions, Microsoft Windows Server 2019, R Version 3.5.3
 - Github Actions, Mac OS 10.15, R Version 4.1.0
 - Local, Windows 10, R version 4.1.0
 
