@@ -1,3 +1,12 @@
+elevatr 0.4.1 (2021-07-21)
+==============
+
+# Bug Fixes
+- Previously errored on solaris.  Skipped tests.  A fix has been proposed within
+  sp.  Once that is available can re-test on solaris.
+- Updated CITATION file to reference new version and new Zenodo DOI
+
+
 elevatr 0.4.0 (2021-07-19)
 ==========================
 
