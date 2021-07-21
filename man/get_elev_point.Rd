@@ -66,7 +66,7 @@ mt_mans <- data.frame(x = -72.8145, y = 44.5438)
 mts <- rbind(mt_wash,mt_mans)
 ll_prj <- "EPSG:4326"
 mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
-                            proj4string = sp::CRS(ll_prj))
+                            proj4string = sp::CRS(SRS_string = ll_prj))
 mts_spdf <- sp::SpatialPointsDataFrame(mts_sp, 
                                        data = data.frame(name = 
                                        c("Mt. Washington", "Mt. Mansfield"))) 
