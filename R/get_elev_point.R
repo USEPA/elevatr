@@ -177,7 +177,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
   }
   
   if(is.null(serial)){
-    if(nfeature < 35){
+    if(nfeature < 25){
       serial <- TRUE
     } else {
      serial <- FALSE
@@ -196,21 +196,30 @@ get_epqs <- function(locations, units = c("meters","feet"),
   units <- paste0("&units=",units)
   
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
-    x <- coords[1]
-    y <- coords[2]
-    loc <- paste0("x=",x, "&y=", y)
-    url <- paste0(base_url,loc,units,"&output=json")
-    resp <- httr::GET(url)
-    if (httr::http_type(resp) != "application/json") {
-      # Hit it again to test as most times this is a unexplained timeout that
-      # Corrects on next hit
-      resp <- httr::GET(url)
-      if (httr::http_type(resp) != "application/json") {
-        warning("API did not return json, NA returned for elevation", 
+      x <- coords[1]
+      y <- coords[2]
+      
+      loc <- paste0("x=",x, "&y=", y)
+      url <- paste0(base_url,loc,units,"&output=json")
+     
+      resp <- tryCatch(httr::GET(url), error = function(e) e)
+      n<-1
+      
+      while(n <= 5 & any(class(resp) == "simpleError")) {
+        # Hit it again to test as most times this is a unexplained timeout that
+        # Corrects on next hit
+        
+        resp <- tryCatch(httr::GET(url), error = function(e) e)
+        n <- n + 1
+      }
+      
+      if(n > 5 & any(class(resp) == "simpleError"))  {
+        warning(paste0("API returned:'", resp$message, 
+                       "'. NA returned for elevation"), 
                 call. = FALSE)
         return(NA)
       }
-    } 
+      
     resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                simplifyVector = FALSE)
     as.numeric(resp[[1]][[1]]$Elevation)
