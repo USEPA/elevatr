@@ -257,14 +257,14 @@ get_epqs <- function(locations, units = c("meters","feet"),
                                                  p()
                                                  get_epqs_resp(x, base_url, 
                                                                units)})
-    future::plan(future::sequential)
-    #future:::ClusterRegistry("stop")
+    
   }
   })
   
   # For areas without epqs values that return -1000000, switch to NA
   locations$elevation[locations[[elev_column_name]] == -1000000] <- NA
   location_list <- list(locations, units)
+  if(serial==FALSE){future::plan(future::sequential)}
   location_list
 }
 

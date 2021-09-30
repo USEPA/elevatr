@@ -247,12 +247,12 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                                     } 
                                     tmpfile
                                   })
-    future::plan(future::sequential)
-    #future:::ClusterRegistry("stop")
   }
   })
-  
+
   merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
+  
+  if(serial==FALSE){future::plan(future::sequential)}
   
   merged_elevation_grid
 }
