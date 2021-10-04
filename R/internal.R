@@ -15,8 +15,9 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 get_tilexy <- function(bbx,z){
   min_tile <- latlong_to_tilexy(bbx[1,1],bbx[2,1],z)
   max_tile <- latlong_to_tilexy(bbx[1,2],bbx[2,2],z)
-  x_all <- seq(from = floor(min_tile[1]), to = ceiling(max_tile[1]))
-  y_all <- seq(from = ceiling(min_tile[2]), to = floor(max_tile[2]))
+  x_all <- seq(from = floor(min_tile[1]), to = floor(max_tile[1]))
+  y_all <- seq(from = floor(min_tile[2]), to = floor(max_tile[2]))
+  
   if(z == 1){
     x_all <- x_all[x_all<2]
     y_all <- y_all[y_all<2]
@@ -24,6 +25,7 @@ get_tilexy <- function(bbx,z){
     x_all <- x_all[x_all<1]
     y_all <- y_all[y_all<1]
   }
+  
   return(expand.grid(x_all,y_all))
 }
 
@@ -105,6 +107,7 @@ loc_check <- function(locations, prj = NULL){
                                        proj4string = sp::CRS(SRS_string = prj))
       }
     }
+    
     locations@data <- data.frame(locations@data,
                                  elevation = vector("numeric",nfeature)) 
   } else if(attributes(class(locations)) %in% c("raster","sp")){
