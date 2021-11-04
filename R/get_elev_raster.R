@@ -121,6 +121,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
                    that the OpenTopography API Limit will likely be exceeded."))
   }
   
+  
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
     raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand, ...)
@@ -193,6 +194,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
   
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff"
   
+  #tiles <- get_tilexy_coords(locations, z)
   tiles <- get_tilexy(bbx,z)
   
   urls  <-  sprintf("%s/%s/%s/%s.tif", base_url, z, tiles[,1], tiles[,2])

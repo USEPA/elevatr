@@ -2,6 +2,8 @@
 #' rounding to tile occurs in \code{get_tilexy}
 #' @keywords internal
 latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
+  # Code assumes lon is 180 to 180, so converts to that
+  lon_deg <- ifelse(lon_deg > 180, lon_deg - 360, lon_deg)
   #Code from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Coordinates_to_tile_numbers_2
   lat_rad <- lat_deg * pi /180
   n <- 2.0 ^ zoom
@@ -13,6 +15,7 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 #' function to get a data.frame of all xyz tiles to download
 #' @keywords internal
 get_tilexy <- function(bbx,z){
+  
   min_tile <- latlong_to_tilexy(bbx[1,1],bbx[2,1],z)
   max_tile <- latlong_to_tilexy(bbx[1,2],bbx[2,2],z)
   x_all <- seq(from = floor(min_tile[1]), to = floor(max_tile[1]))
@@ -26,8 +29,24 @@ get_tilexy <- function(bbx,z){
     y_all <- y_all[y_all<1]
   }
   
+  
   return(expand.grid(x_all,y_all))
 }
+
+#' function to get a data.frame of all xyz tiles to download
+#' @keywords internal
+get_tilexy_coords <- function(locations,z){
+  coords <- sp::coordinates(locations)
+  
+  tiles <- latlong_to_tilexy(coords[,1],coords[,2],z)
+  tiles <- matrix(tiles, nrow = nrow(coords), ncol = 2)
+  tiles <- floor(tiles)
+  tiles <- unique(tiles)
+  
+  tiles
+}
+
+
 
 #' function to check input type and projection.  All input types convert to a
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
@@ -149,6 +168,21 @@ loc_check <- function(locations, prj = NULL){
                                                 sp::coordinates(locations)))))
     }
   }
+  
+  #check for long>180
+  lll <- any(grepl("GEOGCRS",st_crs(prj)) |
+               grepl("GEODCRS", st_crs(prj)) |
+               grepl("GEODETICCRS", st_crs(prj)) |
+               grepl("GEOGRAPHICCRS", st_crs(prj)) |
+               grepl("longlat", st_crs(prj)) |
+               grepl("latlong", st_crs(prj)) |
+               grepl("4326", st_crs(prj)))
+  if(lll){
+    if(any(sp::coordinates(locations)[,1]>180)){
+      stop("The elevatr package requires longitude in a range from -180 to 180.")
+    } 
+  }
+  
 locations
 } 
 
@@ -158,12 +192,13 @@ locations
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
   
-  lll <- grepl("GEOGCRS",prj) |
-    grepl("GEODCRS",prj) |
-    grepl("GEODETICCRS",prj) |
-    grepl("GEOGRAPHICCRS",prj) |
-    grepl("longlat", prj) |
-    grepl("latlong", prj)
+  lll <- any(grepl("GEOGCRS",sf::st_crs(prj)) |
+               grepl("GEODCRS", sf::st_crs(prj)) |
+               grepl("GEODETICCRS", sf::st_crs(prj)) |
+               grepl("GEOGRAPHICCRS", sf::st_crs(prj)) |
+               grepl("longlat", sf::st_crs(prj)) |
+               grepl("latlong", sf::st_crs(prj)) |
+               grepl("4326", sf::st_crs(prj)))
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 

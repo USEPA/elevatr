@@ -25,13 +25,13 @@ sources may be added as they come available.
 Currently this package includes just two primary functions to access
 elevation web services:
 
-  - `get_elev_point()`: Get point elevations using the USGS Elevation
+-   `get_elev_point()`: Get point elevations using the USGS Elevation
     Point Query Service (for the US Only) or using the AWS Terrian Tiles
     (global). This will accept a data frame of x (long) and y (lat), a
     SpatialPoints/SpatialPointsDataFame, or a Simple Features object as
     input. A SpatialPointsDataFrame or Simple Features object is
     returned, depending on the class of the input locations.
-  - `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital
+-   `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital
     Elevation Model) from the AWS Open Data Terrain Tiles. Other sources
     may be added later. This will accept a data frame of of x (long) and
     y (lat) or any `sp` or `raster` object as input and will return a
@@ -53,6 +53,24 @@ The development version (this repo) may installed with `devtools`:
 library(devtools)
 install_github("jhollist/elevatr")
 ```
+
+## Contributions
+
+As `elevatr` is getting more widely used, there have been some great
+contributions, use cases, and additional packages that have come from
+the user community. If you have one you’d like to share, let me know and
+I will gladly add it! Here are some of the ones that I have seen. Thank
+you all!
+
+-   [Michaela Mulhearn’s `rayshader` and `elevatr`
+    cheatsheet](contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
+-   [\[@researchremora on
+    twitter\](https://mobile.twitter.com/researchremora) has created
+    some amazing elevation
+    maps](https://mobile.twitter.com/researchremora/status/1415119197441564672)
+-   [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
+    `elevatr` to create some cool
+    visualizations](https://github.com/h-a-graham/rayvista)
 
 ## Attribution
 
