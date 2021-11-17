@@ -54,7 +54,7 @@ library(devtools)
 install_github("jhollist/elevatr")
 ```
 
-## Contributions
+## Contributions and Use Cases
 
 As `elevatr` is getting more widely used, there have been some great
 contributions, use cases, and additional packages that have come from
@@ -64,8 +64,8 @@ you all!
 
 -   [Michaela Mulhearn’s `rayshader` and `elevatr`
     cheatsheet](contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
--   \[@researchremora on twitter has created some amazing elevation
-    maps\](<https://mobile.twitter.com/researchremora/status/1415119197441564672>)
+-   [researchremora on twitter has created some amazing elevation
+    maps](https://mobile.twitter.com/researchremora/status/1415119197441564672)
 -   [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
     `elevatr` to create some cool
     visualizations](https://github.com/h-a-graham/rayvista)
