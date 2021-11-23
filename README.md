@@ -40,7 +40,7 @@ elevation web services:
 
 ## Installation
 
-Version 0.3.4 of this package is currently available from CRAN and may
+Version 0.4.1 of this package is currently available from CRAN and may
 be installed by:
 
 ``` r
@@ -59,7 +59,7 @@ install_github("jhollist/elevatr")
 As `elevatr` is getting more widely used, there have been some great
 contributions, use cases, and additional packages that have come from
 the user community. If you have one you’d like to share, let me know and
-I will gladly add it! Here are some of the ones that I have seen. Thank
+I will gladly add it. Here are some of the ones that I have seen. Thank
 you all!
 
 -   [Michaela Mulhearn’s `rayshader` and `elevatr`

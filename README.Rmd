@@ -21,7 +21,13 @@ Currently this package includes just two primary functions to access elevation w
 
 ## Installation
 
-Version 0.3.4 of this package is currently available from CRAN and may be installed by:
+```{r echo = FALSE}
+options(repos = "https://cran.rstudio.com")
+x <- data.frame(available.packages())
+version <- x[x$Package == "elevatr", "Version"]
+```
+
+Version `r version` of this package is currently available from CRAN and may be installed by:
 
 ```{r eval=F}
 install.packages("elevatr")
