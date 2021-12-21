@@ -24,3 +24,4 @@
 bugs/
 ^revdep$
 contributions/
+^TODO.md$

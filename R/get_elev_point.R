@@ -40,24 +40,22 @@
 #' @return Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
 #'         in the projection specified by the \code{prj} argument.
 #' @export
-#' @importFrom sp wkt
 #' @examples
 #' \dontrun{
-#' mt_wash <- data.frame(x = -71.3036, y = 44.2700)
-#' mt_mans <- data.frame(x = -72.8145, y = 44.5438)
-#' mts <- rbind(mt_wash,mt_mans)
-#' ll_prj <- "EPSG:4326"
-#' mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
-#'                             proj4string = sp::CRS(SRS_string = ll_prj))
-#' mts_spdf <- sp::SpatialPointsDataFrame(mts_sp, 
-#'                                        data = data.frame(name = 
-#'                                        c("Mt. Washington", "Mt. Mansfield"))) 
-#' mts_raster <- raster::raster(mts_sp, ncol = 2, nrow = 2)
-#' get_elev_point(locations = mt_wash, prj = ll_prj)
-#' get_elev_point(locations = mt_wash, units="feet", prj = ll_prj)
-#' get_elev_point(locations = mt_wash, units="meters", prj = ll_prj)
-#' get_elev_point(locations = mts_sp)
-#' get_elev_point(locations = mts_spdf)
+#' library(elevatr)
+#' library(sf)
+#' library(raster)
+#' 
+#' mts <- data.frame(x = c(-71.3036, -72.8145), 
+#'                   y = c(44.2700, 44.5438), 
+#'                   names = c("Mt. Washington", "Mt. Mansfield"))
+#' ll_prj <- 4326
+#' mts_sf <- st_as_sf(x = mts, coords = c("x", "y"), crs = ll_prj)
+#' mts_raster <- raster(mts_sf, ncol = 2, nrow = 2)
+#' 
+#' get_elev_point(locations = mts, prj = ll_prj)
+#' get_elev_point(locations = mts, units="feet", prj = ll_prj)
+#' get_elev_point(locations = mts_sf)
 #' get_elev_point(locations = mts_raster)
 #' 
 #' # Code to split into a loop and grab point at a time.
@@ -66,15 +64,14 @@
 #' library(dplyr)
 #' 
 #' elev <- vector("numeric", length = nrow(mts))
-#' pb <- progress_estimated(length(elev))
 #' for(i in seq_along(mts)){
-#' pb$tick()$print()
 #' elev[i]<-suppressMessages(get_elev_point(locations = mts[i,], prj = ll_prj, 
 #'                                         src = "aws", z = 14)$elevation)
 #'                                         }
 #' mts_elev <- cbind(mts, elev)
 #' mts_elev
 #' }
+#'
 get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), 
                            overwrite = FALSE, ...){
   
@@ -87,20 +84,13 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
     "  To replace these columns set the overwrite argument to TRUE."))
   }
   
-  # Check location type and if sp or raster, set prj.  If no prj (for either) then error
-  
-  if(is.numeric(prj)){prj <- paste0("EPSG:", prj)}
   locations <- loc_check(locations,prj)
   
   if(is.null(prj)){
-    if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-      prj <- sp::wkt(locations)
-    } else {
-      prj <- sp::proj4string(locations)
-    }
+    prj <- sf::st_crs(locations)
   }
   
-  # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
+  # Pass of reprojected to epqs or aws to get data as spatialpointsdataframe
   if (src == "epqs"){
     locations_prj <- get_epqs(locations, ...)
     units <- locations_prj[[2]]
@@ -191,8 +181,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
     units <- "Feet"
   }
   
-  locations <- sp::spTransform(locations,
-                                   sp::CRS(SRS_string = ll_prj))
+  locations <- sf::st_transform(locations, sf::st_crs(ll_prj))
   units <- paste0("&units=",units)
   
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
@@ -201,7 +190,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
       
       loc <- paste0("x=",x, "&y=", y)
       url <- paste0(base_url,loc,units,"&output=json")
-     
+      
       resp <- tryCatch(httr::GET(url), error = function(e) e)
       n<-1
       
@@ -224,9 +213,10 @@ get_epqs <- function(locations, units = c("meters","feet"),
                                simplifyVector = FALSE)
     as.numeric(resp[[1]][[1]]$Elevation)
   }
+   
   
-  coords_df <- split(data.frame(sp::coordinates(locations)), 
-                     seq_along(locations[,1]))   
+  coords_df <- split(data.frame(sf::st_coordinates(locations)), 
+                     seq_along(locations$elevation))   
   
   #elev_column_name <- make.unique(c(names(locations), "elevation"))
   #elev_column_name <- elev_column_name[!elev_column_name %in% names(locations)]

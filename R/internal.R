@@ -50,17 +50,8 @@ get_tilexy_coords <- function(locations,z){
 
 #' function to check input type and projection.  All input types convert to a
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
-#' @importFrom sp wkt
-#' @importFrom sf st_crs st_as_sf
 #' @keywords internal
 loc_check <- function(locations, prj = NULL){
-  
-  #prj <- st_crs(prj)
-  
-  #Convert sf locations to SP
-  if(("sf" %in% class(locations)) | ("sfc" %in% class(locations))){
-    locations <- sf::as_Spatial(locations)
-  }
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
@@ -68,117 +59,53 @@ loc_check <- function(locations, prj = NULL){
     nfeature <- nrow(locations)
   }
   
-  if(class(locations)=="data.frame"){ 
-    if(is.null(prj)){
-      stop("Please supply a valid crs via locations or prj.")
+  if(any(class(locations)=="data.frame")){ 
+    if(is.null(prj) & !any(class(locations) %in% c("sf", "sfc", "sfg"))){
+      stop("Please supply a valid sf crs via locations or prj.")
     }
-    if(ncol(locations) > 2){
-      df <- data.frame(locations[,3:ncol(locations)],
-                       vector("numeric",nfeature))
-      names(df) <- c(names(locations)[3:ncol(locations)],
-                     "elevation")
-    } else {
-      df <- data.frame(vector("numeric",nfeature))
-      names(df) <- "elevation"
-    }
-    if(grepl("+proj", prj)){
-      locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
-                                            proj4string = sp::CRS(prj),
-                                            data = df)
-    } else {  
-      locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
-                               proj4string = sp::CRS(SRS_string = prj),
-                               data = df)
-    }
-  } else if(class(locations) == "SpatialPoints"){
     
-    crs_check <- is.na(st_crs(st_as_sf(locations)))
-    if(crs_check &  is.null(prj)){
+    locations <- sf::st_as_sf(x = locations, coords = c("x", "y"), crs = prj)
+    locations$elevation <- rep(0, nfeature)
+    
+  } else if(attributes(class(locations)) %in% c("raster")){
+    
+    raster_crs <- raster::crs(locations)
+    
+    if((is.null(raster_crs) | is.na(raster_crs)) & is.null(prj)){
       stop("Please supply a valid crs via locations or prj.")
     }
     
-    if(crs_check){
-      if(grepl("+proj", prj)){
-        locations <- sp::SpatialPoints(locations, 
-                                       proj4string = sp::CRS(prj))
-      } else {  
-        locations <- sp::SpatialPoints(locations, 
-                                       proj4string = sp::CRS(SRS_string = prj))
-      }
-    }
-    
-    locations<-sp::SpatialPointsDataFrame(locations, 
-                    data = data.frame(
-                      elevation = vector("numeric", nrow(
-                        sp::coordinates(locations)))))
-    
-  } else if(class(locations) == "SpatialPointsDataFrame"){
-    crs_check <- is.na(st_crs(st_as_sf(locations)))
-    if(crs_check & is.null(prj)) {
-      stop("Please supply a valid crs via locations or prj.")
-    }
-    if(crs_check){
-      if(grepl("+proj", prj)){
-        locations <- sp::SpatialPoints(locations, 
-                                       proj4string = sp::CRS(prj))
-      } else {
-        locations <- sp::SpatialPoints(locations, 
-                                       proj4string = sp::CRS(SRS_string = prj))
-      }
-    }
-    
-    locations@data <- data.frame(locations@data,
-                                 elevation = vector("numeric",nfeature)) 
-  } else if(attributes(class(locations)) %in% c("raster","sp")){
-    
-    if(attributes(class(locations)) %in% "raster"){
-      locs <- raster::crs(locations)
-    } else if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-      locs <- sp::wkt(locations)
-    } else {
-      locs <- sp::proj4string(locations)
-    } 
-    
-    if((is.null(locs) | 
-       is.na(locs)) & is.null(prj)){
-      stop("Please supply a valid crs via locations or prj.")
-    }
-    if(is.null(locs) | is.na(locs)){
+    if(is.null(raster_crs) | is.na(raster_crs)){
         if(attributes(class(locations)) == "raster"){
-          
           if(sum(!is.na(raster::getValues(locations))) == 0){
             stop("No distinct points, all values NA.")
           } else {
-            locations <- raster::rasterToPoints(locations,spatial = TRUE)
-            locations<-sp::SpatialPointsDataFrame(locations, 
-                                                 data = data.frame(
-                                                   elevation = vector("numeric", nrow(
-                                                     sp::coordinates(locations)))))
+            
+            locations <- unique(data.frame(raster::rasterToPoints(locations)))
+            locations$elevation <- vector("numeric", nrow(locations))
+            locations<-sf::st_as_sf(x = locations, coords = c("x", "y"), 
+                                    crs = st_crs(prj))
           }
-        } else if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-          locs <- sp::wkt(locations)
-        } else {
-          locs <- sp::proj4string(locations)
-        } 
+        }
     } else if(attributes(class(locations)) %in% c("raster")){
-      locations <- raster::rasterToPoints(locations,spatial = TRUE)
-      locations<-sp::SpatialPointsDataFrame(locations, 
-                                            data = data.frame(
-                                              elevation = vector("numeric", nrow(
-                                                sp::coordinates(locations)))))
+      
+      locations <- unique(data.frame(raster::rasterToPoints(locations)))
+      locations$elevation <- vector("numeric", nrow(locations))
+      locations <- sf::st_as_sf(x = locations, coords = c("x", "y"),
+                                crs = raster_crs)
     }
   }
   
   #check for long>180
-  lll <- any(grepl("GEOGCRS",st_crs(prj)) |
-               grepl("GEODCRS", st_crs(prj)) |
-               grepl("GEODETICCRS", st_crs(prj)) |
-               grepl("GEOGRAPHICCRS", st_crs(prj)) |
-               grepl("longlat", st_crs(prj)) |
-               grepl("latlong", st_crs(prj)) |
-               grepl("4326", st_crs(prj)))
+  lll <- any(grepl("GEOGCRS",sf::st_crs(prj)) |
+               grepl("GEODCRS", sf::st_crs(prj)) |
+               grepl("GEODETICCRS", sf::st_crs(prj)) |
+               grepl("GEOGRAPHICCRS", sf::st_crs(prj)) |
+               grepl("longlat", sf::st_crs(prj)) |
+               grepl("latlong", sf::st_crs(prj)) |
+               grepl("4326", sf::st_crs(prj)))
   if(lll){
-    if(any(sp::coordinates(locations)[,1]>180)){
+    if(any(sf::st_coordinates(locations)[,1]>180)){
       stop("The elevatr package requires longitude in a range from -180 to 180.")
     } 
   }
