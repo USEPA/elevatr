@@ -30,7 +30,8 @@ Imports:
     furrr,
     purrr,
     methods,
-    units
+    units,
+    slippymath
 License: CC0
 Encoding: UTF-8
 LazyData: true

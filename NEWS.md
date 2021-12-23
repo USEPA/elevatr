@@ -7,7 +7,7 @@ elevatr 0.4.2 (????-??-??)
 # Bug Fixes
 - The epqs server was occasionally returning an empty response (see https://github.com/jhollist/elevatr/issues/29) and would error.  If that happens now, elevatr will retry up to 5 times (which usually fixes the issue).  If still an empty response after 5 tries, NA is returned and a warning is issued indicating what happened.
 - Changing to future::plans was losing tempfiles on parallel downloads.  Moved the change back to serial plan after creation of raster.
-- Changed get_tile_xy.  Was using ceiling and floor to get need tiles. End result is areas near 180/-180 longitude were trying to grab non-existent tiles.  Set all to get floor for tile calc.
+- Changed get_tile_xy.  My math was messing up in areas near 180/-180 longitude were trying to grab non-existent tiles.  Now using slippymath::lonlat_to_tilenum instead.
 - NA's introduced with simultaneous gdal mosaic and project.  Now uses two steps.  Solves https://stackoverflow.com/questions/67839878/gridded-dot-artifacts-in-geom-raster-plot
 
 

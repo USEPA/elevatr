@@ -15,11 +15,13 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 #' function to get a data.frame of all xyz tiles to download
 #' @keywords internal
 get_tilexy <- function(bbx,z){
-  
-  min_tile <- latlong_to_tilexy(bbx[1,1],bbx[2,1],z)
-  max_tile <- latlong_to_tilexy(bbx[1,2],bbx[2,2],z)
+  #Convert to -180 - +180
+  bbx["x",] <- ifelse(bbx["x",] > 180, bbx["x",] - 360, bbx["x",])
+  min_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,1],bbx[2,1],z))
+  max_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,2],bbx[2,2],z))
   x_all <- seq(from = floor(min_tile[1]), to = floor(max_tile[1]))
   y_all <- seq(from = floor(min_tile[2]), to = floor(max_tile[2]))
+  
   
   if(z == 1){
     x_all <- x_all[x_all<2]
