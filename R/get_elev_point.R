@@ -292,7 +292,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
 #'         elevation added to the data slot and a character of the elevation units
 #' @export
 #' @keywords internal
-get_aws_points <- function(locations, z=5, units = c("meters", "feet"), 
+get_aws_points <- function(locations, z = 5, units = c("meters", "feet"), 
                            verbose = TRUE, ...){
   units <- match.arg(units)
   dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
