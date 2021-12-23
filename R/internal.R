@@ -327,3 +327,17 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
   num_megabytes <- (num_rows * num_cols * bits)/8388608
   num_megabytes
 }
+
+#' OpenTopo Key
+#' 
+#' The OpenTopography API now requires an API Key.  This function will grab your
+#' key from an .Renviron file
+#' 
+#' @keywords internal
+get_opentopo_key <- function(){
+  if(Sys.getenv("OPENTOPO_KEY")==""){
+    stop("You have not set your OpenTopography API Key.
+         Please use elevatr::set_opentopo_key().")
+  }
+  Sys.getenv("OPENTOPO_KEY")
+}
