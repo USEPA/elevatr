@@ -7,6 +7,7 @@ elevatr 1.0.0 (????-??-??)
 - Terra?!?
 - gdalio??
 - slippymath??
+- Added API key for OpenTopography
 
 
 elevatr 0.4.2 (????-??-??)
@@ -14,7 +15,7 @@ elevatr 0.4.2 (????-??-??)
 
 # Bug Fixes
 - The epqs server was occasionally returning an empty response (see https://github.com/jhollist/elevatr/issues/29) and would error.  If that happens now, elevatr will retry up to 5 times (which usually fixes the issue).  If still an empty response after 5 tries, NA is returned and a warning is issued indicating what happened.
-- Changing future::plans was losing tempfiles on parallel downloads.  Moved the change back to serial plan to after creation of raster.
+- Changing to future::plans was losing tempfiles on parallel downloads.  Moved the change back to serial plan after creation of raster.
 - Changed get_tile_xy...  Was using ceiling and floor to get need tiles. End result is areas near 180/-180 longitude were trying to grab non-existent tiles.  Set all to get floor for tile calc.
 
 

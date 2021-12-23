@@ -99,15 +99,12 @@ Currently, the \code{get_elev_raster} function utilizes the
 \dontrun{
 data(lake)
 
-loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-                               max=sp::bbox(lake)[1,2]),
-                     y = runif(6,min=sp::bbox(lake)[2,1], 
-                               max=sp::bbox(lake)[2,2]))
-# Example for PROJ > 5.2.0
-x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
-
-# Example for PROJ < 5.2.0 
-x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
+loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
+                               max=sf::st_bbox(lake)$xmax),
+                     y = runif(6,min=sf::st_bbox(lake)$ymin, 
+                               max=sf::st_bbox(lake)$ymax))
+                               
+x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
 x <- get_elev_raster(lake, z = 12)
 x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 }

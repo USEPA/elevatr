@@ -63,21 +63,16 @@
 #'          object submitted for \code{locations} argument, and the z argument 
 #'          must be specified by the user.   
 #' @export
-#' @importFrom sp wkt
 #' @examples 
 #' \dontrun{
 #' data(lake)
 #' 
-#' loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-#'                                max=sp::bbox(lake)[1,2]),
-#'                      y = runif(6,min=sp::bbox(lake)[2,1], 
-#'                                max=sp::bbox(lake)[2,2]))
-#' # Example for PROJ > 5.2.0
-#' x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
-#' 
-#' # Example for PROJ < 5.2.0 
-#' x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
-
+#' loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
+#'                                max=sf::st_bbox(lake)$xmax),
+#'                      y = runif(6,min=sf::st_bbox(lake)$ymin, 
+#'                                max=sf::st_bbox(lake)$ymax))
+#'                                
+#' x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
 #' x <- get_elev_raster(lake, z = 12)
 #' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 #' }
@@ -91,15 +86,11 @@ get_elev_raster <- function(locations, z, prj = NULL,
   src  <- match.arg(src)
   clip <- match.arg(clip) 
   
-  # Check location type and if sp, set prj.  If no prj (for either) then error
+  # Check location type and if sf, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   
   if(is.null(prj)){
-    if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-      prj <- sp::wkt(locations)
-    } else {
-      prj <- sp::proj4string(locations)
-    }
+    prj <- sf::st_crs(locations)
   }
    #need to check what is going on with PRJ when no prj passed.
   # Check download size and provide feedback, stop if too big!
@@ -332,11 +323,12 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                      gl1 = "SRTMGL1",
                      alos = "AW3D30",
                      srtm15plus = "SRTM15Plus")
+  
   url <- paste0(base_url, data_set,
-                "&west=",min(bbx[1,]),
-                "&south=",min(bbx[2,]),
-                "&east=",max(bbx[1,]),
-                "&north=",max(bbx[2,]),
+                "&west=",bbx$xmin,
+                "&south=",bbx$ymin,
+                "&east=",bbx$xmax,
+                "&north=",bbx$ymax,
                 "&outputFormat=GTiff")
   
   message("Downloading OpenTopography DEMs")

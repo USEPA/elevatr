@@ -1,32 +1,31 @@
 context("get_elev_raster")
-library(sp)
+library(sf)
 library(elevatr)
 data("pt_df")
-data("sp_big")
+data("sf_big")
 data("lake")
 skip_on_os("solaris")
-ll_prj  <- "EPSG:4326"
-aea_prj <- "EPSG:5072"
+ll_prj  <- 4326
+aea_prj <- 5072
 
-sp_sm <- SpatialPoints(coordinates(pt_df),
-                       CRS(SRS_string = ll_prj))
-sp_sm_prj <- spTransform(sp_sm, CRS(SRS_string = aea_prj))
-bad_sp <- SpatialPoints(coordinates(data.frame(x = 1000, y = 1000)),
-                        CRS(SRS_string = ll_prj))
+sf_sm <- st_as_sf(pt_df, coords = c("x", "y"), crs = ll_prj)
+sf_sm_prj <- st_transform(sf_sm, crs = aea_prj) 
+bad_sf <- st_as_sf(data.frame(x = 1000, y = 1000), coords = c("x", "y"), 
+                   crs = ll_prj)
 
 test_that("get_elev_raster returns correctly", {
   skip_on_cran()
   
-  aws <- get_elev_raster(locations = sp_sm, z = 6, src = "aws")
-  aws_prj <- get_elev_raster(locations = sp_sm_prj, z = 6, src = "aws")
+  aws <- get_elev_raster(locations = sf_sm, z = 6, src = "aws")
+  aws_prj <- get_elev_raster(locations = sf_sm_prj, z = 6, src = "aws")
   
   #class
   expect_is(aws,"RasterLayer")
   expect_is(aws_prj,"RasterLayer")
   
   #project
-  #expect_equal(wkt(aws),ll_prj)
-  #expect_equal(wkt(aws_prj),aea_prj)
+  #expect_equal(st_crs(aws)$wkt,st_crs(ll_prj)$wkt)
+  expect_equal(st_crs(aws_prj)$wkt,st_crs(aea_prj)$wkt)
 
 })
 
@@ -51,8 +50,8 @@ test_that("get_elev_raster clip argument works", {
 test_that("get_elev_raster returns correctly from opentopo", {
   skip_on_cran()
   
-  gl1 <- get_elev_raster(locations = sp_sm[3:4,], src = "gl1", neg_to_na = TRUE)
-  gl1_prj <- get_elev_raster(locations = sp_sm_prj[3:4,], src = "gl1", 
+  gl1 <- get_elev_raster(locations = sf_sm[3:4,], src = "gl1", neg_to_na = TRUE)
+  gl1_prj <- get_elev_raster(locations = sf_sm_prj[3:4,], src = "gl1", 
                              clip = "bbox")
   
   #class
@@ -60,14 +59,14 @@ test_that("get_elev_raster returns correctly from opentopo", {
   expect_is(gl1_prj,"RasterLayer")
   
   #project
-  #expect_equal(wkt(gl1),ll_prj$wkt)
-  #expect_equal(wkt(gl1_prj),aea_prj$wkt)
+  #expect_equal(st_crs(gl1)$wkt,st_crs(ll_prj)$wkt)
+  expect_equal(st_crs(gl1_prj)$wkt,st_crs(aea_prj)$wkt)
   
 })
 
 test_that("A resp that isn't a tiff or octet-stream works",{
   
-  expect_error(suppressWarnings(get_elev_raster(bad_sp, z = 6)))
-  expect_error(suppressWarnings(get_elev_raster(bad_sp, src = "gl3")))
+  expect_error(suppressWarnings(get_elev_raster(bad_sf, z = 6)))
+  expect_error(suppressWarnings(get_elev_raster(bad_sf, src = "gl3")))
 })
 

@@ -20,7 +20,6 @@ Description: Several web services are available that provide access to elevation
              and the USGS Elevation Point Query Service <https://nationalmap.gov/epqs/>.
 Depends: R (>= 3.5.0)
 Imports:
-    sp,
     raster,
     httr,
     jsonlite,
@@ -40,6 +39,5 @@ Suggests:
     knitr,
     rmarkdown,
     formatR,
-    rgdal,
     progress
 VignetteBuilder: knitr

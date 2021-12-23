@@ -76,7 +76,6 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
                            overwrite = FALSE, ...){
   
   src <- match.arg(src)
-  sf_check <- ("sf" %in% class(locations)) | ("sfc" %in% class(locations))
   
   # Check for existing elevation/elev_units columns and overwrite or error
   if(!overwrite & any(names(locations) %in% c("elevation", "elev_units"))){
@@ -104,16 +103,15 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   }
 
   # Re-project back to original, add in units, and return
-  locations <- methods::as(sf::st_transform(sf::st_as_sf(locations_prj), 
-                                            sf::st_crs(locations)), "Spatial")
+  locations <- sf::st_transform(sf::st_as_sf(locations_prj), 
+                                sf::st_crs(locations))
+  
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
   } else {
     nfeature <- nrow(locations)
   }
   
-  #unit_column_name <- make.unique(c(names(locations), "elev_units"))
-  #unit_column_name <- unit_column_name[!unit_column_name %in% names(locations)]
   unit_column_name <- "elev_units"
   
   if(any(names(list(...)) %in% "units")){
@@ -125,7 +123,6 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   } else {
     locations[[unit_column_name]] <- rep("meters", nfeature)
   }
-  if(sf_check){locations <- sf::st_as_sf(locations)}
   
   if(src == "aws") {
     message(paste("Note: Elevation units are in", units))
