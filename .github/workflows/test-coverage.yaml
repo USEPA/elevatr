@@ -44,8 +44,10 @@ jobs:
         shell: Rscript {0}
       
       - name: Set API key
+        env:
+          OPENTOPO_KEY: ${{ secrets.OPENTOPO }}
         run: |
-          cat(paste0("OPENTOPO_KEY=", OPENTOPO, "\n"), file = paste0(normalizePath("~/"), "/.Renviron"), append = TRUE)
+          cat(paste0("OPENTOPO_KEY=", Sys.getenv("OPENTOPO_KEY")", "\n"), file = paste0(normalizePath("~/"), "/.Renviron"), append = TRUE)
         shell: Rscript {0}
       
       - name: Test coverage
