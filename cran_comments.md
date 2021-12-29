@@ -1,6 +1,5 @@
 ## Comments
-Version 0.4.0 was erroring on solaris.  Also, updated citation and included one 
-bug fix
+Several bug and issue fixes, adds API key for OpenTopography.  
 
 ## Test Environments
 - Github Actions, Ubuntu 20.04 LTS, R version 4.1.2
