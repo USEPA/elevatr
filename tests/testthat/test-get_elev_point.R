@@ -4,6 +4,7 @@ library(sf)
 library(elevatr)
 data("pt_df")
 data("sp_big")
+skip_on_cran()
 #skip_on_os("solaris")
 ll_prj  <- "EPSG:4326"
 aea_prj <- "EPSG:5072"
@@ -16,7 +17,6 @@ bad_sp <- SpatialPoints(coordinates(data.frame(x = 1000, y = 1000)),
 sf_sm <- st_as_sf(sp_sm)
 
 test_that("get_elev_point returns correctly", {
-  skip_on_cran()
   
   epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
   epqs_sp <- get_elev_point(locations = sp_sm, src = "epqs")
