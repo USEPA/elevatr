@@ -130,7 +130,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
   }
   if(clip != "tile"){
     message(paste("Clipping DEM to", clip))
-    #raster_elev not web merc from Open Topo - need to deal with that.
+    
     raster_elev <- clip_it(raster_elev, locations, expand, clip)
   }
  

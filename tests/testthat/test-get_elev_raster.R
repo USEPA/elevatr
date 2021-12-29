@@ -4,7 +4,7 @@ library(elevatr)
 data("pt_df")
 data("sp_big")
 data("lake")
-skip_on_os("solaris")
+#skip_on_os("solaris")
 ll_prj  <- "EPSG:4326"
 aea_prj <- "EPSG:5072"
 
@@ -65,7 +65,7 @@ test_that("get_elev_raster returns correctly from opentopo", {
   
 })
 
-test_that("A resp that isn't a tiff or octet-stream works",{
+test_that("A bad location file errors",{
   
   expect_error(suppressWarnings(get_elev_raster(bad_sp, z = 6)))
   expect_error(suppressWarnings(get_elev_raster(bad_sp, src = "gl3")))

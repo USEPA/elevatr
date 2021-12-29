@@ -172,13 +172,20 @@ loc_check <- function(locations, prj = NULL){
   }
   
   #check for long>180
-  lll <- any(grepl("GEOGCRS",st_crs(prj)) |
-               grepl("GEODCRS", st_crs(prj)) |
-               grepl("GEODETICCRS", st_crs(prj)) |
-               grepl("GEOGRAPHICCRS", st_crs(prj)) |
-               grepl("longlat", st_crs(prj)) |
-               grepl("latlong", st_crs(prj)) |
-               grepl("4326", st_crs(prj)))
+  if(is.null(prj)){
+    prj_test <- sf::st_crs(locations)
+  } else {
+    prj_test <- prj
+  }
+  
+  lll <- any(grepl("\\bGEOGCRS\\b",st_crs(prj_test)) |
+               grepl("\\bGEODCRS\\b", st_crs(prj_test)) |
+               grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
+               grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
+               grepl("\\blonglat\\b", st_crs(prj_test)) |
+               grepl("\\blatlong\\b", st_crs(prj_test)) |
+               grepl("\\b4326\\b", st_crs(prj_test)))
+  
   if(lll){
     if(any(sp::coordinates(locations)[,1]>180)){
       stop("The elevatr package requires longitude in a range from -180 to 180.")
@@ -233,6 +240,10 @@ proj_expand <- function(locations,prj,expand){
   }
   bbx <- bbox_to_sp(bbx, prj = prj)
   bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
+  bbx_coord_check <- as.numeric(bbx)
+  if(any(!bbx_coord_check >= -180 & bbx_coord_check <= 360)){
+    stop("The elevatr package requires longitude in a range from -180 to 180.")
+  } 
   bbx
   
   #sf expand - save for later

@@ -3,6 +3,7 @@ elevatr 0.4.2 (????-??-??)
 
 # Additions
 - OpenTopography now requires an API Key.  This can be acquired form OpenTopography.  You need to set it with elevatr using elevatr::set_opentopo_key().  After a restart, elevatr will use this key.
+- The "Introduction to elevatr" vignette has been updated to include chanage reflected in version 0.4.2 and also includes a new section on accessing data from OpenTopography and details on setting the API key.
 
 # Bug Fixes
 - The epqs server was occasionally returning an empty response (see https://github.com/jhollist/elevatr/issues/29) and would error.  If that happens now, elevatr will retry up to 5 times (which usually fixes the issue).  If still an empty response after 5 tries, NA is returned and a warning is issued indicating what happened.
