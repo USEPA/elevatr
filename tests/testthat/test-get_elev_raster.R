@@ -4,7 +4,8 @@ library(elevatr)
 data("pt_df")
 data("sf_big")
 data("lake")
-skip_on_os("solaris")
+skip_on_cran()
+#skip_on_os("solaris")
 ll_prj  <- 4326
 aea_prj <- 5072
 
@@ -14,7 +15,6 @@ bad_sf <- st_as_sf(data.frame(x = 1000, y = 1000), coords = c("x", "y"),
                    crs = ll_prj)
 
 test_that("get_elev_raster returns correctly", {
-  skip_on_cran()
   
   aws <- get_elev_raster(locations = sf_sm, z = 6, src = "aws")
   aws_prj <- get_elev_raster(locations = sf_sm_prj, z = 6, src = "aws")
@@ -30,7 +30,6 @@ test_that("get_elev_raster returns correctly", {
 })
 
 test_that("get_elev_raster clip argument works", {
-  skip_on_cran()
   
   default_clip <- get_elev_raster(lake, z = 5, clip = "tile")
   bbox_clip <- get_elev_raster(lake, z = 5, clip = "bbox")
@@ -48,7 +47,7 @@ test_that("get_elev_raster clip argument works", {
 })
 
 test_that("get_elev_raster returns correctly from opentopo", {
-  skip_on_cran()
+  skip_on_os("solaris")
   
   gl1 <- get_elev_raster(locations = sf_sm[3:4,], src = "gl1", neg_to_na = TRUE)
   gl1_prj <- get_elev_raster(locations = sf_sm_prj[3:4,], src = "gl1", 
@@ -64,7 +63,7 @@ test_that("get_elev_raster returns correctly from opentopo", {
   
 })
 
-test_that("A resp that isn't a tiff or octet-stream works",{
+test_that("A bad location file errors",{
   
   expect_error(suppressWarnings(get_elev_raster(bad_sf, z = 6)))
   expect_error(suppressWarnings(get_elev_raster(bad_sf, src = "gl3")))

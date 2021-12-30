@@ -9,15 +9,18 @@ elevatr 1.0.0 (????-??-??)
 - slippymath??
 - Added API key for OpenTopography
 
-
-elevatr 0.4.2 (????-??-??)
+elevatr 0.4.2 (2021-12-28)
 =============
+
+# Additions
+- OpenTopography now requires an API Key.  This can be acquired form OpenTopography.  You need to set it with elevatr using elevatr::set_opentopo_key().  After a restart, elevatr will use this key.
+- The "Introduction to elevatr" vignette has been updated to include chanage reflected in version 0.4.2 and also includes a new section on accessing data from OpenTopography and details on setting the API key.
 
 # Bug Fixes
 - The epqs server was occasionally returning an empty response (see https://github.com/jhollist/elevatr/issues/29) and would error.  If that happens now, elevatr will retry up to 5 times (which usually fixes the issue).  If still an empty response after 5 tries, NA is returned and a warning is issued indicating what happened.
 - Changing to future::plans was losing tempfiles on parallel downloads.  Moved the change back to serial plan after creation of raster.
-- Changed get_tile_xy...  Was using ceiling and floor to get need tiles. End result is areas near 180/-180 longitude were trying to grab non-existent tiles.  Set all to get floor for tile calc.
-
+- Changed get_tile_xy.  My math was messing up in areas near 180/-180 longitude were trying to grab non-existent tiles.  Now using slippymath::lonlat_to_tilenum instead.
+- NA's introduced with simultaneous gdal mosaic and project.  Now uses two steps.  Solves https://stackoverflow.com/questions/67839878/gridded-dot-artifacts-in-geom-raster-plot
 
 elevatr 0.4.1 (2021-07-21)
 ==============

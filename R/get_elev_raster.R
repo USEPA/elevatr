@@ -121,7 +121,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
   }
   if(clip != "tile"){
     message(paste("Clipping DEM to", clip))
-    #raster_elev not web merc from Open Topo - need to deal with that.
+    
     raster_elev <- clip_it(raster_elev, locations, expand, clip)
   }
  
@@ -278,14 +278,22 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
   sf::gdal_utils(util = "warp", 
                  source = files, 
                  destination = destfile,
-                 options = c("-t_srs", as.character(target_prj),
-                             "-r", method)
+                 options = c("-r", method)
              )
+  # Using two steps now as gdal with one step introduced NA's along seams
+  # Slower but more accurate!
+  destfile2 <- tempfile(fileext = ".tif")
+  sf::gdal_utils(util = "warp", 
+                 source = destfile, 
+                 destination = destfile2,
+                 options = c("-r", method,
+                   "-t_srs", as.character(target_prj))
+  )
   
   if(returnRaster){
-    raster::raster(destfile)
+    raster::raster(destfile2)
   } else {
-    destfile
+    destfile2
   }
 }
 
@@ -313,6 +321,9 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
 #' @export
 #' @keywords internal
 get_opentopo <- function(locations, src, prj, expand=NULL, ...){
+  
+  api_key <- get_opentopo_key()
+  
   # Expand (if needed) and re-project bbx to ll_geo
   bbx <- proj_expand(locations,prj,expand)
   
@@ -325,11 +336,12 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                      srtm15plus = "SRTM15Plus")
   
   url <- paste0(base_url, data_set,
-                "&west=",bbx$xmin,
-                "&south=",bbx$ymin,
-                "&east=",bbx$xmax,
-                "&north=",bbx$ymax,
-                "&outputFormat=GTiff")
+                "&west=",min(bbx[1,]),
+                "&south=",min(bbx[2,]),
+                "&east=",max(bbx[1,]),
+                "&north=",max(bbx[2,]),
+                "&outputFormat=GTiff",
+                "&API_Key=", api_key)
   
   message("Downloading OpenTopography DEMs")
   resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), 
@@ -341,4 +353,27 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
   } 
   dem <- merge_rasters(tmpfile, target_prj = prj)
   dem
+}
+
+#' Store OpenTopography Key
+#' 
+#' This function stores an OpenTopgrapy key in a local .Renviron file. If the
+#' .Renviron file exists, the key will be appended. This will typically only 
+#' need to be done once per machine.   
+#' 
+#' 
+#' @param key An OpenTopography API Key as a character.  For details on obtaining an 
+#'            OpenTopgraphy key see \url{https://opentopography.org/blog/introducing-api-keys-access-opentopography-global-datasets}. 
+#' @export
+set_opentopo_key <- function(key){
+  home <- normalizePath("~/")
+  if(Sys.getenv("OPENTOPO_KEY")==""){ 
+    cat(paste0("OPENTOPO_KEY=", key, "\n"), file = paste0(home, "/.Renviron"), 
+        append = TRUE)
+    message("Your OpenTopography Key has been added to .Renviron.
+            You will need to restart R for the changes to take effect.")
+  } else {
+    message("An existing OpenTopography Key already exists.
+            To edit try usethis::edit_r_environ().")
+  } 
 }

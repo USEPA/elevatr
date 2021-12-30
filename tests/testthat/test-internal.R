@@ -6,7 +6,8 @@ library(elevatr)
 data("pt_df")
 data("sf_big")
 data("lake")
-skip_on_os("solaris")
+skip_on_cran()
+#skip_on_os("solaris")
 ll_prj  <- 4326
 aea_prj <- 5072
 
@@ -26,14 +27,12 @@ mts <- rbind(mt_wash,mt_mans)
 mts$name <- c("Mount Washington", "Mount Mansfield")
 
 test_that("data frame with more extra columns work", {
-  skip_on_cran()
   
   mts_with_names_and_elevation <- get_elev_point(mts, ll_prj)
   expect_true("name" %in% names(mts_with_names_and_elevation))
 })
 
 test_that("proj_expand works",{
-  skip_on_cran()
   
   suppressWarnings({
   mans_sf <- st_as_sf(data.frame(x = -72.8145, y = 44.5438), 
@@ -52,7 +51,6 @@ test_that("proj_expand works",{
 })
 
 test_that("loc_check errors correctly", {
-  skip_on_cran()
   
   expect_error(get_elev_point(locations = pt_df), 
                "Please supply a valid sf crs via locations or prj.")
@@ -65,7 +63,6 @@ test_that("loc_check errors correctly", {
 })
 
 test_that("Z of 1 or 0 works in get_tilexy",{
-  skip_on_cran()
   
   suppressWarnings({
   sf_sm_1 <- get_elev_raster(sf_sm_prj, z = 1, clip = "bbox")

@@ -5,8 +5,8 @@ status](https://github.com/jhollist/elevatr/workflows/R-CMD-check/badge.svg)](ht
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/elevatr)](https://www.r-pkg.org/pkg/elevatr)
 [![Codecov test
-coverage](https://codecov.io/gh/jhollist/elevatr/branch/master/graph/badge.svg)](https://codecov.io/gh/jhollist/elevatr?branch=master)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4282962.svg)](https://doi.org/10.5281/zenodo.4282962)
+coverage](https://codecov.io/gh/jhollist/elevatr/branch/main/graph/badge.svg)](https://codecov.io/gh/jhollist/elevatr?branch=main)
+[![DOI](https://zenodo.org/badge/65325400.svg)](https://zenodo.org/badge/latestdoi/65325400)
 
 # elevatr
 

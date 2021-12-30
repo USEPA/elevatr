@@ -45,7 +45,7 @@ That stuff goes here.
 
 Elevation data is used for a wide array of applications, including, for example, visualization, hydrology, and ecological modelling.  Gaining access to these data in R has not had a single interface, is made available through functions across many packages, or requires local access to the data.  This is no longer required as a variety of APIs now exist that provide programmatic access to elevation data.  The `elevatr` package was written to standarize access to elevation data from web APIs.  This introductory vignette provides details on how to use `elevatr` to access elevation data and provides a bit of detail on the source data it accesses.
 
-There are currently several endpoints that `elevatr` accesses.  For point elevation data it uses the USGS Elevation Point Query Service and can also access point elevations from the Amazon Web Services (AWS) Terrain Tiles.  To access raster elevation data (e.g. a DEM) it uses both the AWS terrain tiles as well as OpenTopography's GL3, GL1, ALOS, and Global Bathymetry/Topography (see <https://opentopography.org/developers> for more details).   
+As of version 0.4.2, there are several endpoints that `elevatr` accesses.  For point elevation data it uses USGS Elevation Point Query Service (United States only) as well as the Amazon Web Services (AWS) Terrain Tiles from which point elevations are extracted.  Raster elevation data (i.e., Digital Elevation Models or DEMs) are available from the AWS Terrain Tiles or from the OpenTopography Global DEM API (<https://portal.opentopography.org/apidocs/#/Public/getGlobalDem>) .  Currently, `elevatr` supports the SRTMGL3, SRTMGL1, AW3D30, and SRTM15Plus datasets.  
 
 # Get Point Elevation Data
 
@@ -98,13 +98,46 @@ spdf_elev_epqs <- get_elev_point(examp_spdf, src = "epqs")
 spdf_elev_epqs
 ```
 
+## Point elevation from Amazon Web Service Terrain Tiles
+
+Since version 0.2.0, `elevatr` has also provided access to point elevations from the AWS Terrain Tiles.  This is not a separate service from the raster DEM service (see below).  It is provided as a convenience so users don't need to download the raster DEMs from AWS and perform their own point data extraction.  The added benefit is that points outside of the United States may be used with the AWS source.  To access the the point elevations using "aws":
+
+```{r}
+df_elev_aws <- get_elev_point(examp_df, prj = prj_dd, src = "aws")
+```
+
+An important thing to note, that the elevations will differ, and the prime reason is the resolution of the AWS tiles at the specified zoom.  The default zoom of 5 (i.e., `z=5`) is rather coarse and that is reflected in the elevations.
+
+```{r}
+df_elev_aws$elevation
+df_elev_epqs$elevation
+```
+
+A larger zoom results in a smaller pixel size and the two sources converge.
+
+```{r}
+df_elev_aws_z12 <- get_elev_point(examp_df, prj = prj_dd, src = "aws", z = 12)
+df_elev_aws_z12$elevation
+df_elev_epqs$elevation
+```
+
+Determining the correct zoom is a function of the needs of the user and represents a trade off between higher accuracy/longer download.
+
+Lastly, an example using locations outside of the United States.
+
+```{r}
+mt_everest <- data.frame(x = 86.9250, y = 27.9881)
+everest_aws_elev <- get_elev_point(mt_everest, prj = prj_dd, z = 14, src = "aws")
+everest_aws_elev
+```
+
 # Get Raster Elevation Data
 
 While point elevations are useful, they will not provide the information required for most elevation based analysis such as hydrologic modeling, viewsheds, etc.  To do that requires a raster digital elevation model (DEM).  There are several sources for digital elevation models such as the Shuttle Radar Topography Mission (SRTM), the USGS National Elevation Dataset (NED), Global DEM (GDEM), and others.  Each of these DEMs has pros and cons for their use.  Prior to its closure in January of 2018, Mapzen combined [several of these sources](https://github.com/tilezen/joerd/blob/master/docs/data-sources.md) to create a synthesis elevation product that utilizes the best available elevation data for a given region at given zoom level.  Additionally, the elevation data are enhanced with the inclusion of bathymetry in oceans from ETOPO1.  Although closed, these data compiled by Mapzen are made available through two separate APIs: the [Nextzen Terrain Tile Service](https://www.nextzen.org#terrain-tiles) and the [Terrain Tiles on Amazon Web Services](https://registry.opendata.aws/terrain-tiles/).  Only the Amazon tiles are currently accessible via `elevatr`.
 
 The input for `get_elev_raster()` is a data.frame with  x (longitude) and y (latitude) locations as the first two columns, any `sp` object, or any `raster` object and it returns a RasterLayer of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged Raster Layer.  Details for each service and their usage via `get_elev_raster()` are provided below.
 
-### Using `get_elev_raster()` to access the Terrain Tiles on AWS.
+## Using `get_elev_raster()` to access the Terrain Tiles on AWS.
 
 As mentioned a data frame with x and y columns, a `sp` object, or a `raster` object needs be the input and the `src` needs to be set to "mapzen" (this is the default).  
 
@@ -134,7 +167,7 @@ plot(elev_edge)
 plot(lake, add = TRUE)
 
 # Use expand to grab additional tiles
-elev_expand<-get_elev_raster(lake, z = 10, expand = 1500)
+elev_expand<-get_elev_raster(lake, z = 10, expand = 15000)
 plot(elev_expand)
 plot(lake, add = TRUE)
 ```
@@ -153,4 +186,22 @@ Lastly, multiple configurations may be passed.  Below is an example combining `h
 library(httr)
 # Increase timeout:
 get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
+```
+
+## Access OpenTopography API with `get_elev_raster()`
+
+As of version 0.3.1, the OpenTopography API (<https://portal.opentopography.org/apidocs/#/Public/getGlobalDem>) has been available as another source of data from `get_elev_raster()`.  To access this data you need to specify which of the available global DEMs you would like to access.  The currently available options are: gl3", "gl1", "alos", "srtm15plus".  
+
+Starting in January of 2022, all OpenTopography API requests will require an API key.  Version 0.4.3 and greater of `elevatr` supports this.  
+
+To create a key, visit <https://portal.opentopography.org/myopentopo>.  If you do not already have an account, you can create one here: <https://portal.opentopography.org/newUser>.  Once you have your account and are logged into your myOpenTopo Workbench, you can create a new key by scrolling to My Account and selecting "myOpenTopoAuthorization and API Key".  Once there scroll down to the API Key section to create your key.
+
+Within `elevatr` the API key is expected to be stored as an R environment variable.  The easiest way to set this is to use the `set_opentopo_key()` function.  It has a single argument for your API key.  Once this is set, restart R and `elevatr` will use this key for subsequent OpenTopography API requests.
+
+Below is an example for grabbing the OpenTopography SRTM data.
+
+```{r}
+lake_srtmgl1 <- get_elev_raster(lake, src = "gl1", clip = "bbox", expand = 1000)
+plot(lake_srtmgl1)
+plot(lake, add = TRUE)
 ```
