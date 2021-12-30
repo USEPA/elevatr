@@ -66,36 +66,31 @@ Example usage of each is included below.  For these examples, we can create a da
 set.seed(65.7)
 examp_df <- data.frame(x = runif(3, min = -73, max = -72.5), 
                        y = runif(3, min = 42 , max = 43))
-prj_dd <- "EPSG:4326"
+crs_dd <- 4326
 
 # Create and example data.frame with additional columns
 cats <- data.frame(category = c("H", "M", "L"))
 
 examp_df2 <- data.frame(examp_df, cats)
 
-# Create an example SpatialPoints
-examp_sp <- SpatialPoints(examp_df, proj4string = CRS(prj_dd))
-
-# Create an example SpatialPointsDataFrame
-examp_spdf <- SpatialPointsDataFrame(examp_sp, data = cats)
+# Create an example 
+examp_sf <- sf::st_as_sf(examp_df2, coords = c("x", "y"), crs = crs_dd)
 ```
 
 If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output SpatialPointsDataFrame.  Similarly, an elevation column is added to the data slot of a SpatialPointsDataFrame.
 
-The USGS Elevation Point Query Service returns a single point at a time.  The implemntation in `get_elev_point()` will loop through each point, thus can be slow for large number of requests.  
+The USGS Elevation Point Query Service returns a single point at a time.  The implementation in `get_elev_point()` will loop through each point, thus can be slow for large number of requests.  
 
 Accessing data from this service is done by setting the `src` to `"epqs"`.  No API key is required and there are no rate limits.
 
 
 ```{r}
-df_elev_epqs <- get_elev_point(examp_df, prj = prj_dd, src = "epqs")
-data.frame(df_elev_epqs)
-df2_elev_epqs <- get_elev_point(examp_df2, prj = prj_dd, src = "epqs")
-data.frame(df2_elev_epqs)
-sp_elev_epqs <- get_elev_point(examp_sp, src = "epqs")
-sp_elev_epqs
-spdf_elev_epqs <- get_elev_point(examp_spdf, src = "epqs")
-spdf_elev_epqs
+df_elev_epqs <- get_elev_point(examp_df, prj = crs_dd, src = "epqs")
+df_elev_epqs
+df2_elev_epqs <- get_elev_point(examp_df2, prj = crs_dd, src = "epqs")
+df2_elev_epqs
+sf_elev_epqs <- get_elev_point(examp_sf, src = "epqs")
+sf_elev_epqs
 ```
 
 ## Point elevation from Amazon Web Service Terrain Tiles
@@ -103,7 +98,7 @@ spdf_elev_epqs
 Since version 0.2.0, `elevatr` has also provided access to point elevations from the AWS Terrain Tiles.  This is not a separate service from the raster DEM service (see below).  It is provided as a convenience so users don't need to download the raster DEMs from AWS and perform their own point data extraction.  The added benefit is that points outside of the United States may be used with the AWS source.  To access the the point elevations using "aws":
 
 ```{r}
-df_elev_aws <- get_elev_point(examp_df, prj = prj_dd, src = "aws")
+df_elev_aws <- get_elev_point(examp_df, prj = crs_dd, src = "aws")
 ```
 
 An important thing to note, that the elevations will differ, and the prime reason is the resolution of the AWS tiles at the specified zoom.  The default zoom of 5 (i.e., `z=5`) is rather coarse and that is reflected in the elevations.
@@ -116,7 +111,7 @@ df_elev_epqs$elevation
 A larger zoom results in a smaller pixel size and the two sources converge.
 
 ```{r}
-df_elev_aws_z12 <- get_elev_point(examp_df, prj = prj_dd, src = "aws", z = 12)
+df_elev_aws_z12 <- get_elev_point(examp_df, prj = crs_dd, src = "aws", z = 12)
 df_elev_aws_z12$elevation
 df_elev_epqs$elevation
 ```
@@ -127,7 +122,7 @@ Lastly, an example using locations outside of the United States.
 
 ```{r}
 mt_everest <- data.frame(x = 86.9250, y = 27.9881)
-everest_aws_elev <- get_elev_point(mt_everest, prj = prj_dd, z = 14, src = "aws")
+everest_aws_elev <- get_elev_point(mt_everest, prj = crs_dd, z = 14, src = "aws")
 everest_aws_elev
 ```
 
@@ -151,7 +146,7 @@ plot(elevation)
 plot(lake, add=TRUE)
 
 # data.frame example
-elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5)
+elevation_df <- get_elev_raster(examp_df,prj=crs_dd, z = 5)
 plot(elevation_df)
 plot(examp_sp, add = TRUE)
 ```

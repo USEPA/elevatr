@@ -16,6 +16,7 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 #' @keywords internal
 get_tilexy <- function(bbx,z){
   #Convert to -180 - +180
+  browser()
   bbx["x",] <- ifelse(bbx["x",] > 180, bbx["x",] - 360, bbx["x",])
   min_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,1],bbx[2,1],z))
   max_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,2],bbx[2,2],z))
@@ -60,24 +61,27 @@ loc_check <- function(locations, prj = NULL){
   } else {
     nfeature <- nrow(locations)
   }
+  
+  
   if(all(class(locations)=="data.frame")){ 
     if(is.null(prj) & !any(class(locations) %in% c("sf", "sfc", "sfg"))){
       stop("Please supply a valid sf crs via locations or prj.")
     }
     
     locations <- sf::st_as_sf(x = locations, coords = c("x", "y"), crs = prj)
-    locations$elevation <- rep(0, nfeature)
+    locations$elevation <- vector("numeric", nfeature)
     
   } else if(any(class(locations) %in% c("sf", "sfc", "sfg"))){
     
     sf_crs <- sf::st_crs(locations)
+    locations$elevation <- vector("numeric", nfeature)
     
     if((is.null(sf_crs) | is.na(sf_crs)) & is.null(prj)){
       stop("Please supply an sf object with a valid crs.")
     }
     
   } else if(attributes(class(locations)) %in% c("raster")){
-    
+    browser()
     raster_crs <- raster::crs(locations)
     
     if((is.null(raster_crs) | is.na(raster_crs))){
@@ -139,13 +143,13 @@ locations
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
   
-  lll <- any(grepl("GEOGCRS",sf::st_crs(prj)) |
-               grepl("GEODCRS", sf::st_crs(prj)) |
-               grepl("GEODETICCRS", sf::st_crs(prj)) |
-               grepl("GEOGRAPHICCRS", sf::st_crs(prj)) |
-               grepl("longlat", sf::st_crs(prj)) |
-               grepl("latlong", sf::st_crs(prj)) |
-               grepl("4326", sf::st_crs(prj)))
+  lll <- any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
+               grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
+               grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
+               grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
+               grepl("\\blonglat\\b", sf::st_crs(prj)) |
+               grepl("\\blatlong\\b", sf::st_crs(prj)) |
+               grepl("\\b4326\\b", sf::st_crs(prj)))
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
