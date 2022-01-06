@@ -1,5 +1,5 @@
 ## Comments
-Several bug and issue fixes, adds API key for OpenTopography.  
+Several bug and issue fixes, adds API key for OpenTopography.  Addresses invalid URL/URI in README
 
 ## Test Environments
 - Github Actions, Ubuntu 20.04 LTS, R version 4.1.2
