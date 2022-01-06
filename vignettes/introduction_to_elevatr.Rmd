@@ -116,7 +116,7 @@ df_elev_aws_z12$elevation
 df_elev_epqs$elevation
 ```
 
-Determining the correct zoom is a function of the needs of the user and represents a trade off between higher accuracy/longer download.
+Determining the correct zoom is a function of the needs of the user and represents a trade off between higher accuracy/longer downloads.
 
 Lastly, an example using locations outside of the United States.
 
@@ -139,16 +139,16 @@ As mentioned a data frame with x and y columns, a `sp` object, or a `raster` obj
 There is no difference in using the `sp` and `raster` input data types.  The data frame requires a `prj`.   We show examples using a `SpatialPolygonsDataFrame` and a data frame.  The zoom level (`z`) defaults to 9 (a trade off between resolution and time for download), but different zoom levels are often desired.  For example:  
 
 ```{r get_raster}
-# SpatialPolygonsDataFrame example
+# sf POLYGON example
 data(lake)
-elevation <- get_elev_raster(lake,z = 9)
+elevation <- get_elev_raster(lake, z = 9)
 plot(elevation)
 plot(lake, add=TRUE)
 
 # data.frame example
-elevation_df <- get_elev_raster(examp_df,prj=crs_dd, z = 5)
+elevation_df <- get_elev_raster(examp_df, prj=crs_dd, z = 5)
 plot(elevation_df)
-plot(examp_sp, add = TRUE)
+plot(examp_sf, add = TRUE, col = "black", pch = 19)
 ```
 
 The zoom level determines the resolution of the output raster.  More details on resolution and zoom level is still available in the [Mapzen Documentation on ground resolution](https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution).

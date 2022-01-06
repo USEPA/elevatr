@@ -16,10 +16,9 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 #' @keywords internal
 get_tilexy <- function(bbx,z){
   #Convert to -180 - +180
-  browser()
-  bbx["x",] <- ifelse(bbx["x",] > 180, bbx["x",] - 360, bbx["x",])
-  min_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,1],bbx[2,1],z))
-  max_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,2],bbx[2,2],z))
+  bbx[c("xmin","xmax")] <- ifelse( bbx[c("xmin","xmax")] > 180,  bbx[c("xmin","xmax")] - 360,  bbx[c("xmin","xmax")])
+  min_tile <- unlist(slippymath::lonlat_to_tilenum(bbx["xmin"],bbx["ymin"],z))
+  max_tile <- unlist(slippymath::lonlat_to_tilenum(bbx["xmax"],bbx["ymax"],z))
   x_all <- seq(from = floor(min_tile[1]), to = floor(max_tile[1]))
   y_all <- seq(from = floor(min_tile[2]), to = floor(max_tile[2]))
   
@@ -37,17 +36,17 @@ get_tilexy <- function(bbx,z){
 }
 
 #' function to get a data.frame of all xyz tiles to download
-#' @keywords internal
-get_tilexy_coords <- function(locations,z){
-  coords <- sp::coordinates(locations)
-  
-  tiles <- latlong_to_tilexy(coords[,1],coords[,2],z)
-  tiles <- matrix(tiles, nrow = nrow(coords), ncol = 2)
-  tiles <- floor(tiles)
-  tiles <- unique(tiles)
-  
-  tiles
-}
+# @keywords internal
+#get_tilexy_coords <- function(locations,z){
+#  coords <- sp::coordinates(locations)
+#  
+#  tiles <- latlong_to_tilexy(coords[,1],coords[,2],z)
+#  tiles <- matrix(tiles, nrow = nrow(coords), ncol = 2)
+#  tiles <- floor(tiles)
+#  tiles <- unique(tiles)
+#  
+#  tiles
+#}
 
 
 
@@ -81,7 +80,7 @@ loc_check <- function(locations, prj = NULL){
     }
     
   } else if(attributes(class(locations)) %in% c("raster")){
-    browser()
+    
     raster_crs <- raster::crs(locations)
     
     if((is.null(raster_crs) | is.na(raster_crs))){
@@ -93,11 +92,11 @@ loc_check <- function(locations, prj = NULL){
           if(sum(!is.na(raster::getValues(locations))) == 0){
             stop("No distinct points, all values NA.")
           } else {
-            
+            browser()
             locations <- unique(data.frame(raster::rasterToPoints(locations)))
             locations$elevation <- vector("numeric", nrow(locations))
             locations<-sf::st_as_sf(x = locations, coords = c("x", "y"), 
-                                    crs = st_crs(prj))
+                                    crs = sf::st_crs(prj))
           }
         }
     } else if(attributes(class(locations)) %in% c("raster")){
@@ -105,6 +104,7 @@ loc_check <- function(locations, prj = NULL){
       if(sum(!is.na(raster::getValues(locations))) == 0){
         stop("No distinct points, all values NA.")
       } else {
+        browser()
         locations <- unique(data.frame(raster::rasterToPoints(locations)))
         locations$elevation <- vector("numeric", nrow(locations))
         locations <- sf::st_as_sf(x = locations, coords = c("x", "y"),
@@ -120,13 +120,13 @@ loc_check <- function(locations, prj = NULL){
     prj_test <- prj
   }
   
-  lll <- any(grepl("\\bGEOGCRS\\b",st_crs(prj_test)) |
-               grepl("\\bGEODCRS\\b", st_crs(prj_test)) |
-               grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
-               grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
-               grepl("\\blonglat\\b", st_crs(prj_test)) |
-               grepl("\\blatlong\\b", st_crs(prj_test)) |
-               grepl("\\b4326\\b", st_crs(prj_test)))
+  lll <- any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj_test)) |
+               grepl("\\bGEODCRS\\b", sf::st_crs(prj_test)) |
+               grepl("\\bGEODETICCRS\\b", sf::st_crs(prj_test)) |
+               grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj_test)) |
+               grepl("\\blonglat\\b", sf::st_crs(prj_test)) |
+               grepl("\\blatlong\\b", sf::st_crs(prj_test)) |
+               grepl("\\b4326\\b", sf::st_crs(prj_test)))
   
   if(lll){
     if(any(sf::st_coordinates(locations)[,1]>180)){
@@ -166,7 +166,7 @@ proj_expand <- function(locations,prj,expand){
   } else if(nfeature == 1 & is.null(expand)){
     # Edge case for single point and projected
     # set to 1000 meters
-    unit <- st_crs(sf::st_as_sf(locations), parameters = TRUE)$ud_unit
+    unit <- sf::st_crs(sf::st_as_sf(locations), parameters = TRUE)$ud_unit
     expand <- units::set_units(units::set_units(1000, "m"), unit, 
                                mode = "standard")
     expand <- as.numeric(expand)
@@ -203,9 +203,9 @@ proj_expand <- function(locations,prj,expand){
 clip_it <- function(rast, loc, expand, clip){
   
   loc_wm <- sf::st_transform(loc, crs = raster::crs(rast))
-  if(clip == "locations" & !grepl("sfc_POINT", class(st_geometry(loc_wm))[1])){
+  if(clip == "locations" & !grepl("sfc_POINT", class(sf::st_geometry(loc_wm))[1])){
     dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
-  } else if(clip == "bbox" | grepl("sfc_POINT", class(st_geometry(loc_wm))[1])){
+  } else if(clip == "bbox" | grepl("sfc_POINT", class(sf::st_geometry(loc_wm))[1])){
     bbx <- proj_expand(loc_wm, as.character(raster::crs(rast)), expand)
     bbx_sf <- sf::st_transform(bbox_to_sf(bbx), crs = raster::crs(rast))
     dem <- raster::mask(raster::crop(rast,bbx_sf), bbx_sf)

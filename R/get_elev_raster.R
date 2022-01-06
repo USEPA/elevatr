@@ -141,7 +141,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #' Get a digital elevation model from the AWS Terrain Tiles
 #' 
 #' This function uses the AWS Terrain Tile service to retrieve an elevation
-#' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
+#' raster from the geotiff service.  It accepts a \code{sf::st_bbox} object as 
 #' input and returns a single raster object covering that extent.   
 #' 
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
@@ -149,7 +149,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
 #'         \url{https://github.com/tilezen/joerd/tree/master/docs} 
 #' 
-#' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
+#' @param bbx a \code{sf::st_bbox} object that is used to select x,y,z tiles.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
@@ -287,7 +287,7 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
                  source = destfile, 
                  destination = destfile2,
                  options = c("-r", method,
-                   "-t_srs", as.character(target_prj))
+                   "-t_srs", sf::st_crs(target_prj)$wkt)
   )
   
   if(returnRaster){
@@ -336,10 +336,10 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                      srtm15plus = "SRTM15Plus")
   
   url <- paste0(base_url, data_set,
-                "&west=",min(bbx[1,]),
-                "&south=",min(bbx[2,]),
-                "&east=",max(bbx[1,]),
-                "&north=",max(bbx[2,]),
+                "&west=",min(bbx["xmin"]),
+                "&south=",min(bbx["ymin"]),
+                "&east=",max(bbx["xmax"]),
+                "&north=",max(bbx["ymax"]),
                 "&outputFormat=GTiff",
                 "&API_Key=", api_key)
   

@@ -49,11 +49,11 @@ usage is to adjust timeout.  This is done as
 seconds.  Multiple configuration functions may be passed as a 
 vector.}
 
-\item{bbx}{a \code{sp::bbox} object that is used to select x,y,z tiles.}
+\item{bbx}{a \code{sf::st_bbox} object that is used to select x,y,z tiles.}
 }
 \description{
 This function uses the AWS Terrain Tile service to retrieve an elevation
-raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
+raster from the geotiff service.  It accepts a \code{sf::st_bbox} object as 
 input and returns a single raster object covering that extent.
 }
 \keyword{internal}

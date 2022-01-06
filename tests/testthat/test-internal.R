@@ -1,7 +1,6 @@
 context("internals not yet caught")
 library(sf)
 library(raster)
-library(rgdal)
 library(elevatr)
 data("pt_df")
 data("sf_big")
