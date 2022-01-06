@@ -5,7 +5,7 @@ status](https://github.com/jhollist/elevatr/workflows/R-CMD-check/badge.svg)](ht
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/elevatr)](https://www.r-pkg.org/pkg/elevatr)
 [![Codecov test
-coverage](https://codecov.io/gh/jhollist/elevatr/branch/main/graph/badge.svg)](https://codecov.io/gh/jhollist/elevatr?branch=main)
+coverage](https://codecov.io/gh/jhollist/elevatr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jhollist/elevatr?branch=main)
 [![DOI](https://zenodo.org/badge/65325400.svg)](https://zenodo.org/badge/latestdoi/65325400)
 
 # elevatr
@@ -63,7 +63,7 @@ I will gladly add it. Here are some of the ones that I have seen. Thank
 you all!
 
 -   [Michaela Mulhearn’s `rayshader` and `elevatr`
-    cheatsheet](contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
+    cheatsheet](https://github.com/jhollist/elevatr/blob/main/contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
 -   [researchremora on twitter has created some amazing elevation
     maps](https://mobile.twitter.com/researchremora/status/1415119197441564672)
 -   [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
