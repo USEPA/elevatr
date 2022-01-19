@@ -183,8 +183,7 @@ loc_check <- function(locations, prj = NULL){
                grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
                grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
                grepl("\\blonglat\\b", st_crs(prj_test)) |
-               grepl("\\blatlong\\b", st_crs(prj_test)) |
-               grepl("\\b4326\\b", st_crs(prj_test)))
+               grepl("\\blatlong\\b", st_crs(prj_test)))
   
   if(lll){
     if(any(sp::coordinates(locations)[,1]>180)){
@@ -206,8 +205,7 @@ proj_expand <- function(locations,prj,expand){
                grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
                grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
                grepl("\\blonglat\\b", sf::st_crs(prj)) |
-               grepl("\\blatlong\\b", sf::st_crs(prj)) |
-               grepl("\\b4326\\b", sf::st_crs(prj)))
+               grepl("\\blatlong\\b", sf::st_crs(prj)))
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 

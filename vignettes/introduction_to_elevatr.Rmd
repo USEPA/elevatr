@@ -197,7 +197,7 @@ Within `elevatr` the API key is expected to be stored as an R environment variab
 
 Below is an example for grabbing the OpenTopography SRTM data.
 
-```{r}
+```{r, eval=FALSE}
 lake_srtmgl1 <- get_elev_raster(lake, src = "gl1", clip = "bbox", expand = 1000)
 plot(lake_srtmgl1)
 plot(lake, add = TRUE)
