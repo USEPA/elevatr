@@ -28,7 +28,7 @@ jobs:
           
       - name: Install R packages
         run: |
-          Rscript -e "install.packages(c('sf', 'dplyr', 'elevatr'), type = "binary")"
+          Rscript -e "install.packages(c('sf', 'dplyr', 'elevatr'), type = 'binary')"
           
       - name: Run bug code
         run: |
