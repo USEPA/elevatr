@@ -1,0 +1,27 @@
+name: cc-buoys
+
+on:
+  push:
+    branches: main
+
+jobs:
+  cc-buoys:
+    runs-on: macos-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      
+    steps:
+      - name: checkout repo    
+        uses: actions/checkout@v2
+
+      - name: setup R
+        uses: r-lib/actions/setup-r@v1
+        with:
+          use-public-rspm: true
+          r-version: '4.1.2'
+          
+      - name: create dashboard
+        run: |
+          Rscript -e "source('inst/bug.R')"
+          
