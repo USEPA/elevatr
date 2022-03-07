@@ -1,31 +1,36 @@
-name: cc-buoys
+name: Bug Test
 
 on:
   push:
     branches: main
 
 jobs:
-  cc-buoys:
-    runs-on: macos-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_KEEP_PKG_SOURCE: yes
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: 'release'}
+          - {os: macos-latest, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/latest"}
+          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
       
     steps:
       - name: checkout repo    
         uses: actions/checkout@v2
 
-      - name: setup R
-        uses: r-lib/actions/setup-r@v1
+      -- uses: r-lib/actions/setup-r@v1
         with:
-          use-public-rspm: true
-          r-version: '4.1.2'
+          r-version: ${{ matrix.config.r }}
           
       - name: Install R packages
         run: |
           Rscript -e "install.packages(c('sf', 'dplyr', 'elevatr'))"
           
-      - name: create dashboard
+      - name: Run bug code
         run: |
           Rscript -e "source('inst/bug.R')"
           
