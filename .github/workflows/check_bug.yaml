@@ -35,7 +35,7 @@ jobs:
         run: |
           Rscript -e "install.packages('sf', configure.args = '--with-proj-lib=/usr/local/lib/', dependencies = TRUE)"
           Rscript -e "install.packages('rgdal', configure.args = c('--with-proj-lib=/usr/local/lib/', '--with-proj-include=/usr/local/include/'), dependencies = TRUE)"
-          Rscript -e "install.packages(c(dplyr', 'elevatr', 'sp'), type = 'binary', dependencies = TRUE)"
+          Rscript -e "install.packages(c('dplyr', 'elevatr', 'sp'), type = 'binary', dependencies = TRUE)"
           
       - name: Run bug code
         run: |
