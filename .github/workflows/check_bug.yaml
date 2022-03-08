@@ -29,7 +29,7 @@ jobs:
       - name: Install gdal
         if: matrix.config.os != 'windows-latest'
         run: |
-          brew install pkg-config gdal 
+          brew install gdal proj
           
       - name: Install R packages
         run: |
