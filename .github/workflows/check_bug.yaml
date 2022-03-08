@@ -26,15 +26,15 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           
-      - name: "Install gdal"
-        if: runner.os != "windows-latest"
+      - name: Install gdal
+        if: matrix.config.os != 'windows-latest'
         run: |
           brew install pkg-config gdal 
           
       - name: Install R packages
         run: |
           Rscript -e "install.packages('sf', configure.args = '--with-proj-lib=/usr/local/lib/', dependencies = TRUE)"
-          Rscript -e "install.packages('rgdal', configure.args = c('--with-proj-lib=/usr/local/lib/', '--with-proj-include=/usr/local/include/'))"
+          Rscript -e "install.packages('rgdal', configure.args = c('--with-proj-lib=/usr/local/lib/', '--with-proj-include=/usr/local/include/'), dependencies = TRUE)"
           Rscript -e "install.packages(c(dplyr', 'elevatr', 'sp'), type = 'binary', dependencies = TRUE)"
           
       - name: Run bug code
