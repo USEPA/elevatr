@@ -1,3 +1,12 @@
+elevatr 0.4.3 (2022-04-XX)
+
+# Fixes
+- Changed API ERRORS to warnings and return NA.  Would bomb out runs when this would happen only occasionally.
+- Switched long lat check from my homespun thing to st::sf_is_longlat
+
+
+=============
+
 elevatr 0.4.2 (2021-12-28)
 =============
 

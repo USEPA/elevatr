@@ -201,12 +201,13 @@ locations
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
   
-  lll <- any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
-               grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
-               grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
-               grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
-               grepl("\\blonglat\\b", sf::st_crs(prj)) |
-               grepl("\\blatlong\\b", sf::st_crs(prj)))
+  lll <- sf::st_is_longlat(prj)
+    #any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
+    #           grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\blonglat\\b", sf::st_crs(prj)) |
+    #           grepl("\\blatlong\\b", sf::st_crs(prj)))
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
