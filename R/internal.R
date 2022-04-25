@@ -178,12 +178,13 @@ loc_check <- function(locations, prj = NULL){
     prj_test <- prj
   }
   
-  lll <- any(grepl("\\bGEOGCRS\\b",st_crs(prj_test)) |
-               grepl("\\bGEODCRS\\b", st_crs(prj_test)) |
-               grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
-               grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
-               grepl("\\blonglat\\b", st_crs(prj_test)) |
-               grepl("\\blatlong\\b", st_crs(prj_test)))
+  lll <- sf::st_is_longlat(prj_test)
+  #any(grepl("\\bGEOGCRS\\b",st_crs(prj_test)) | 
+  #     grepl("\\bGEODCRS\\b", st_crs(prj_test)) |
+  #     grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
+  #     grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
+  #     grepl("\\blonglat\\b", st_crs(prj_test)) |
+  #     grepl("\\blatlong\\b", st_crs(prj_test)))
   
   if(lll){
     if(any(sp::coordinates(locations)[,1]>180)){
