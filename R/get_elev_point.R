@@ -196,32 +196,39 @@ get_epqs <- function(locations, units = c("meters","feet"),
   units <- paste0("&units=",units)
   
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
-      x <- coords[1]
-      y <- coords[2]
+    Sys.sleep(0.001) #Getting non-repeateable errors maybe too many hits...
+    x <- coords[1]
+    y <- coords[2]
+    
+    loc <- paste0("x=",x, "&y=", y)
+    url <- paste0(base_url,loc,units,"&output=json")
+    resp <- tryCatch(httr::GET(url), error = function(e) e)
+    n<-1
+    
+    while(n <= 5 & any(class(resp) == "simpleError")) {
+      # Hit it again to test as most times this is a unexplained timeout that
+      # Corrects on next hit
       
-      loc <- paste0("x=",x, "&y=", y)
-      url <- paste0(base_url,loc,units,"&output=json")
-     
       resp <- tryCatch(httr::GET(url), error = function(e) e)
-      n<-1
-      
-      while(n <= 5 & any(class(resp) == "simpleError")) {
-        # Hit it again to test as most times this is a unexplained timeout that
-        # Corrects on next hit
-        
-        resp <- tryCatch(httr::GET(url), error = function(e) e)
-        n <- n + 1
-      }
-      
-      if(n > 5 & any(class(resp) == "simpleError"))  {
-        warning(paste0("API returned:'", resp$message, 
-                       "'. NA returned for elevation"), 
-                call. = FALSE)
-        return(NA)
-      }
-      
-    resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+      n <- n + 1
+    }
+    
+    if(n > 5 & any(class(resp) == "simpleError"))  {
+      warning(paste0("API returned:'", resp$message, 
+                     "'. NA returned for elevation"), 
+              call. = FALSE)
+      return(NA)
+    }
+    
+    if(httr::status_code(resp) == 200){
+      resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                simplifyVector = FALSE)
+    } else {
+      warning(paste0("API returned a status code:'", resp$status_code, 
+                     "'. NA returned for elevation"), 
+              call. = FALSE)
+      return(NA)
+    }
     as.numeric(resp[[1]][[1]]$Elevation)
   }
   
