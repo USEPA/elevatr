@@ -40,7 +40,7 @@ elevation web services:
 
 ## Installation
 
-Version 0.4.1 of this package is currently available from CRAN and may
+Version 0.4.2 of this package is currently available from CRAN and may
 be installed by:
 
 ``` r
@@ -69,6 +69,9 @@ you all!
 -   [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
     `elevatr` to create some cool
     visualizations](https://github.com/h-a-graham/rayvista)
+-   [Spencer Schien has built some fantastic shaded relief
+    visulaizations and provided the code to recreate
+    them](https://github.com/Pecners/rayshader_portraits)
 
 ## Attribution
 
