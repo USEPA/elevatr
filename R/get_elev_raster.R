@@ -128,6 +128,9 @@ get_elev_raster <- function(locations, z, prj = NULL,
   } else if(src %in% c("gl3", "gl1", "alos", "srtm15plus")){
     raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, ...)
   }
+  sources <- attr(raster_elev, "sources")
+  if(is.null(sources)){sources <- src}
+  
   if(clip != "tile"){
     message(paste("Clipping DEM to", clip))
     
@@ -143,6 +146,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
     raster_elev[raster_elev < 0] <- NA
   }
   
+  attr(raster_elev, "sources") <- sources
   raster_elev
   
 }
@@ -218,7 +222,6 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
       clear = FALSE, 
       width= 60
     ))
-  
   progressr::with_progress({
   if(serial){
     
@@ -258,13 +261,15 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                                   })
   }
   })
-
+  
   merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
   sources <- unlist(lapply(dem_list, function(x) attr(x, "source")))
-  sources <- trimws(unlist(strsplit(sources, ",")))
-  sources <- strsplit(sources, "/")
-  sources <- unlist(unique(lapply(sources, function(x) x[1])))
-  mreged_elevation_grid <- attr(merged_elevation_grid, "sources") <- 
+  if(!is.null(sources)){
+    sources <- trimws(unlist(strsplit(sources, ",")))
+    sources <- strsplit(sources, "/")
+    sources <- unlist(unique(lapply(sources, function(x) x[1])))
+  }
+  attr(merged_elevation_grid, "sources") <- 
     paste(sources, collapse = ",")
   
   if(serial==FALSE){future::plan(future::sequential)}

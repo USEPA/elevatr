@@ -258,7 +258,7 @@ proj_expand <- function(locations,prj,expand){
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
-  
+
   loc_wm <- sp::spTransform(loc, raster::crs(rast))
   if(clip == "locations" & !grepl("Points", class(loc_wm))){
     dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
