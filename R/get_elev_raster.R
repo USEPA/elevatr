@@ -78,7 +78,7 @@
 #' # Example for PROJ < 5.2.0 
 #' x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
 
-#' x <- get_elev_raster(lake, z = 12)
+#' x <- get_elev_raster(lake, z = 12, serial = TRUE)
 #' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 #' }
 
@@ -221,6 +221,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
   
   progressr::with_progress({
   if(serial){
+    
     p <- progressr::progressor(along = urls)
     dem_list <- purrr::map(urls,
                            function(x){
@@ -232,7 +233,10 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                              if (!grepl("image/tif", httr::http_type(resp))) {
                                stop(paste("This url:", x,"did not return a tif"), call. = FALSE)
                              } 
-                             tmpfile
+                             tmpfile2 <- tmpfile
+                             attr(tmpfile2, "source") <- 
+                               httr::headers(resp)$'x-amz-meta-x-imagery-sources'
+                             tmpfile2
                            })
   } else {
     future::plan(future::multisession, workers = ncpu)
@@ -247,16 +251,25 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                                     if (!grepl("image/tif", httr::http_type(resp))) {
                                       stop(paste("This url:", x,"did not return a tif"), call. = FALSE)
                                     } 
-                                    tmpfile
+                                    tmpfile2 <- tmpfile
+                                    attr(tmpfile2, "source") <- 
+                                      httr::headers(resp)$'x-amz-meta-x-imagery-sources'
+                                    tmpfile2
                                   })
   }
   })
 
   merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
+  sources <- unlist(lapply(dem_list, function(x) attr(x, "source")))
+  sources <- trimws(unlist(strsplit(sources, ",")))
+  sources <- strsplit(sources, "/")
+  sources <- unlist(unique(lapply(sources, function(x) x[1])))
+  mreged_elevation_grid <- attr(merged_elevation_grid, "sources") <- 
+    paste(sources, collapse = ",")
   
   if(serial==FALSE){future::plan(future::sequential)}
   
-  merged_elevation_grid
+  merged_elevation_grid 
 }
 
 #' Merge Rasters
