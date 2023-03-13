@@ -184,7 +184,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
     }
   }
   
-  base_url <- "https://nationalmap.gov/epqs/pqs.php?"
+  base_url <- "https://epqs.nationalmap.gov/v1/json?"
   if(match.arg(units) == "meters"){
     units <- "Meters"
   } else if(match.arg(units) == "feet"){
@@ -196,6 +196,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
   units <- paste0("&units=",units)
   
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
+    
     Sys.sleep(0.001) #Getting non-repeateable errors maybe too many hits...
     x <- coords[1]
     y <- coords[2]
@@ -220,7 +221,11 @@ get_epqs <- function(locations, units = c("meters","feet"),
       return(NA)
     }
     
-    if(httr::status_code(resp) == 200){
+    if(httr::status_code(resp) == 200 & httr::content(resp, "text", encoding = "UTF-8") == ""){
+      warning("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
+      return(NA)
+    } else if(httr::status_code(resp) == 200){
+      
       resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                simplifyVector = FALSE)
     } else {
@@ -229,7 +234,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
               call. = FALSE)
       return(NA)
     }
-    as.numeric(resp[[1]][[1]]$Elevation)
+    round(as.numeric(resp$value), 2)
   }
   
   coords_df <- split(data.frame(sp::coordinates(locations)), 
