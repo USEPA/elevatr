@@ -1,8 +1,9 @@
-elevatr 0.4.3 (2022-04-XX)
+elevatr 0.4.3 (2023-04-XX)
 
 # Fixes
 - Changed API ERRORS to warnings and return NA.  Would bomb out runs when this would happen only occasionally.
 - Switched long lat check from my homespun thing to st::sf_is_longlat
+- Fixed EPQS API URL.  Moved to a new one.  Thanks @haas4726 for the catch.
 
 
 =============
