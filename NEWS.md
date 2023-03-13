@@ -1,4 +1,5 @@
 elevatr 0.4.3 (2023-04-XX)
+=============
 
 # Fixes
 - Changed API ERRORS to warnings and return NA.  Would bomb out runs when this would happen only occasionally.
@@ -6,7 +7,7 @@ elevatr 0.4.3 (2023-04-XX)
 - Fixed EPQS API URL.  Moved to a new one.  Thanks @haas4726 for the catch.
 
 
-=============
+
 
 elevatr 0.4.2 (2021-12-28)
 =============
