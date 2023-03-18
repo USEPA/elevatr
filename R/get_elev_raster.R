@@ -370,7 +370,7 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                 "&outputFormat=GTiff",
                 "&API_Key=", api_key)
   
-  message("Downloading OpenTopography DEMs using GET URL: ", url)
+  message("Downloading OpenTopography DEMs")
   resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), 
                     httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
                     httr::progress(), ...)
