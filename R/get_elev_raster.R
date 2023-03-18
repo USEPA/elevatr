@@ -359,7 +359,7 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
   data_set <- switch(src,
                      gl3 = "SRTMGL3",
                      gl1 = "SRTMGL1",
-                     gl1e = "SRTM_GL1_Ellip",
+                     gl1e = "SRTMGL1Ellip",
                      alos = "AW3D30",
                      srtm15plus = "SRTM15Plus")
   url <- paste0(base_url, data_set,
