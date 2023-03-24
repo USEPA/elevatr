@@ -70,7 +70,7 @@ loc_check <- function(locations, prj = NULL){
     nfeature <- nrow(locations)
   }
   
-  if(class(locations)=="data.frame"){ 
+  if(inherits(locations, "data.frame")){ 
     if(is.null(prj)){
       stop("Please supply a valid crs via locations or prj.")
     }
@@ -92,7 +92,7 @@ loc_check <- function(locations, prj = NULL){
                                proj4string = sp::CRS(SRS_string = prj),
                                data = df)
     }
-  } else if(class(locations) == "SpatialPoints"){
+  } else if(inherits(locations, "SpatialPoints")){
     
     crs_check <- is.na(st_crs(st_as_sf(locations)))
     if(crs_check &  is.null(prj)){
@@ -114,7 +114,7 @@ loc_check <- function(locations, prj = NULL){
                       elevation = vector("numeric", nrow(
                         sp::coordinates(locations)))))
     
-  } else if(class(locations) == "SpatialPointsDataFrame"){
+  } else if(inherits(locations,"SpatialPointsDataFrame")){
     crs_check <- is.na(st_crs(st_as_sf(locations)))
     if(crs_check & is.null(prj)) {
       stop("Please supply a valid crs via locations or prj.")
