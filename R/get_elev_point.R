@@ -201,7 +201,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
   locations <- sp::spTransform(locations,
                                    sp::CRS(SRS_string = ll_prj))
   units <- paste0("&units=",units)
-  browser()
+  
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
     
     Sys.sleep(0.001) #Getting non-repeateable errors maybe too many hits...
