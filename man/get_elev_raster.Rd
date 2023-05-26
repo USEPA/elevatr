@@ -108,7 +108,7 @@ x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
 
 # Example for PROJ < 5.2.0 
 x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
-x <- get_elev_raster(lake, z = 12)
+x <- get_elev_raster(lake, z = 12, serial = TRUE)
 x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 }
 }

@@ -87,6 +87,11 @@ get_elev_raster <- function(locations, z, prj = NULL,
                             expand = NULL, clip = c("tile", "bbox", "locations"), 
                             verbose = TRUE, neg_to_na = FALSE, 
                             override_size_check = FALSE, ...){
+  # First Check for internet
+  if(!curl::has_internet()) {
+    message("Please connect to the internet and try again.")
+    return(NULL)
+  }
   
   src  <- match.arg(src)
   clip <- match.arg(clip) 
@@ -198,12 +203,18 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
   
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff"
   
-  #tiles <- get_tilexy_coords(locations, z)
+  
   tiles <- get_tilexy(bbx,z)
   
   urls  <-  sprintf("%s/%s/%s/%s.tif", base_url, z, tiles[,1], tiles[,2])
   
-  #dem_list <- vector("list",length = nrow(tiles))
+  for(i in urls){
+    if(httr::http_error(i)) {
+      message("An AWS URL is invalid.")
+      return(NULL)
+    }
+  }
+  
   
   dir <- tempdir()
   
@@ -368,6 +379,11 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                 "&north=",max(bbx[2,]),
                 "&outputFormat=GTiff",
                 "&API_Key=", api_key)
+ 
+  if(httr::http_error(url)) {
+    message("The OpenTopography URL is invalid.")
+    return(NULL)
+  }
   
   message("Downloading OpenTopography DEMs")
   resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), 

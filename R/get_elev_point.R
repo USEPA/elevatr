@@ -78,6 +78,12 @@
 get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), 
                            overwrite = FALSE, ...){
   
+  # First Check for internet
+  if(!curl::has_internet()) {
+    message("Please connect to the internet and try again.")
+    return(NULL)
+  }
+  
   src <- match.arg(src)
   sf_check <- ("sf" %in% class(locations)) | ("sfc" %in% class(locations))
   
@@ -185,6 +191,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
   }
   
   base_url <- "https://epqs.nationalmap.gov/v1/json?"
+  
   if(match.arg(units) == "meters"){
     units <- "Meters"
   } else if(match.arg(units) == "feet"){
@@ -194,7 +201,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
   locations <- sp::spTransform(locations,
                                    sp::CRS(SRS_string = ll_prj))
   units <- paste0("&units=",units)
-  
+  browser()
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
     
     Sys.sleep(0.001) #Getting non-repeateable errors maybe too many hits...
@@ -203,6 +210,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
     
     loc <- paste0("x=",x, "&y=", y)
     url <- paste0(base_url,loc,units,"&output=json")
+    
     resp <- tryCatch(httr::GET(url), error = function(e) e)
     n<-1
     
@@ -215,21 +223,21 @@ get_epqs <- function(locations, units = c("meters","feet"),
     }
     
     if(n > 5 & any(class(resp) == "simpleError"))  {
-      warning(paste0("API returned:'", resp$message, 
+      message(paste0("API returned:'", resp$message, 
                      "'. NA returned for elevation"), 
               call. = FALSE)
       return(NA)
     }
     
     if(httr::status_code(resp) == 200 & httr::content(resp, "text", encoding = "UTF-8") == ""){
-      warning("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
+      message("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
       return(NA)
     } else if(httr::status_code(resp) == 200){
       
       resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                simplifyVector = FALSE)
     } else {
-      warning(paste0("API returned a status code:'", resp$status_code, 
+      message(paste0("API returned a status code:'", resp$status_code, 
                      "'. NA returned for elevation"), 
               call. = FALSE)
       return(NA)

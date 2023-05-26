@@ -1,8 +1,8 @@
-elevatr 0.4.3 (2023-04-XX)
+elevatr 0.4.3 (2023-05-26)
 =============
 
 # Fixes
-- Changed API ERRORS to warnings and return NA.  Would bomb out runs when this would happen only occasionally.
+- Changed API ERRORS to messages and return NA.  Would bomb out runs when this would happen only occasionally. Also this should meet CRAN policy on failing gracefully.
 - Switched long lat check from my homespun thing to st::sf_is_longlat
 - Fixed EPQS API URL.  Moved to a new one.  Thanks @haas4726 for the catch.
 

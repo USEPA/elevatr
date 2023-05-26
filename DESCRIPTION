@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Access Elevation Data from Various APIs
-Version: 0.4.3.9999
+Version: 0.4.3
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9254-9740")),
              person("Tarak","Shah", role = "ctb"),
@@ -31,7 +31,8 @@ Imports:
     purrr,
     methods,
     units,
-    slippymath
+    slippymath,
+    curl
 License: CC0
 Encoding: UTF-8
 LazyData: true
