@@ -1,4 +1,5 @@
 ## Comments
+- Re-submit (SORRY!) with fixed URLS
 - Changed API ERRORS to messages and return NA or NULL.  Would bomb out runs when this would happen only occasionally. Also this should meet CRAN policy on failing gracefully.
 - Switched long lat check to st::sf_is_longlat
 - Fixed EPQS API URL that was poitned out by a user and emails from Uwe Ligges and Brian Ripley on 2023-05-26.
