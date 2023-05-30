@@ -64,8 +64,8 @@ you all!
 
 - [Michaela Mulhearn’s `rayshader` and `elevatr`
   cheatsheet](https://github.com/jhollist/elevatr/blob/main/contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
-- [researchremora on twitter has created some amazing elevation
-  maps](https://twitter.com/researchremora)
+- researchremora on twitter has created some amazing elevation
+  maps
 - [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
   `elevatr` to create some cool
   visualizations](https://github.com/h-a-graham/rayvista)
