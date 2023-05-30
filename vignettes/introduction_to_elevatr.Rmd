@@ -52,7 +52,7 @@ Point elevation is accessed from `get_elev_point()`.  This function takes either
 
 ## USGS Elevation Point Query Service 
 
-The [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/) is accessible from `elevatr`.  It is only available for the United States (including Alaska and Hawaii).  Points that fall within the United States but are not on land return a value of zero.  Points outside the United States boundaries return a value of -1000000.
+The [USGS Elevation Point Query Service](https://apps.nationalmap.gov/epqs/) is accessible from `elevatr`.  It is only available for the United States (including Alaska and Hawaii).  Points that fall within the United States but are not on land return a value of zero.  Points outside the United States boundaries return a value of -1000000.
 
 ### Using `get_elev_point()` to Access The USGS Elevation Point Query Service
 

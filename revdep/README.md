@@ -10,23 +10,23 @@
 |collate  |English_United States.utf8               |
 |ctype    |English_United States.utf8               |
 |tz       |America/New_York                         |
-|date     |2023-05-26                               |
+|date     |2023-05-30                               |
 |rstudio  |2022.12.0+353 Elsbeth Geranium (desktop) |
 |pandoc   |NA                                       |
 
 # Dependencies
 
-|package |old   |new    |Δ  |
-|:-------|:-----|:------|:--|
-|elevatr |0.4.2 |0.4.3  |*  |
-|sf      |NA    |1.0-13 |*  |
+|package    |old   |new    |Δ  |
+|:----------|:-----|:------|:--|
+|elevatr    |0.4.2 |0.4.3  |*  |
+|parallelly |NA    |1.36.0 |*  |
+|sf         |NA    |1.0-13 |*  |
 
 # Revdeps
 
-## Failed to check (2)
+## Failed to check (1)
 
 |package   |version |error |warning |note |
 |:---------|:-------|:-----|:-------|:----|
-|gwavr     |?       |      |        |     |
 |shoredate |1.0.2   |1     |        |     |
 

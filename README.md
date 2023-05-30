@@ -18,25 +18,25 @@ Tiles](https://registry.opendata.aws/terrain-tiles/) and the Open
 Topography [Global datasets
 API](https://opentopography.org/developers#API) for raster digital
 elevation models. For point elevation data,the [USGS Elevation Point
-Query Service](https://nationalmap.gov/epqs/)) may be used or the point
-elevations may be derived from the AWS Tiles. Additional elevation data
-sources may be added as they come available.
+Query Service](https://apps.nationalmap.gov/epqs/)) may be used or the
+point elevations may be derived from the AWS Tiles. Additional elevation
+data sources may be added as they come available.
 
 Currently this package includes just two primary functions to access
 elevation web services:
 
--   `get_elev_point()`: Get point elevations using the USGS Elevation
-    Point Query Service (for the US Only) or using the AWS Terrian Tiles
-    (global). This will accept a data frame of x (long) and y (lat), a
-    SpatialPoints/SpatialPointsDataFame, or a Simple Features object as
-    input. A SpatialPointsDataFrame or Simple Features object is
-    returned, depending on the class of the input locations.
--   `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital
-    Elevation Model) from the AWS Open Data Terrain Tiles. Other sources
-    may be added later. This will accept a data frame of of x (long) and
-    y (lat) or any `sp` or `raster` object as input and will return a
-    `raster` object of the elevation tiles that cover the bounding box
-    of the input spatial data.
+- `get_elev_point()`: Get point elevations using the USGS Elevation
+  Point Query Service (for the US Only) or using the AWS Terrian Tiles
+  (global). This will accept a data frame of x (long) and y (lat), a
+  SpatialPoints/SpatialPointsDataFame, or a Simple Features object as
+  input. A SpatialPointsDataFrame or Simple Features object is returned,
+  depending on the class of the input locations.
+- `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital
+  Elevation Model) from the AWS Open Data Terrain Tiles. Other sources
+  may be added later. This will accept a data frame of of x (long) and y
+  (lat) or any `sp` or `raster` object as input and will return a
+  `raster` object of the elevation tiles that cover the bounding box of
+  the input spatial data.
 
 ## Installation
 
@@ -62,16 +62,16 @@ the user community. If you have one you’d like to share, let me know and
 I will gladly add it. Here are some of the ones that I have seen. Thank
 you all!
 
--   [Michaela Mulhearn’s `rayshader` and `elevatr`
-    cheatsheet](https://github.com/jhollist/elevatr/blob/main/contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
--   [researchremora on twitter has created some amazing elevation
-    maps](https://mobile.twitter.com/researchremora/status/1415119197441564672)
--   [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
-    `elevatr` to create some cool
-    visualizations](https://github.com/h-a-graham/rayvista)
--   [Spencer Schien has built some fantastic shaded relief
-    visulaizations and provided the code to recreate
-    them](https://github.com/Pecners/rayshader_portraits)
+- [Michaela Mulhearn’s `rayshader` and `elevatr`
+  cheatsheet](https://github.com/jhollist/elevatr/blob/main/contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
+- [researchremora on twitter has created some amazing elevation
+  maps](https://twitter.com/researchremora)
+- [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
+  `elevatr` to create some cool
+  visualizations](https://github.com/h-a-graham/rayvista)
+- [Spencer Schien has built some fantastic shaded relief visulaizations
+  and provided the code to recreate
+  them](https://github.com/Pecners/rayshader_portraits)
 
 ## Attribution
 
