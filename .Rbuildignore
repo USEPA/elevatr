@@ -8,6 +8,7 @@
 ^CONTRIBUTING.md$
 ^README\.Rmd$
 ^README\.pdf$
+^README\.html$
 ^figure$
 ^NEWS\.md$
 ^log_check\.R$

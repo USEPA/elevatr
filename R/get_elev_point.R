@@ -75,6 +75,12 @@
 get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), 
                            overwrite = FALSE, ...){
   
+  # First Check for internet
+  if(!curl::has_internet()) {
+    message("Please connect to the internet and try again.")
+    return(NULL)
+  }
+  
   src <- match.arg(src)
   
   # Check for existing elevation/elev_units columns and overwrite or error
@@ -171,7 +177,8 @@ get_epqs <- function(locations, units = c("meters","feet"),
     }
   }
   
-  base_url <- "https://nationalmap.gov/epqs/pqs.php?"
+  base_url <- "https://epqs.nationalmap.gov/v1/json?"
+  
   if(match.arg(units) == "meters"){
     units <- "Meters"
   } else if(match.arg(units) == "feet"){
@@ -182,33 +189,46 @@ get_epqs <- function(locations, units = c("meters","feet"),
   units <- paste0("&units=",units)
   
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
-      x <- coords[1]
-      y <- coords[2]
-      
-      loc <- paste0("x=",x, "&y=", y)
-      url <- paste0(base_url,loc,units,"&output=json")
+    
+    Sys.sleep(0.001) #Getting non-repeateable errors maybe too many hits...
+    x <- coords[1]
+    y <- coords[2]
+    
+    loc <- paste0("x=",x, "&y=", y)
+    url <- paste0(base_url,loc,units,"&output=json")
+    
+    resp <- tryCatch(httr::GET(url), error = function(e) e)
+    n<-1
+    
+    while(n <= 5 & any(class(resp) == "simpleError")) {
+      # Hit it again to test as most times this is a unexplained timeout that
+      # Corrects on next hit
       
       resp <- tryCatch(httr::GET(url), error = function(e) e)
-      n<-1
+      n <- n + 1
+    }
+    
+    if(n > 5 & any(class(resp) == "simpleError"))  {
+      message(paste0("API returned:'", resp$message, 
+                     "'. NA returned for elevation"), 
+              call. = FALSE)
+      return(NA)
+    }
+    
+    if(httr::status_code(resp) == 200 & httr::content(resp, "text", encoding = "UTF-8") == ""){
+      message("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
+      return(NA)
+    } else if(httr::status_code(resp) == 200){
       
-      while(n <= 5 & any(class(resp) == "simpleError")) {
-        # Hit it again to test as most times this is a unexplained timeout that
-        # Corrects on next hit
-        
-        resp <- tryCatch(httr::GET(url), error = function(e) e)
-        n <- n + 1
-      }
-      
-      if(n > 5 & any(class(resp) == "simpleError"))  {
-        warning(paste0("API returned:'", resp$message, 
-                       "'. NA returned for elevation"), 
-                call. = FALSE)
-        return(NA)
-      }
-      
-    resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+      resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                simplifyVector = FALSE)
-    as.numeric(resp[[1]][[1]]$Elevation)
+    } else {
+      message(paste0("API returned a status code:'", resp$status_code, 
+                     "'. NA returned for elevation"), 
+              call. = FALSE)
+      return(NA)
+    }
+    round(as.numeric(resp$value), 2)
   }
    
   

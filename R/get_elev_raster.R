@@ -82,6 +82,11 @@ get_elev_raster <- function(locations, z, prj = NULL,
                             expand = NULL, clip = c("tile", "bbox", "locations"), 
                             verbose = TRUE, neg_to_na = FALSE, 
                             override_size_check = FALSE, ...){
+  # First Check for internet
+  if(!curl::has_internet()) {
+    message("Please connect to the internet and try again.")
+    return(NULL)
+  }
   
   src  <- match.arg(src)
   clip <- match.arg(clip) 
@@ -119,6 +124,9 @@ get_elev_raster <- function(locations, z, prj = NULL,
   } else if(src %in% c("gl3", "gl1", "alos", "srtm15plus")){
     raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, ...)
   }
+  sources <- attr(raster_elev, "sources")
+  if(is.null(sources)){sources <- src}
+  
   if(clip != "tile"){
     message(paste("Clipping DEM to", clip))
     
@@ -134,6 +142,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
     raster_elev[raster_elev < 0] <- NA
   }
   
+  attr(raster_elev, "sources") <- sources
   raster_elev
   
 }
@@ -185,12 +194,18 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
   
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff"
   
-  #tiles <- get_tilexy_coords(locations, z)
+  
   tiles <- get_tilexy(bbx,z)
   
   urls  <-  sprintf("%s/%s/%s/%s.tif", base_url, z, tiles[,1], tiles[,2])
   
-  #dem_list <- vector("list",length = nrow(tiles))
+  for(i in urls){
+    if(httr::http_error(i)) {
+      message("An AWS URL is invalid.")
+      return(NULL)
+    }
+  }
+  
   
   dir <- tempdir()
   
@@ -209,9 +224,9 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
       clear = FALSE, 
       width= 60
     ))
-  
   progressr::with_progress({
   if(serial){
+    
     p <- progressr::progressor(along = urls)
     dem_list <- purrr::map(urls,
                            function(x){
@@ -223,7 +238,10 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                              if (!grepl("image/tif", httr::http_type(resp))) {
                                stop(paste("This url:", x,"did not return a tif"), call. = FALSE)
                              } 
-                             tmpfile
+                             tmpfile2 <- tmpfile
+                             attr(tmpfile2, "source") <- 
+                               httr::headers(resp)$'x-amz-meta-x-imagery-sources'
+                             tmpfile2
                            })
   } else {
     future::plan(future::multisession, workers = ncpu)
@@ -238,16 +256,27 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                                     if (!grepl("image/tif", httr::http_type(resp))) {
                                       stop(paste("This url:", x,"did not return a tif"), call. = FALSE)
                                     } 
-                                    tmpfile
+                                    tmpfile2 <- tmpfile
+                                    attr(tmpfile2, "source") <- 
+                                      httr::headers(resp)$'x-amz-meta-x-imagery-sources'
+                                    tmpfile2
                                   })
   }
   })
-
+  
   merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
+  sources <- unlist(lapply(dem_list, function(x) attr(x, "source")))
+  if(!is.null(sources)){
+    sources <- trimws(unlist(strsplit(sources, ",")))
+    sources <- strsplit(sources, "/")
+    sources <- unlist(unique(lapply(sources, function(x) x[1])))
+  }
+  attr(merged_elevation_grid, "sources") <- 
+    paste(sources, collapse = ",")
   
   if(serial==FALSE){future::plan(future::sequential)}
   
-  merged_elevation_grid
+  merged_elevation_grid 
 }
 
 #' Merge Rasters
@@ -342,6 +371,11 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                 "&north=",max(bbx["ymax"]),
                 "&outputFormat=GTiff",
                 "&API_Key=", api_key)
+ 
+  if(httr::http_error(url)) {
+    message("The OpenTopography URL is invalid.")
+    return(NULL)
+  }
   
   message("Downloading OpenTopography DEMs")
   resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), 

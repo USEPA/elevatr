@@ -60,8 +60,7 @@ loc_check <- function(locations, prj = NULL){
   } else {
     nfeature <- nrow(locations)
   }
-  
-  
+
   if(all(class(locations)=="data.frame")){ 
     if(is.null(prj) & !any(class(locations) %in% c("sf", "sfc", "sfg"))){
       stop("Please supply a valid sf crs via locations or prj.")
@@ -120,13 +119,8 @@ loc_check <- function(locations, prj = NULL){
     prj_test <- prj
   }
   
-  lll <- any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj_test)) |
-               grepl("\\bGEODCRS\\b", sf::st_crs(prj_test)) |
-               grepl("\\bGEODETICCRS\\b", sf::st_crs(prj_test)) |
-               grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj_test)) |
-               grepl("\\blonglat\\b", sf::st_crs(prj_test)) |
-               grepl("\\blatlong\\b", sf::st_crs(prj_test)) |
-               grepl("\\b4326\\b", sf::st_crs(prj_test)))
+
+  lll <- sf::st_is_longlat(prj_test)
   
   if(lll){
     if(any(sf::st_coordinates(locations)[,1]>180)){
@@ -143,13 +137,13 @@ locations
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
   
-  lll <- any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
-               grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
-               grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
-               grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
-               grepl("\\blonglat\\b", sf::st_crs(prj)) |
-               grepl("\\blatlong\\b", sf::st_crs(prj)) |
-               grepl("\\b4326\\b", sf::st_crs(prj)))
+  lll <- sf::st_is_longlat(prj)
+    #any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
+    #           grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
+    #           grepl("\\blonglat\\b", sf::st_crs(prj)) |
+    #           grepl("\\blatlong\\b", sf::st_crs(prj)))
   
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
@@ -201,7 +195,6 @@ proj_expand <- function(locations,prj,expand){
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
-  
   loc_wm <- sf::st_transform(loc, crs = raster::crs(rast))
   if(clip == "locations" & !grepl("sfc_POINT", class(sf::st_geometry(loc_wm))[1])){
     dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
@@ -212,28 +205,6 @@ clip_it <- function(rast, loc, expand, clip){
   }
   dem
 }
-
-# Edited from https://github.com/jhollist/quickmapr/blob/master/R/internals.R
-# Assumes geographic projection
-# sp bbox to poly
-# @param bbx an sp bbox object
-# @param prj defaults to "EPSG:4326"
-# @keywords internal
-# @importFrom sp wkt
-#bbox_to_sp <- function(bbox, prj = "EPSG:4326") {
-#  x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
-#  y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
-#  p <- sp::Polygon(cbind(x, y))
-#  ps <- sp::Polygons(list(p), "p1")
-#  if(grepl("+proj", prj)){
-#    sp_bbx <- sp::SpatialPolygons(list(ps), 1L, 
-#                                  proj4string = sp::CRS(prj))
-#  } else {
-#    sp_bbx <- sp::SpatialPolygons(list(ps), 1L, 
-#                                  proj4string = sp::CRS(SRS_string = prj))
-#  }
-#  sp_bbx
-#}
 
 #' Assumes geographic projection
 #' sf bbox to poly

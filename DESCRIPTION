@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Access Elevation Data from Various APIs
-Version: 0.4.2
+Version: 0.4.5.9999
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9254-9740")),
              person("Tarak","Shah", role = "ctb"),
@@ -17,7 +17,7 @@ Description: Several web services are available that provide access to elevation
              elevation services.  Currently, the package supports access to the
              Amazon Web Services Terrain Tiles <https://registry.opendata.aws/terrain-tiles/>, 
              the Open Topography Global Datasets API <https://opentopography.org/developers/>, 
-             and the USGS Elevation Point Query Service <https://nationalmap.gov/epqs/>.
+             and the USGS Elevation Point Query Service <https://apps.nationalmap.gov/epqs/>.
 Depends: R (>= 3.5.0)
 Imports:
     raster,
@@ -30,11 +30,12 @@ Imports:
     purrr,
     methods,
     units,
-    slippymath
+    slippymath,
+    curl
 License: CC0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Suggests: 
     testthat,
     knitr,

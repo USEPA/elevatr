@@ -4,10 +4,16 @@ elevatr 1.0.0 (????-??-??)
 # Major refactor
 - dropped sp, rgdal and rgeos depends
 - All sf
-- Terra?!?
-- gdalio??
-- slippymath??
-- Added API key for OpenTopography
+- Terra
+
+elevatr 0.4.4 (2023-05-30)
+=============
+
+# Fixes
+- Changed API ERRORS to messages and return NA.  Would bomb out runs when this would happen only occasionally. Also this should meet CRAN policy on failing gracefully.
+- Switched long lat check from my homespun thing to st::sf_is_longlat
+- Fixed EPQS API URL.  Moved to a new one.  Thanks @haas4726 for the catch.
+- URL fixes in docs
 
 elevatr 0.4.2 (2021-12-28)
 =============
@@ -142,7 +148,7 @@ elevatr 0.1.4 (2017-12-28)
 ==========================
 ## Bug Fixes
 - Primary change with this released is fixing a bug with the return file type on the AWS and mapzen APIs.  "tif" was changed to "tiff" and the check was stopping processing of the raster images.  Details are on <https://github.com/jhollist/elevatr/issues/17>. Thanks to the following individuals for catching this: @yipcma, @TomBor, @jslingsby.  And thanks to @vividbot for <https://github.com/jhollist/elevatr/pull/18> which provided a fix.  
-- Thanks to @pascalfust for this issue: <https://github.com/USEPA/elevatr/issues/2>.  Kicked me into gear to send fix to CRAN.
+- Thanks to @pascalfust for kicking me into gear to send fix to CRAN.
 - Fixed NOTE on CRAN: Packages in Imports, not imported.
     - Removed prettyunits
     - moved rgdal to suggests

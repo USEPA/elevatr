@@ -9,8 +9,10 @@ output:
     toc_float: yes
 vignette: >
   %\VignetteIndexEntry{Introduction to elevatr} 
-  %\VignetteEngine{knitr::rmarkdown} 
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown} 
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -53,7 +55,7 @@ Point elevation is accessed from `get_elev_point()`.  This function takes either
 
 ## USGS Elevation Point Query Service 
 
-The [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/) is accessible from `elevatr`.  It is only available for the United States (including Alaska and Hawaii).  Points that fall within the United States but are not on land return a value of zero.  Points outside the United States boundaries return a value of -1000000.
+The [USGS Elevation Point Query Service](https://apps.nationalmap.gov/epqs/) is accessible from `elevatr`.  It is only available for the United States (including Alaska and Hawaii).  Points that fall within the United States but are not on land return a value of zero.  Points outside the United States boundaries return a value of -1000000.
 
 ### Using `get_elev_point()` to Access The USGS Elevation Point Query Service
 
@@ -195,7 +197,7 @@ Within `elevatr` the API key is expected to be stored as an R environment variab
 
 Below is an example for grabbing the OpenTopography SRTM data.
 
-```{r}
+```{r, eval=FALSE}
 lake_srtmgl1 <- get_elev_raster(lake, src = "gl1", clip = "bbox", expand = 1000)
 plot(lake_srtmgl1)
 plot(lake, add = TRUE)
