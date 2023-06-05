@@ -35,20 +35,6 @@ get_tilexy <- function(bbx,z){
   return(expand.grid(x_all,y_all))
 }
 
-#' function to get a data.frame of all xyz tiles to download
-# @keywords internal
-#get_tilexy_coords <- function(locations,z){
-#  coords <- sp::coordinates(locations)
-#  
-#  tiles <- latlong_to_tilexy(coords[,1],coords[,2],z)
-#  tiles <- matrix(tiles, nrow = nrow(coords), ncol = 2)
-#  tiles <- floor(tiles)
-#  tiles <- unique(tiles)
-#  
-#  tiles
-#}
-
-
 
 #' function to check input type and projection.  All input types convert to a
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
@@ -78,39 +64,7 @@ loc_check <- function(locations, prj = NULL){
       stop("Please supply an sf object with a valid crs.")
     }
     
-  } else if(attributes(class(locations)) %in% c("raster")){
-    
-    raster_crs <- raster::crs(locations)
-    
-    if((is.null(raster_crs) | is.na(raster_crs))){
-      stop("Please supply a valid sf crs via locations or prj.")
-    }
-    
-    if(is.null(raster_crs) | is.na(raster_crs)){
-        if(attributes(class(locations)) == "raster"){
-          if(sum(!is.na(raster::getValues(locations))) == 0){
-            stop("No distinct points, all values NA.")
-          } else {
-            browser()
-            locations <- unique(data.frame(raster::rasterToPoints(locations)))
-            locations$elevation <- vector("numeric", nrow(locations))
-            locations<-sf::st_as_sf(x = locations, coords = c("x", "y"), 
-                                    crs = sf::st_crs(prj))
-          }
-        }
-    } else if(attributes(class(locations)) %in% c("raster")){
-      
-      if(sum(!is.na(raster::getValues(locations))) == 0){
-        stop("No distinct points, all values NA.")
-      } else {
-        browser()
-        locations <- unique(data.frame(raster::rasterToPoints(locations)))
-        locations$elevation <- vector("numeric", nrow(locations))
-        locations <- sf::st_as_sf(x = locations, coords = c("x", "y"),
-                                  crs = raster_crs)
-      }
-    }
-  }
+  } 
 
   #check for long>180
   if(is.null(prj)){
@@ -195,13 +149,13 @@ proj_expand <- function(locations,prj,expand){
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
-  loc_wm <- sf::st_transform(loc, crs = raster::crs(rast))
+  loc_wm <- sf::st_transform(loc, crs = terra::crs(rast))
   if(clip == "locations" & !grepl("sfc_POINT", class(sf::st_geometry(loc_wm))[1])){
-    dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
+    dem <- terra::mask(terra::crop(rast,loc_wm), loc_wm)
   } else if(clip == "bbox" | grepl("sfc_POINT", class(sf::st_geometry(loc_wm))[1])){
-    bbx <- proj_expand(loc_wm, as.character(raster::crs(rast)), expand)
-    bbx_sf <- sf::st_transform(bbox_to_sf(bbx), crs = raster::crs(rast))
-    dem <- raster::mask(raster::crop(rast,bbx_sf), bbx_sf)
+    bbx <- proj_expand(loc_wm, as.character(terra::crs(rast)), expand)
+    bbx_sf <- sf::st_transform(bbox_to_sf(bbx), crs = terra::crs(rast))
+    dem <- terra::mask(terra::crop(rast,bbx_sf), bbx_sf)
   }
   dem
 }

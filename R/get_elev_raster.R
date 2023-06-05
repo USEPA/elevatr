@@ -300,8 +300,8 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
   files    <- unlist(raster_list)
  
   if(is.null(target_prj)){
-    r <- raster::raster(files[1])
-    target_prj <- raster::crs(r)
+    r <- terra::rast(files[1])
+    target_prj <- terra::crs(r)
   }
   
   sf::gdal_utils(util = "warp", 
@@ -320,7 +320,7 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
   )
   
   if(returnRaster){
-    raster::raster(destfile2)
+    terra::rast(destfile2)
   } else {
     destfile2
   }

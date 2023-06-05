@@ -303,7 +303,7 @@ get_aws_points <- function(locations, z = 5, units = c("meters", "feet"),
                            verbose = TRUE, ...){
   units <- match.arg(units)
   dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
-  elevation <- raster::extract(dem, locations)
+  elevation <- terra::extract(dem, locations)
   if(units == "feet") {elevation <- elevation * 3.28084}
   locations$elevation <- round(elevation, 2)
   location_list <- list(locations, units)

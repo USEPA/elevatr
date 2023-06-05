@@ -35,11 +35,11 @@ test_that("get_elev_raster clip argument works", {
   bbox_clip <- get_elev_raster(lake, z = 5, clip = "bbox")
   locations_clip <- get_elev_raster(lake, z = 5, clip = "locations")
   
-  default_values <- raster::getValues(default_clip)
+  default_values <- terra::values(default_clip)
   num_cell_default <- length(default_values[!is.na(default_values)])
-  bbox_values <- raster::getValues(bbox_clip)
+  bbox_values <- terra::values(bbox_clip)
   num_cell_bbox <- length(bbox_values[!is.na(bbox_values)])
-  locations_values <- raster::getValues(locations_clip)
+  locations_values <- terra::values(locations_clip)
   num_cell_locations <- length(locations_values[!is.na(locations_values)])
   
   expect_true(num_cell_default > num_cell_bbox)
