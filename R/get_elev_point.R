@@ -37,26 +37,31 @@
 #'            increase.  
 #'            Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
 #'            for details.  
-#' @return Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
-#'         in the projection specified by the \code{prj} argument.
+#' @return Function returns an \code{sf} object in the projection specified by 
+#'         the \code{prj} argument.
 #' @export
 #' @examples
 #' \dontrun{
 #' library(elevatr)
 #' library(sf)
-#' library(raster)
+#' library(terra)
 #' 
 #' mts <- data.frame(x = c(-71.3036, -72.8145), 
 #'                   y = c(44.2700, 44.5438), 
 #'                   names = c("Mt. Washington", "Mt. Mansfield"))
 #' ll_prj <- 4326
 #' mts_sf <- st_as_sf(x = mts, coords = c("x", "y"), crs = ll_prj)
-#' mts_raster <- raster(mts_sf, ncol = 2, nrow = 2)
+#' #Empty Raster
+#' mts_raster <- rast(mts_sf, nrow = 5, ncol = 5)
+#' # Raster with cells for each location
+#' mts_raster_loc <- terra::rasterize(x, rast(x, nrow = 10, ncol = 10))
 #' 
 #' get_elev_point(locations = mts, prj = ll_prj)
 #' get_elev_point(locations = mts, units="feet", prj = ll_prj)
 #' get_elev_point(locations = mts_sf)
 #' get_elev_point(locations = mts_raster)
+#' get_elev_point(locations = mts_raster_loc)
+#' 
 #' 
 #' # Code to split into a loop and grab point at a time.
 #' # This is usually faster for points that are spread apart 
@@ -65,9 +70,8 @@
 #' 
 #' elev <- vector("numeric", length = nrow(mts))
 #' for(i in seq_along(mts)){
-#' elev[i]<-suppressMessages(get_elev_point(locations = mts[i,], prj = ll_prj, 
-#'                                         src = "aws", z = 14)$elevation)
-#'                                         }
+#' elev[i]<-get_elev_point(locations = mts[i,], prj = ll_prj, src = "aws", 
+#'                         z = 10)$elevation}
 #' mts_elev <- cbind(mts, elev)
 #' mts_elev
 #' }
@@ -231,13 +235,13 @@ get_epqs <- function(locations, units = c("meters","feet"),
     round(as.numeric(resp$value), 2)
   }
    
-  
   coords_df <- split(data.frame(sf::st_coordinates(locations)), 
                      seq_along(locations$elevation))   
   
   #elev_column_name <- make.unique(c(names(locations), "elevation"))
   #elev_column_name <- elev_column_name[!elev_column_name %in% names(locations)]
   elev_column_name <- "elevation"
+  browser()
   message("Downloading point elevations:")
   
   progressr::handlers(

@@ -2,14 +2,12 @@
 % Please edit documentation in R/internal.R
 \name{loc_check}
 \alias{loc_check}
-\title{function to get a data.frame of all xyz tiles to download
-function to check input type and projection.  All input types convert to a
+\title{function to check input type and projection.  All input types convert to a
 SpatialPointsDataFrame for point elevation and bbx for raster.}
 \usage{
 loc_check(locations, prj = NULL)
 }
 \description{
-function to get a data.frame of all xyz tiles to download
 function to check input type and projection.  All input types convert to a
 SpatialPointsDataFrame for point elevation and bbx for raster.
 }

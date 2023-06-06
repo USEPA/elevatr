@@ -49,8 +49,9 @@
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
-#' @return Function returns a \code{RasterLayer} in the projection 
-#'         specified by the \code{prj} argument.
+#' @return Function returns a \code{SpatRaster} in the projection 
+#'         specified by the \code{prj} argument or in the projection of the 
+#'         provided locations.
 #' @details Currently, the \code{get_elev_raster} function utilizes the 
 #'          Amazon Web Services 
 #'          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
@@ -66,7 +67,7 @@
 #' @examples 
 #' \dontrun{
 #' data(lake)
-#' 
+#' lake_buff  <- st_buffer(lake, 1000)
 #' loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
 #'                                max=sf::st_bbox(lake)$xmax),
 #'                      y = runif(6,min=sf::st_bbox(lake)$ymin, 
@@ -75,6 +76,7 @@
 #' x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
 #' x <- get_elev_raster(lake, z = 12)
 #' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
+#' x <- get_elev_raster(lake_buff, z = 10, clip = "locations")
 #' }
 
 get_elev_raster <- function(locations, z, prj = NULL, 

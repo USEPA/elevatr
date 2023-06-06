@@ -1,6 +1,6 @@
 context("internals not yet caught")
 library(sf)
-library(raster)
+library(terra)
 library(elevatr)
 data("pt_df")
 data("sf_big")
@@ -14,7 +14,7 @@ sf_sm <- st_as_sf(pt_df, coords = c("x", "y"), crs = ll_prj)
 sf_sm_prj <- st_transform(sf_sm, crs = aea_prj) 
 bad_sf <- st_as_sf(data.frame(x = 1000, y = 1000), coords = c("x", "y"), 
                    crs = ll_prj)
-rast <- rasterize(st_coordinates(sf_sm),raster(sf_sm))
+rast <- terra::rasterize(st_coordinates(sf_sm),terra::rast(sf_sm))
 sf_sm_na <- sf_sm
 st_crs(sf_sm_na) <- NA
 rast_na <- rast
@@ -33,20 +33,21 @@ test_that("data frame with more extra columns work", {
 
 test_that("proj_expand works",{
   
-  suppressWarnings({
   mans_sf <- st_as_sf(data.frame(x = -72.8145, y = 44.5438), 
                       coords = c("x","y"),
                       crs = ll_prj)
   mans <- get_elev_raster(locations =  mans_sf, z = 6)
   mans_exp <- get_elev_raster(locations = mans_sf, z = 6, expand = 2)
   
+  rast_elev <- get_elev_raster(locations = rast, z = 5)
+  rast_elev_exp <- get_elev_raster(locations = rast, z = 5, exp = 5)
+  expect_gt(ncell(mans_exp),ncell(mans))
+  expect_gt(ncell(rast_elev_exp), ncell(rast_elev))
+  
   origin_sf <- st_as_sf(data.frame(x = 0, y = 0), coords = c("x", "y"),
                         crs = ll_prj)
   origins <- get_elev_raster(locations = origin_sf, z = 6)
-  })
-  expect_gt(ncell(mans_exp),ncell(mans))
-  
-  expect_is(origins, "RasterLayer")
+  expect_is(origins, "SpatRaster")
 })
 
 test_that("loc_check errors correctly", {
@@ -57,7 +58,7 @@ test_that("loc_check errors correctly", {
                "Please supply a valid sf crs via locations or prj.")
   expect_error(get_elev_point(locations = sf_sm_na),
                "Please supply an sf object with a valid crs.")
-  expect_error(get_elev_point(locations = raster(), prj = ll_prj),
+  expect_error(get_elev_point(locations = rast(), prj = ll_prj),
                "No distinct points, all values NA.")
 })
 

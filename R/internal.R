@@ -46,7 +46,7 @@ loc_check <- function(locations, prj = NULL){
   } else {
     nfeature <- nrow(locations)
   }
-
+  
   if(all(class(locations)=="data.frame")){ 
     if(is.null(prj) & !any(class(locations) %in% c("sf", "sfc", "sfg"))){
       stop("Please supply a valid sf crs via locations or prj.")
@@ -64,7 +64,17 @@ loc_check <- function(locations, prj = NULL){
       stop("Please supply an sf object with a valid crs.")
     }
     
-  } 
+  } else if(any(class(locations) %in% c("SpatRaster", "SpatVector"))){
+    
+    sf_crs <- sf::st_crs(locations)
+    locations <- sf::st_as_sf(as.points(locations), 
+                              coords = terra::crds(locations, df = TRUE),
+                              crs = st_as_sf)
+    locations$elevation <- vector("numeric", nrow(locations))
+    if(is.null(prj) |is.null(sf_crs) | is.na(sf_crs)){
+      stop("Please supply a valid sf crs via locations or prj.")
+    }
+  }
 
   #check for long>180
   if(is.null(prj)){
