@@ -6,6 +6,13 @@ elevatr 1.0.0 (????-??-??)
 - All sf
 - Terra
 
+# Vignette
+- Add location clip example 
+- cleaned up examples (e.g. plot was throwing warning, now max.plot = 1)
+
+# Other Changes
+- Switched to MIT from CCO
+
 elevatr 0.4.4 (2023-05-30)
 =============
 

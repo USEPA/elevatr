@@ -40,7 +40,7 @@ get_tilexy <- function(bbx,z){
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
 #' @keywords internal
 loc_check <- function(locations, prj = NULL){
-  
+ 
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
   } else {
@@ -67,11 +67,11 @@ loc_check <- function(locations, prj = NULL){
   } else if(any(class(locations) %in% c("SpatRaster", "SpatVector"))){
     
     sf_crs <- sf::st_crs(locations)
-    locations <- sf::st_as_sf(as.points(locations), 
+    locations <- sf::st_as_sf(terra::as.points(locations, values = FALSE), 
                               coords = terra::crds(locations, df = TRUE),
-                              crs = st_as_sf)
+                              crs = sf_crs)
     locations$elevation <- vector("numeric", nrow(locations))
-    if(is.null(prj) |is.null(sf_crs) | is.na(sf_crs)){
+    if((is.null(sf_crs) | is.na(sf_crs)) & is.null(prj)){
       stop("Please supply a valid sf crs via locations or prj.")
     }
   }

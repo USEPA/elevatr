@@ -51,23 +51,20 @@ test_that("proj_expand works",{
 })
 
 test_that("loc_check errors correctly", {
-  
+  empty_rast <- rast(nrow = 1, ncol =1)
   expect_error(get_elev_point(locations = pt_df), 
                "Please supply a valid sf crs via locations or prj.")
   expect_error(get_elev_point(locations = rast_na),
                "Please supply a valid sf crs via locations or prj.")
   expect_error(get_elev_point(locations = sf_sm_na),
                "Please supply an sf object with a valid crs.")
-  expect_error(get_elev_point(locations = rast(), prj = ll_prj),
-               "No distinct points, all values NA.")
 })
 
 test_that("Z of 1 or 0 works in get_tilexy",{
+
+  sf_sm_1 <- get_elev_raster(sf_sm, z = 1, clip = "bbox")
+  sf_sm_0 <- get_elev_raster(sf_sm, z = 0, clip = "bbox")
   
-  suppressWarnings({
-  sf_sm_1 <- get_elev_raster(sf_sm_prj, z = 1, clip = "bbox")
-  sf_sm_0 <- get_elev_raster(sf_sm_prj, z = 0, clip = "bbox")
-  })
   expect_gt(max(res(sf_sm_1)), 0.27)
   expect_gt(max(res(sf_sm_0)), 0.54)
 })

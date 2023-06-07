@@ -20,7 +20,7 @@ editor_options:
 ################################################################################
 #Load packages
 ################################################################################
-library("raster")
+library("terra")
 library("knitr")
 library("elevatr")
 library("httr")
@@ -145,12 +145,12 @@ There is no difference in using the `sp` and `raster` input data types.  The dat
 data(lake)
 elevation <- get_elev_raster(lake, z = 9)
 plot(elevation)
-plot(lake, add=TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
 
 # data.frame example
 elevation_df <- get_elev_raster(examp_df, prj=crs_dd, z = 5)
 plot(elevation_df)
-plot(examp_sf, add = TRUE, col = "black", pch = 19)
+plot(examp_sf, add = TRUE, col = "black", pch = 19, max.plot = 1)
 ```
 
 The zoom level determines the resolution of the output raster.  More details on resolution and zoom level is still available in the [Mapzen Documentation on ground resolution](https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution).
@@ -161,12 +161,23 @@ In addition the the required arguments (`locations`, `z`, and  `prj` for data fr
 # Bounding box on edge
 elev_edge<-get_elev_raster(lake, z = 10)
 plot(elev_edge)
-plot(lake, add = TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
 
 # Use expand to grab additional tiles
 elev_expand<-get_elev_raster(lake, z = 10, expand = 15000)
 plot(elev_expand)
-plot(lake, add = TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
+```
+
+Second, the `clip` argument provides some control over the extent and shape of the elevation raster that is returned.  The default value returns the entire tile for the "aws" `src`.  The default value for the OpenTopography is also tile, but as these datasets are not served by tile, the "tile" and "bbox" clip return the same elevation raster.  The "locations" clip option will clip the elevation raster to the locations themselves.  If the input locations are points, this is no different that "bbox", however if the input locations are a polygon, the elevation raster will be clipped to the boudary of that polygon.  For example:
+
+```{r clip_it}
+lake_buffer <- st_buffer(lake, 1000)
+
+lake_buffer_elev <- get_elev_raster(lake_buffer, z = 9, clip = "locations")
+plot(lake_buffer_elev)
+plot(st_geometry(lake), add = TRUE, col = "blue")
+plot(st_geometry(lake_buffer), add = TRUE)
 ```
 
 Lastly, `...` provides the ability to pass additional arguments to `httr::GET` which is used to access the API endpoints.  While any `httr::GET` arguments may be used, this will most likely be used to pass on configuration arguments such as `httr::timeout()` or `httr::verbose()` via a named argument, `config` to `httr::GET`.  The `httr::timeout()` can be used to increase the timeout if downloads are timing out.  For instance:
@@ -174,7 +185,7 @@ Lastly, `...` provides the ability to pass additional arguments to `httr::GET` w
 ```{r timeout}
 library(httr)
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = timeout(5))
+get_elev_raster(lake, z = 5, config = timeout(100))
 ```
 
 Lastly, multiple configurations may be passed.  Below is an example combining `httr::timeout()` with `httr::verbose()`.
@@ -200,5 +211,5 @@ Below is an example for grabbing the OpenTopography SRTM data.
 ```{r, eval=FALSE}
 lake_srtmgl1 <- get_elev_raster(lake, src = "gl1", clip = "bbox", expand = 1000)
 plot(lake_srtmgl1)
-plot(lake, add = TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
 ```

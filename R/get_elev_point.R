@@ -241,7 +241,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
   #elev_column_name <- make.unique(c(names(locations), "elevation"))
   #elev_column_name <- elev_column_name[!elev_column_name %in% names(locations)]
   elev_column_name <- "elevation"
-  browser()
+  
   message("Downloading point elevations:")
   
   progressr::handlers(
@@ -307,8 +307,12 @@ get_aws_points <- function(locations, z = 5, units = c("meters", "feet"),
                            verbose = TRUE, ...){
   units <- match.arg(units)
   dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
-  elevation <- terra::extract(dem, locations)
-  if(units == "feet") {elevation <- elevation * 3.28084}
+  elevation <- units::set_units(terra::extract(dem, locations)[,2], "m")
+  if(units == "feet"){
+    elevation <- as.numeric(units::set_units(elevation, "ft"))
+  } else {
+    elevation <- as.numeric(elevation)
+  }
   locations$elevation <- round(elevation, 2)
   location_list <- list(locations, units)
   location_list

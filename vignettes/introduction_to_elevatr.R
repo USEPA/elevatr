@@ -2,7 +2,7 @@
 ################################################################################
 #Load packages
 ################################################################################
-library("raster")
+library("terra")
 library("knitr")
 library("elevatr")
 library("httr")
@@ -64,26 +64,44 @@ everest_aws_elev
 data(lake)
 elevation <- get_elev_raster(lake, z = 9)
 plot(elevation)
-plot(lake, add=TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
 
 # data.frame example
 elevation_df <- get_elev_raster(examp_df, prj=crs_dd, z = 5)
 plot(elevation_df)
-plot(examp_sf, add = TRUE, col = "black", pch = 19)
+plot(examp_sf, add = TRUE, col = "black", pch = 19, max.plot = 1)
 
 ## ----expand-------------------------------------------------------------------
 # Bounding box on edge
 elev_edge<-get_elev_raster(lake, z = 10)
 plot(elev_edge)
-plot(lake, add = TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
 
 # Use expand to grab additional tiles
 elev_expand<-get_elev_raster(lake, z = 10, expand = 15000)
 plot(elev_expand)
-plot(lake, add = TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
+
+## ----clip_it------------------------------------------------------------------
+lake_buffer <- st_buffer(lake, 1000)
+
+lake_buffer_elev <- get_elev_raster(lake_buffer, z = 9, clip = "locations")
+plot(lake_buffer_elev)
+plot(st_geometry(lake), add = TRUE, col = "blue")
+plot(st_geometry(lake_buffer), add = TRUE)
 
 ## ----timeout------------------------------------------------------------------
 library(httr)
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = timeout(5))
+get_elev_raster(lake, z = 5, config = timeout(100))
+
+## ----timeout_verbose----------------------------------------------------------
+library(httr)
+# Increase timeout:
+get_elev_raster(lake, z = 5, config = c(verbose(),timeout(5)))
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  lake_srtmgl1 <- get_elev_raster(lake, src = "gl1", clip = "bbox", expand = 1000)
+#  plot(lake_srtmgl1)
+#  plot(st_geometry(lake), add = TRUE, col = "blue")
 
