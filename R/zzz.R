@@ -6,9 +6,9 @@ op <- options()
 }
 
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Version 0.4.5 of elevatr is the last version that will \n
-                        use the 'sp' and 'raster' packages. The next release \n
-                        will swith to 'sf' and 'terra'.")
+  packageStartupMessage(
+"elevatr v0.4.5 NOTE: This is the last version of 'elevatr' that will use the 
+'sp' and 'raster' packages. The next release will switch to 'sf' and 'terra'.")
 }
 
 .onUnload <- function(libname, pkgname){
