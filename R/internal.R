@@ -318,7 +318,7 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
                     1223.0, 611.5, 305.7, 152.9, 76.4, 38.2, 19.1, 9.6, 4.8, 
                     2.4)
   z_res <- data.frame(z = 0:16, res_dd = m_at_equator/111319.9)
-
+ 
   bits <- switch(src,
                  aws = 32,
                  gl3 = 32,
