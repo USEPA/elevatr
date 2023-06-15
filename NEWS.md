@@ -13,6 +13,13 @@ elevatr 1.0.0 (????-??-??)
 # Other Changes
 - Switched to MIT from CCO
 
+elevatr 0.4.5 (2023-06-12)
+=============
+
+# Startup
+- added startup message warning of switch to sf and terra in future releases.
+
+
 elevatr 0.4.4 (2023-05-30)
 =============
 
