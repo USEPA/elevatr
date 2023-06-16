@@ -92,6 +92,6 @@ test_that("Parallel processing works",{
   #class
   expect_is(serial_elev,"SpatRaster")
   
-  #project
-  expect_equal(st_crs(serial_elev)$wkt,st_crs(ll_prj)$wkt)
+  #same size as serial
+  expect_equal(ncell(serial_elev),ncell(aws))
 })
