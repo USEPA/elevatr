@@ -1,6 +1,8 @@
 ## Comments
 
 - Added startup message indicating upcoming change to sf and terra in future releases.
+- Next release is scheduled for July, so wanted to get this notification in now.
+
 
 ## Test Environments
 

@@ -72,8 +72,9 @@ can be overriden with this argument set to TRUE.}
 \code{\link{get_aws_terrain}} for more details.}
 }
 \value{
-Function returns a \code{RasterLayer} in the projection 
-        specified by the \code{prj} argument.
+Function returns a \code{SpatRaster} in the projection 
+        specified by the \code{prj} argument or in the projection of the 
+        provided locations.
 }
 \description{
 Several web services provide access to raster elevation. Currently, this 
@@ -98,17 +99,15 @@ Currently, the \code{get_elev_raster} function utilizes the
 \examples{
 \dontrun{
 data(lake)
-
-loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-                               max=sp::bbox(lake)[1,2]),
-                     y = runif(6,min=sp::bbox(lake)[2,1], 
-                               max=sp::bbox(lake)[2,2]))
-# Example for PROJ > 5.2.0
-x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
-
-# Example for PROJ < 5.2.0 
-x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
-x <- get_elev_raster(lake, z = 12, serial = TRUE)
+lake_buff  <- st_buffer(lake, 1000)
+loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
+                               max=sf::st_bbox(lake)$xmax),
+                     y = runif(6,min=sf::st_bbox(lake)$ymin, 
+                               max=sf::st_bbox(lake)$ymax))
+                               
+x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
+x <- get_elev_raster(lake, z = 12)
 x <- get_elev_raster(lake, src = "gl3", expand = 5000)
+x <- get_elev_raster(lake_buff, z = 10, clip = "locations")
 }
 }

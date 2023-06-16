@@ -1,8 +1,24 @@
+elevatr 1.0.0 (????-??-??)
+=============
+
+# Major refactor
+- dropped sp, rgdal and rgeos depends
+- All sf
+- Terra
+
+# Vignette
+- Add location clip example 
+- cleaned up examples (e.g. plot was throwing warning, now max.plot = 1)
+
+# Other Changes
+- Switched to MIT from CCO
+
 elevatr 0.4.5 (2023-06-12)
 =============
 
 # Startup
 - added startup message warning of switch to sf and terra in future releases.
+
 
 elevatr 0.4.4 (2023-05-30)
 =============
@@ -25,7 +41,6 @@ elevatr 0.4.2 (2021-12-28)
 - Changing to future::plans was losing tempfiles on parallel downloads.  Moved the change back to serial plan after creation of raster.
 - Changed get_tile_xy.  My math was messing up in areas near 180/-180 longitude were trying to grab non-existent tiles.  Now using slippymath::lonlat_to_tilenum instead.
 - NA's introduced with simultaneous gdal mosaic and project.  Now uses two steps.  Solves https://stackoverflow.com/questions/67839878/gridded-dot-artifacts-in-geom-raster-plot
-
 
 elevatr 0.4.1 (2021-07-21)
 ==============

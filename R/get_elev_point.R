@@ -37,28 +37,31 @@
 #'            increase.  
 #'            Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
 #'            for details.  
-#' @return Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
-#'         in the projection specified by the \code{prj} argument.
+#' @return Function returns an \code{sf} object in the projection specified by 
+#'         the \code{prj} argument.
 #' @export
-#' @importFrom sp wkt
 #' @examples
 #' \dontrun{
-#' mt_wash <- data.frame(x = -71.3036, y = 44.2700)
-#' mt_mans <- data.frame(x = -72.8145, y = 44.5438)
-#' mts <- rbind(mt_wash,mt_mans)
-#' ll_prj <- "EPSG:4326"
-#' mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
-#'                             proj4string = sp::CRS(SRS_string = ll_prj))
-#' mts_spdf <- sp::SpatialPointsDataFrame(mts_sp, 
-#'                                        data = data.frame(name = 
-#'                                        c("Mt. Washington", "Mt. Mansfield"))) 
-#' mts_raster <- raster::raster(mts_sp, ncol = 2, nrow = 2)
-#' get_elev_point(locations = mt_wash, prj = ll_prj)
-#' get_elev_point(locations = mt_wash, units="feet", prj = ll_prj)
-#' get_elev_point(locations = mt_wash, units="meters", prj = ll_prj)
-#' get_elev_point(locations = mts_sp)
-#' get_elev_point(locations = mts_spdf)
+#' library(elevatr)
+#' library(sf)
+#' library(terra)
+#' 
+#' mts <- data.frame(x = c(-71.3036, -72.8145), 
+#'                   y = c(44.2700, 44.5438), 
+#'                   names = c("Mt. Washington", "Mt. Mansfield"))
+#' ll_prj <- 4326
+#' mts_sf <- st_as_sf(x = mts, coords = c("x", "y"), crs = ll_prj)
+#' #Empty Raster
+#' mts_raster <- rast(mts_sf, nrow = 5, ncol = 5)
+#' # Raster with cells for each location
+#' mts_raster_loc <- terra::rasterize(x, rast(x, nrow = 10, ncol = 10))
+#' 
+#' get_elev_point(locations = mts, prj = ll_prj)
+#' get_elev_point(locations = mts, units="feet", prj = ll_prj)
+#' get_elev_point(locations = mts_sf)
 #' get_elev_point(locations = mts_raster)
+#' get_elev_point(locations = mts_raster_loc)
+#' 
 #' 
 #' # Code to split into a loop and grab point at a time.
 #' # This is usually faster for points that are spread apart 
@@ -66,15 +69,13 @@
 #' library(dplyr)
 #' 
 #' elev <- vector("numeric", length = nrow(mts))
-#' pb <- progress_estimated(length(elev))
 #' for(i in seq_along(mts)){
-#' pb$tick()$print()
-#' elev[i]<-suppressMessages(get_elev_point(locations = mts[i,], prj = ll_prj, 
-#'                                         src = "aws", z = 14)$elevation)
-#'                                         }
+#' elev[i]<-get_elev_point(locations = mts[i,], prj = ll_prj, src = "aws", 
+#'                         z = 10)$elevation}
 #' mts_elev <- cbind(mts, elev)
 #' mts_elev
 #' }
+#'
 get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), 
                            overwrite = FALSE, ...){
   
@@ -85,7 +86,6 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   }
   
   src <- match.arg(src)
-  sf_check <- ("sf" %in% class(locations)) | ("sfc" %in% class(locations))
   
   # Check for existing elevation/elev_units columns and overwrite or error
   if(!overwrite & any(names(locations) %in% c("elevation", "elev_units"))){
@@ -93,20 +93,13 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
     "  To replace these columns set the overwrite argument to TRUE."))
   }
   
-  # Check location type and if sp or raster, set prj.  If no prj (for either) then error
-  
-  if(is.numeric(prj)){prj <- paste0("EPSG:", prj)}
   locations <- loc_check(locations,prj)
   
   if(is.null(prj)){
-    if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-      prj <- sp::wkt(locations)
-    } else {
-      prj <- sp::proj4string(locations)
-    }
+    prj <- sf::st_crs(locations)
   }
   
-  # Pass of reprojected to epqs or mapzen to get data as spatialpointsdataframe
+  # Pass of reprojected to epqs or aws to get data as spatialpointsdataframe
   if (src == "epqs"){
     locations_prj <- get_epqs(locations, ...)
     units <- locations_prj[[2]]
@@ -120,16 +113,15 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   }
 
   # Re-project back to original, add in units, and return
-  locations <- methods::as(sf::st_transform(sf::st_as_sf(locations_prj), 
-                                            sf::st_crs(locations)), "Spatial")
+  locations <- sf::st_transform(sf::st_as_sf(locations_prj), 
+                                sf::st_crs(locations))
+  
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
   } else {
     nfeature <- nrow(locations)
   }
   
-  #unit_column_name <- make.unique(c(names(locations), "elev_units"))
-  #unit_column_name <- unit_column_name[!unit_column_name %in% names(locations)]
   unit_column_name <- "elev_units"
   
   if(any(names(list(...)) %in% "units")){
@@ -141,7 +133,6 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   } else {
     locations[[unit_column_name]] <- rep("meters", nfeature)
   }
-  if(sf_check){locations <- sf::st_as_sf(locations)}
   
   if(src == "aws") {
     message(paste("Note: Elevation units are in", units))
@@ -198,8 +189,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
     units <- "Feet"
   }
   
-  locations <- sp::spTransform(locations,
-                                   sp::CRS(SRS_string = ll_prj))
+  locations <- sf::st_transform(locations, sf::st_crs(ll_prj))
   units <- paste0("&units=",units)
   
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
@@ -229,7 +219,9 @@ get_epqs <- function(locations, units = c("meters","feet"),
       return(NA)
     }
     
-    if(httr::status_code(resp) == 200 & httr::content(resp, "text", encoding = "UTF-8") == ""){
+    if(httr::status_code(resp) == 200 & 
+       httr::content(resp, "text", encoding = "UTF-8") == 
+       "Invalid or missing input parameters."){
       message("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
       return(NA)
     } else if(httr::status_code(resp) == 200){
@@ -244,13 +236,14 @@ get_epqs <- function(locations, units = c("meters","feet"),
     }
     round(as.numeric(resp$value), 2)
   }
-  
-  coords_df <- split(data.frame(sp::coordinates(locations)), 
-                     seq_along(locations[,1]))   
+   
+  coords_df <- split(data.frame(sf::st_coordinates(locations)), 
+                     seq_along(locations$elevation))   
   
   #elev_column_name <- make.unique(c(names(locations), "elevation"))
   #elev_column_name <- elev_column_name[!elev_column_name %in% names(locations)]
   elev_column_name <- "elevation"
+  
   message("Downloading point elevations:")
   
   progressr::handlers(
@@ -316,8 +309,12 @@ get_aws_points <- function(locations, z = 5, units = c("meters", "feet"),
                            verbose = TRUE, ...){
   units <- match.arg(units)
   dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
-  elevation <- raster::extract(dem, locations)
-  if(units == "feet") {elevation <- elevation * 3.28084}
+  elevation <- units::set_units(terra::extract(dem, locations)[,2], "m")
+  if(units == "feet"){
+    elevation <- as.numeric(units::set_units(elevation, "ft"))
+  } else {
+    elevation <- as.numeric(elevation)
+  }
   locations$elevation <- round(elevation, 2)
   location_list <- list(locations, units)
   location_list

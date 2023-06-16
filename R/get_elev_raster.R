@@ -49,8 +49,9 @@
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
-#' @return Function returns a \code{RasterLayer} in the projection 
-#'         specified by the \code{prj} argument.
+#' @return Function returns a \code{SpatRaster} in the projection 
+#'         specified by the \code{prj} argument or in the projection of the 
+#'         provided locations.
 #' @details Currently, the \code{get_elev_raster} function utilizes the 
 #'          Amazon Web Services 
 #'          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
@@ -63,23 +64,19 @@
 #'          object submitted for \code{locations} argument, and the z argument 
 #'          must be specified by the user.   
 #' @export
-#' @importFrom sp wkt
 #' @examples 
 #' \dontrun{
 #' data(lake)
-#' 
-#' loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-#'                                max=sp::bbox(lake)[1,2]),
-#'                      y = runif(6,min=sp::bbox(lake)[2,1], 
-#'                                max=sp::bbox(lake)[2,2]))
-#' # Example for PROJ > 5.2.0
-#' x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
-#' 
-#' # Example for PROJ < 5.2.0 
-#' x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
-
-#' x <- get_elev_raster(lake, z = 12, serial = TRUE)
+#' lake_buff  <- st_buffer(lake, 1000)
+#' loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
+#'                                max=sf::st_bbox(lake)$xmax),
+#'                      y = runif(6,min=sf::st_bbox(lake)$ymin, 
+#'                                max=sf::st_bbox(lake)$ymax))
+#'                                
+#' x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
+#' x <- get_elev_raster(lake, z = 12)
 #' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
+#' x <- get_elev_raster(lake_buff, z = 10, clip = "locations")
 #' }
 
 get_elev_raster <- function(locations, z, prj = NULL, 
@@ -96,15 +93,11 @@ get_elev_raster <- function(locations, z, prj = NULL,
   src  <- match.arg(src)
   clip <- match.arg(clip) 
   
-  # Check location type and if sp, set prj.  If no prj (for either) then error
+  # Check location type and if sf, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   
   if(is.null(prj)){
-    if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-      prj <- sp::wkt(locations)
-    } else {
-      prj <- sp::proj4string(locations)
-    }
+    prj <- sf::st_crs(locations)
   }
    #need to check what is going on with PRJ when no prj passed.
   # Check download size and provide feedback, stop if too big!
@@ -159,7 +152,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #' Get a digital elevation model from the AWS Terrain Tiles
 #' 
 #' This function uses the AWS Terrain Tile service to retrieve an elevation
-#' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
+#' raster from the geotiff service.  It accepts a \code{sf::st_bbox} object as 
 #' input and returns a single raster object covering that extent.   
 #' 
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
@@ -167,7 +160,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
 #'         \url{https://github.com/tilezen/joerd/tree/master/docs} 
 #' 
-#' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
+#' @param bbx a \code{sf::st_bbox} object that is used to select x,y,z tiles.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
@@ -309,8 +302,8 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
   files    <- unlist(raster_list)
  
   if(is.null(target_prj)){
-    r <- raster::raster(files[1])
-    target_prj <- raster::crs(r)
+    r <- terra::rast(files[1])
+    target_prj <- terra::crs(r)
   }
   
   sf::gdal_utils(util = "warp", 
@@ -325,11 +318,11 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
                  source = destfile, 
                  destination = destfile2,
                  options = c("-r", method,
-                   "-t_srs", as.character(target_prj))
+                   "-t_srs", sf::st_crs(target_prj)$wkt)
   )
   
   if(returnRaster){
-    raster::raster(destfile2)
+    terra::rast(destfile2)
   } else {
     destfile2
   }
@@ -372,11 +365,12 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                      gl1 = "SRTMGL1",
                      alos = "AW3D30",
                      srtm15plus = "SRTM15Plus")
+  
   url <- paste0(base_url, data_set,
-                "&west=",min(bbx[1,]),
-                "&south=",min(bbx[2,]),
-                "&east=",max(bbx[1,]),
-                "&north=",max(bbx[2,]),
+                "&west=",min(bbx["xmin"]),
+                "&south=",min(bbx["ymin"]),
+                "&east=",max(bbx["xmax"]),
+                "&north=",max(bbx["ymax"]),
                 "&outputFormat=GTiff",
                 "&API_Key=", api_key)
  
