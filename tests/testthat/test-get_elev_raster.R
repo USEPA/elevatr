@@ -86,3 +86,12 @@ test_that("A bad location file errors",{
   expect_error(suppressWarnings(get_elev_raster(bad_sf, src = "gl3")))
 })
 
+test_that("Parallel processing works",{
+  serial_elev <- get_elev_raster(sf_sm, z = 6, serial = FALSE)
+  
+  #class
+  expect_is(serial_elev,"SpatRaster")
+  
+  #project
+  expect_equal(st_crs(serial_elev)$wkt,st_crs(ll_prj)$wkt)
+})
