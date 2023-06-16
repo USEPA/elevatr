@@ -219,7 +219,9 @@ get_epqs <- function(locations, units = c("meters","feet"),
       return(NA)
     }
     
-    if(httr::status_code(resp) == 200 & httr::content(resp, "text", encoding = "UTF-8") == ""){
+    if(httr::status_code(resp) == 200 & 
+       httr::content(resp, "text", encoding = "UTF-8") == 
+       "Invalid or missing input parameters."){
       message("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
       return(NA)
     } else if(httr::status_code(resp) == 200){
