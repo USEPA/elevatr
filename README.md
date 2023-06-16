@@ -26,26 +26,31 @@ Currently this package includes just two primary functions to access
 elevation web services:
 
 - `get_elev_point()`: Get point elevations using the USGS Elevation
-  Point Query Service (for the US Only) or using the AWS Terrian Tiles
+  Point Query Service (for the US Only) or using the AWS Terrain Tiles
   (global). This will accept a data frame of x (long) and y (lat), a
-  SpatialPoints/SpatialPointsDataFame, or a Simple Features object as
-  input. A SpatialPointsDataFrame or Simple Features object is returned,
-  depending on the class of the input locations.
+  Simple Features object, or `terra` SpatRaster as input. A Simple
+  Features object is returned of the point locations and elevations.
 - `get_elev_raster()`: Get elevation data as a raster (e.g. a Digital
-  Elevation Model) from the AWS Open Data Terrain Tiles. Other sources
-  may be added later. This will accept a data frame of of x (long) and y
-  (lat) or any `sp` or `raster` object as input and will return a
-  `raster` object of the elevation tiles that cover the bounding box of
-  the input spatial data.
+  Elevation Model) from the AWS Open Data Terrain Tiles or Open
+  Topography Global datasets. Other sources may be added later. This
+  will accept a data frame of of x (long) and y (lat) or any `sf` or
+  `terra` SpatRaster object as input and will return a terra
+  `SpatRaster` object of the elevation. The extent of the SpatRaster is
+  the full tiles that cover the bounding box of the input spatial data,
+  but may be clipped to the shape or bounding box of the input
+  locations.
 
 ## Installation
 
-Version 0.4.2 of this package is currently available from CRAN and may
+Version 0.4.5 of this package is currently available from CRAN and may
 be installed by:
 
 ``` r
 install.packages("elevatr")
 ```
+
+NOTE: As of 2023-06-16, the CRAN version is the older version that does
+not support `terra`.
 
 The development version (this repo) may installed with `devtools`:
 
@@ -53,6 +58,10 @@ The development version (this repo) may installed with `devtools`:
 library(devtools)
 install_github("jhollist/elevatr")
 ```
+
+NOTE: As of 2023-06-16, the development version on GitHub, 1.0.0.9999,
+is the latest version and supports `sf` and `terra`. Support for `sp`
+and `raster` has been deprecated.
 
 ## Contributions and Use Cases
 
@@ -64,8 +73,7 @@ you all!
 
 - [Michaela Mulhearn’s `rayshader` and `elevatr`
   cheatsheet](https://github.com/jhollist/elevatr/blob/main/contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
-- researchremora on twitter has created some amazing elevation
-  maps
+- researchremora on twitter has created some amazing elevation maps
 - [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
   `elevatr` to create some cool
   visualizations](https://github.com/h-a-graham/rayvista)
