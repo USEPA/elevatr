@@ -88,6 +88,7 @@ test_that("A bad location file errors",{
 
 test_that("Parallel processing works",{
   serial_elev <- get_elev_raster(sf_sm, z = 6, serial = FALSE)
+  aws <- get_elev_raster(locations = sf_sm, z = 6, src = "aws", serial = TRUE)
   
   #class
   expect_is(serial_elev,"SpatRaster")
