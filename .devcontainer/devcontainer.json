@@ -18,30 +18,11 @@
 		}
 	},
 
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				// Add Jupyter and Python vscode extensions
-				"ms-toolsai.jupyter",
-				"ms-toolsai.jupyter-renderers",
-				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"vsls-contrib.codetour",
-				"GitHub.copilot"
-			]
-		}
-	},
-
 	// Forward Jupyter and RStudio ports
-	"forwardPorts": [8787, 8888],
+	"forwardPorts": [8787],
 	"portsAttributes": {
 		"8787": {
 			"label": "Rstudio",
-			"requireLocalPort": true,
-			"onAutoForward": "ignore"
-		},
-		"8888": {
-			"label": "Jupyter",
 			"requireLocalPort": true,
 			"onAutoForward": "ignore"
 		}
