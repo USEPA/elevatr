@@ -1,10 +1,11 @@
-elevatr 1.0.0 (????-??-??)
+elevatr 1.0.0 (2023-08-17)
 =============
 
 # Major refactor
 - dropped sp, rgdal and rgeos depends
 - All sf
 - Terra
+- Still returns RasterLayer, but raster will be dropped in upcoming release.
 
 # Vignette
 - Add location clip example 

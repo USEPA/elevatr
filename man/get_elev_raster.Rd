@@ -98,6 +98,8 @@ Currently, the \code{get_elev_raster} function utilizes the
 }
 \examples{
 \dontrun{
+library(elevatr)
+library(sf)
 data(lake)
 lake_buff  <- st_buffer(lake, 1000)
 loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 

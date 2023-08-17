@@ -54,7 +54,7 @@
 #' #Empty Raster
 #' mts_raster <- rast(mts_sf, nrow = 5, ncol = 5)
 #' # Raster with cells for each location
-#' mts_raster_loc <- terra::rasterize(x, rast(x, nrow = 10, ncol = 10))
+#' mts_raster_loc <- terra::rasterize(mts_sf, rast(mts_sf, nrow = 10, ncol = 10))
 #' 
 #' get_elev_point(locations = mts, prj = ll_prj)
 #' get_elev_point(locations = mts, units="feet", prj = ll_prj)
@@ -309,6 +309,7 @@ get_aws_points <- function(locations, z = 5, units = c("meters", "feet"),
                            verbose = TRUE, ...){
   units <- match.arg(units)
   dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
+  dem <- methods::as(dem, "SpatRaster")
   elevation <- units::set_units(terra::extract(dem, locations)[,2], "m")
   if(units == "feet"){
     elevation <- as.numeric(units::set_units(elevation, "ft"))

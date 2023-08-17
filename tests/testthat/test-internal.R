@@ -47,7 +47,8 @@ test_that("proj_expand works",{
   origin_sf <- st_as_sf(data.frame(x = 0, y = 0), coords = c("x", "y"),
                         crs = ll_prj)
   origins <- get_elev_raster(locations = origin_sf, z = 6)
-  expect_is(origins, "SpatRaster")
+  #expect_is(origins, "SpatRaster")
+  expect_is(origins, "RasterLayer")
 })
 
 test_that("loc_check errors correctly", {

@@ -73,7 +73,7 @@ mts_sf <- st_as_sf(x = mts, coords = c("x", "y"), crs = ll_prj)
 #Empty Raster
 mts_raster <- rast(mts_sf, nrow = 5, ncol = 5)
 # Raster with cells for each location
-mts_raster_loc <- terra::rasterize(x, rast(x, nrow = 10, ncol = 10))
+mts_raster_loc <- terra::rasterize(mts_sf, rast(mts_sf, nrow = 10, ncol = 10))
 
 get_elev_point(locations = mts, prj = ll_prj)
 get_elev_point(locations = mts, units="feet", prj = ll_prj)

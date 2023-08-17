@@ -66,6 +66,8 @@
 #' @export
 #' @examples 
 #' \dontrun{
+#' library(elevatr)
+#' library(sf)
 #' data(lake)
 #' lake_buff  <- st_buffer(lake, 1000)
 #' loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
@@ -145,7 +147,9 @@ get_elev_raster <- function(locations, z, prj = NULL,
   }
   
   attr(raster_elev, "sources") <- sources
-  raster_elev
+  #Returning raster for now
+  #Switch to SpatRaster in near future.
+  raster::raster(raster_elev)
   
 }
 
