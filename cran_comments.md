@@ -1,8 +1,6 @@
 ## Comments
 
-- Added startup message indicating upcoming change to sf and terra in future releases.
-- Next release is scheduled for July, so wanted to get this notification in now.
-
+- Modified startup message to note switch to sf and terra, but keeping RasterLayer as output for now..
 
 ## Test Environments
 
@@ -12,7 +10,7 @@
 - Github Actions, Microsoft Windows Server 2022, R Version 4.3.0
 - Github Actions, Microsoft Windows Server 2019, R Version 4.2.3
 - Github Actions, Mac OS 12.6.5, R Version 4.3.0
-- Local, Windows 10 x64 (build 19042), R version 4.2.2
+- Local, Windows 10 x64 (build 22000), R version 4.2.2 (2022-10-31 ucrt)
 
 ## R CMD check results
 
@@ -20,4 +18,4 @@
 
 ## revdepcheck results
 
-Reverse dependencies were checked with release 0.4.4 on May 31, 2023.  They have not changed since and this release is minor and they were not checked again.
+Reverse dependencies were checked with release 1.0.0 on Aug 17, 2023.  

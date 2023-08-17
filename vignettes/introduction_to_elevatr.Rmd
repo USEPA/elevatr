@@ -86,7 +86,7 @@ The USGS Elevation Point Query Service returns a single point at a time.  The im
 Accessing data from this service is done by setting the `src` to `"epqs"`.  No API key is required and there are no rate limits.
 
 
-```{r}
+```{r epqs_examp}
 df_elev_epqs <- get_elev_point(examp_df, prj = crs_dd, src = "epqs")
 df_elev_epqs
 df2_elev_epqs <- get_elev_point(examp_df2, prj = crs_dd, src = "epqs")
