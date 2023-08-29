@@ -27,3 +27,4 @@ bugs/
 contributions/
 ^TODO.md$
 ^LICENSE\.md$
+^\.devcontainer$

@@ -3,7 +3,7 @@ Title: Access Elevation Data from Various APIs
 Version: 1.0.0
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9254-9740")),
-             person("Tarak","Shah", role = "ctb"),
+             person("Tarak", "Shah", role = "ctb"),
              person("Alec L.", "Robitaille", role = "ctb", comment = c(ORCID = "0000-0002-4706-1762")),
              person("Marcus W.", "Beck", role = "rev", comment = c(ORCID = "0000-0002-4996-0059")),
              person("Mike", "Johnson", role = "ctb", comment = c(ORCID = "0000-0002-5288-8350")))
@@ -14,9 +14,9 @@ Description: Several web services are available that provide access to elevation
              data. This package provides access to many of those services and 
              returns elevation data either as a simple features POINT/MULTIPOINT 
              from point elevation services or as a raster RasterLayer from raster 
-             elevation services. .  In future versions, elevatr will drop 
+             elevation services. In future versions, elevatr will drop 
              support for raster Raster Layers and will instead return terra 
-             SpatRaster objects.   Currently, the package supports access to the
+             SpatRaster objects. Currently, the package supports access to the
              Amazon Web Services Terrain Tiles <https://registry.opendata.aws/terrain-tiles/>, 
              the Open Topography Global Datasets API <https://opentopography.org/developers/>, 
              and the USGS Elevation Point Query Service <https://apps.nationalmap.gov/epqs/>.

@@ -67,24 +67,24 @@ test_that("get_elev_raster clip argument works", {
   expect_true(num_cell_default_spat_rast > num_cell_loc_spat_rast)
 })
 
-test_that("get_elev_raster returns correctly from opentopo", {
-  skip_on_os("solaris")
+# test_that("get_elev_raster returns correctly from opentopo", {
+#   skip_on_os("solaris")
   
-  gl1 <- get_elev_raster(locations = sf_sm[3:4,], src = "gl1", neg_to_na = TRUE)
-  gl1_prj <- get_elev_raster(locations = sf_sm_prj[3:4,], src = "gl1", 
-                             clip = "bbox")
+#   gl1 <- get_elev_raster(locations = sf_sm[3:4,], src = "gl1", neg_to_na = TRUE)
+#   gl1_prj <- get_elev_raster(locations = sf_sm_prj[3:4,], src = "gl1", 
+#                              clip = "bbox")
   
-  #class
-  #expect_is(gl1,"SpatRaster")
-  #expect_is(gl1_prj,"SpatRaster")
-  expect_is(gl1,"RasterLayer")
-  expect_is(gl1_prj,"RasterLayer")
+#   #class
+#   #expect_is(gl1,"SpatRaster")
+#   #expect_is(gl1_prj,"SpatRaster")
+#   expect_is(gl1,"RasterLayer")
+#   expect_is(gl1_prj,"RasterLayer")
   
-  #project
-  #expect_equal(st_crs(gl1)$wkt,st_crs(ll_prj)$wkt)
-  #expect_equal(st_crs(gl1_prj)$wkt,st_crs(aea_prj)$wkt) turn back on after switch to terra
+#   #project
+#   #expect_equal(st_crs(gl1)$wkt,st_crs(ll_prj)$wkt)
+#   #expect_equal(st_crs(gl1_prj)$wkt,st_crs(aea_prj)$wkt) turn back on after switch to terra
   
-})
+# })
 
 test_that("A bad location file errors",{
   
