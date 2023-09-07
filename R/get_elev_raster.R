@@ -3,11 +3,11 @@
 #' Several web services provide access to raster elevation. Currently, this 
 #' function provides access to the Amazon Web Services Terrian Tiles and the 
 #' Open Topography global datasets API. The function accepts a \code{data.frame} 
-#' of x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  A 
+#' of x (long) and y (lat), an \code{sf}, or \code{terra} object as input.  A 
 #' \code{raster} object is returned.
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
-#'                  \code{sp}, \code{sf}, or \code{raster} object as input. 
+#'                   \code{sf}, or \code{terra} object as input. 
 #' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
@@ -164,7 +164,8 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
 #'         \url{https://github.com/tilezen/joerd/tree/master/docs} 
 #' 
-#' @param bbx a \code{sf::st_bbox} object that is used to select x,y,z tiles.
+#' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
+#'                  \code{sp}, \code{sf}, or \code{raster} object as input.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 

@@ -1,4 +1,4 @@
-elevatr 1.0.0 (2023-08-17)
+elevatr 0.99.0 (2023-08-17)
 =============
 
 # Major refactor
@@ -13,6 +13,7 @@ elevatr 1.0.0 (2023-08-17)
 
 # Other Changes
 - Switched to MIT from CCO
+- clean up: typos, update citations for new CRAN req, hide one test (thanks @Nowosad)
 
 elevatr 0.4.5 (2023-06-12)
 =============

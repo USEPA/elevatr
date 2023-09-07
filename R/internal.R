@@ -172,7 +172,7 @@ clip_it <- function(rast, loc, expand, clip){
 
 #' Assumes geographic projection
 #' sf bbox to poly
-#' @param bbx an sf bbox object
+#' @param bbox an sf bbox object
 #' @param prj defaults to "EPSG:4326"
 #' @keywords internal
 bbox_to_sf <- function(bbox, prj = 4326) {

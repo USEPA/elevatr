@@ -20,25 +20,20 @@ Run `revdepcheck::revdep_details(, "shoredate")` for more info
      ERROR
     Running the tests in 'tests/testthat.R' failed.
     Last 13 lines of output:
-       1. └─elevatr::get_elev_raster(target_wgs84, z = 14, src = "aws") at test-shoreline_date.R:111:2
-       2.   └─elevatr:::loc_check(locations, prj)
-       3.     ├─sf::st_coordinates(locations)
-       4.     └─sf:::st_coordinates.sfc(locations)
-       5.       └─base::matrix(...)
+          old                     | new                        
+      [3] Output                  | Output                  [3]
+      [4]   ===============       |   ===============       [4]
+      [5]   Site:  1              |   Site:  1              [5]
+      [6]   Elevation:  59.96235  -   Elevation:  59.96506  [6]
+      [7]                         |                         [7]
+      [8]   95% HDR:              |   95% HDR:              [8]
+      [9]   7010 BCE-4880 BCE     |   7010 BCE-4880 BCE     [9]
       
-      ══ Failed tests ════════════════════════════════════════════════════════════════
-      ── Error ('test-shoreline_date.R:113:3'): finding site elevation from a raster works ──
-      `shoreline_date(target_point, elevation = elev_raster)` threw an unexpected error.
-      Message: [extract] raster has no values
-      Class:   simpleError/error/condition
+      * Run `testthat::snapshot_accept('shoreline_date')` to accept the change.
+      * Run `testthat::snapshot_review('shoreline_date')` to interactively review the change.
       
       [ FAIL 1 | WARN 1 | SKIP 1 | PASS 112 ]
       Error: Test failures
       Execution halted
     ```
-
-## In both
-
-*   R CMD check timed out
-    
 
