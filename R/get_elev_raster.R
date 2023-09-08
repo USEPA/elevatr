@@ -1,10 +1,11 @@
 #' Get Raster Elevation
 #' 
 #' Several web services provide access to raster elevation. Currently, this 
-#' function provides access to the Amazon Web Services Terrian Tiles and the 
+#' function provides access to the Amazon Web Services Terrain Tiles and the 
 #' Open Topography global datasets API. The function accepts a \code{data.frame} 
 #' of x (long) and y (lat), an \code{sf}, or \code{terra} object as input.  A 
-#' \code{raster} object is returned.
+#' \code{RasterLayer} object is returned. In subsequent versions, a \code{SpatRaster}
+#' will be returned.
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
 #'                   \code{sf}, or \code{terra} object as input. 
@@ -13,11 +14,9 @@
 #'           details on zoom and resolution see the documentation from Mapzen at 
 #'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 #'           The z is not required for the OpenTopography data sources. 
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
 #'            argument is required for a \code{data.frame} of locations.
 #' @param src A character indicating which API to use.  Currently supports "aws" 
 #'            and "gl3", "gl1", "alos", or "srtm15plus" from the OpenTopography API global 
@@ -32,7 +31,7 @@
 #'             The default value is "tile" which returns the full tiles.  Other 
 #'             options are "bbox" which returns the DEM clipped to the bounding 
 #'             box of the original locations (or expanded bounding box if used), 
-#'             or "locations" if the spatials data (e.g. polygons) in the input 
+#'             or "locations" if the spatial data (e.g. polygons) in the input 
 #'             locations should be used to clip the DEM.  Locations are not used 
 #'             to clip input point datasets.  Instead the bounding box is used.
 #' @param verbose Toggles on and off the note about units and coordinate 
@@ -49,9 +48,10 @@
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
-#' @return Function returns a \code{SpatRaster} in the projection 
+#' @return Function returns a \code{RasterLayer} in the projection 
 #'         specified by the \code{prj} argument or in the projection of the 
-#'         provided locations.
+#'         provided locations.  In subsequent versions, a \code{SpatRaster}
+#'         will be returned.
 #' @details Currently, the \code{get_elev_raster} function utilizes the 
 #'          Amazon Web Services 
 #'          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
@@ -170,12 +170,10 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
 #'          \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
-#'            argument is required for a \code{data.frame} of locations. 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
+#'            argument is required for a \code{data.frame} of locations.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
@@ -341,12 +339,10 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
 #'                  \code{sp}, an \code{sf}, or \code{raster} object as input. 
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
-#'            argument is required for a \code{data.frame} of locations. 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
+#'            argument is required for a \code{data.frame} of locations.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the SRTM data. 
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 

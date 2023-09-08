@@ -20,12 +20,9 @@ first column and y (e.g. latitude) as the second column, a
 Elevation for these points will be returned in the 
 originally supplied class.}
 
-\item{prj}{A string defining the projection of the locations argument. The 
-string needs to be an acceptable SRS_string for 
-\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-object, a \code{sp} object or a \code{raster} object 
-is provided, the string will be taken from that.  This 
-argument is required for a \code{data.frame} of locations.}
+\item{prj}{A valid input to \code{\link{st_crs}}.   This 
+argument is required for a \code{data.frame} of locations and optional
+for \code{sf} locations.}
 
 \item{src}{A character indicating which API to use, either "epqs" or "aws" 
 accepted. The "epqs" source is relatively slow for larger numbers 
@@ -55,9 +52,9 @@ Function returns an \code{sf} object in the projection specified by
 This function provides access to point elevations using either the USGS 
 Elevation Point Query Service (US Only) or by extracting point elevations 
 from the AWS Terrain Tiles.  The function accepts a \code{data.frame} of x 
-(long) and y (lat) or a \code{SpatialPoints}/\code{SpatialPointsDataFame} as 
-input.  A SpatialPointsDataFrame is returned with elevation as an added 
-\code{data.frame}.
+(long) and y (lat) or a \code{sf} \code{POINT} or \code{MULTIPOINT} object as 
+input.  A \code{sf} \code{POINT} or \code{MULTIPOINT} object is returned with 
+elevation and elevation units as an added \code{data.frame}.
 }
 \examples{
 \dontrun{

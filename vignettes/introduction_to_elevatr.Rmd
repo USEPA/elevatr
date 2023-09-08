@@ -39,9 +39,10 @@ knitr::opts_chunk$set(purl = NOT_CRAN,
 #Sys.setenv(mapzen_key=key)
 ```
 
-# Key information about version 1 of `elevatr`
+# Key information about version 0.99.0 and upcoming versions of `elevatr`
 
-That stuff goes here.
+Several major changes have been made to `elevatr` in response to the retirement of legacy spatial packages (see
+<https://r-spatial.org/r/2023/05/15/evolution4.html> for details).  Version 0.99.0 has switched to using `sf` and `terra` for all data handling; however, in this version a `raster RasterLayer` is still returned from `get_elev_raster()`.  Additional changes are planned for version 1+, most notably the return for `get_elev_raster()` will be a `terra SpatRaster`.  Please plan accordingly for your analyses and/or packages account for this change. 
 
 # Introduction to `elevatr`
 
@@ -79,7 +80,7 @@ examp_df2 <- data.frame(examp_df, cats)
 examp_sf <- sf::st_as_sf(examp_df2, coords = c("x", "y"), crs = crs_dd)
 ```
 
-If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output SpatialPointsDataFrame.  Similarly, an elevation column is added to the data slot of a SpatialPointsDataFrame.
+If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output `POINT` or `MULTIPOINT` `sf` object.  Similarly, an elevation and units column is added to the data frame.
 
 The USGS Elevation Point Query Service returns a single point at a time.  The implementation in `get_elev_point()` will loop through each point, thus can be slow for large number of requests.  
 
@@ -132,7 +133,7 @@ everest_aws_elev
 
 While point elevations are useful, they will not provide the information required for most elevation based analysis such as hydrologic modeling, viewsheds, etc.  To do that requires a raster digital elevation model (DEM).  There are several sources for digital elevation models such as the Shuttle Radar Topography Mission (SRTM), the USGS National Elevation Dataset (NED), Global DEM (GDEM), and others.  Each of these DEMs has pros and cons for their use.  Prior to its closure in January of 2018, Mapzen combined [several of these sources](https://github.com/tilezen/joerd/blob/master/docs/data-sources.md) to create a synthesis elevation product that utilizes the best available elevation data for a given region at given zoom level.  Additionally, the elevation data are enhanced with the inclusion of bathymetry in oceans from ETOPO1.  Although closed, these data compiled by Mapzen are made available through two separate APIs: the [Nextzen Terrain Tile Service](https://www.nextzen.org#terrain-tiles) and the [Terrain Tiles on Amazon Web Services](https://registry.opendata.aws/terrain-tiles/).  Only the Amazon tiles are currently accessible via `elevatr`.
 
-The input for `get_elev_raster()` is a data.frame with  x (longitude) and y (latitude) locations as the first two columns, any `sp` object, or any `raster` object and it returns a RasterLayer of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged Raster Layer.  Details for each service and their usage via `get_elev_raster()` are provided below.
+The input for `get_elev_raster()` is a data.frame with  x (longitude) and y (latitude) locations as the first two columns, any `sp` object, any `sf` object, any `terra` object, or any `raster` object and it returns a `RasterLayer` of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged `RasterLayer`.  Details for each service and their usage via `get_elev_raster()` are provided below.
 
 ## Using `get_elev_raster()` to access the Terrain Tiles on AWS.
 
@@ -155,7 +156,7 @@ plot(examp_sf, add = TRUE, col = "black", pch = 19, max.plot = 1)
 
 The zoom level determines the resolution of the output raster.  More details on resolution and zoom level is still available in the [Mapzen Documentation on ground resolution](https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution).
 
-In addition the the required arguments (`locations`, `z`, and  `prj` for data frames), several additional arguments may be passsed to `get_elev_raster()`.  First, the `expand` argument is provided to expand the size of the bounding box by a given value in map units.  This is useful when bounding box coordinates are near the edge of an xyz tile. For example:
+In addition the the required arguments (`locations`, `z`, and  `prj` for data frames), several additional arguments may be passed to `get_elev_raster()`.  First, the `expand` argument is provided to expand the size of the bounding box by a given value in map units.  This is useful when bounding box coordinates are near the edge of an xyz tile. For example:
 
 ```{r expand}
 # Bounding box on edge

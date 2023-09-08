@@ -8,9 +8,9 @@ sf bbox to poly}
 bbox_to_sf(bbox, prj = 4326)
 }
 \arguments{
-\item{prj}{defaults to "EPSG:4326"}
+\item{bbox}{an sf bbox object}
 
-\item{bbx}{an sf bbox object}
+\item{prj}{defaults to "EPSG:4326"}
 }
 \description{
 Assumes geographic projection
