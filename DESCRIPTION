@@ -44,5 +44,6 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    formatR
+    formatR,
+    progress
 VignetteBuilder: knitr
