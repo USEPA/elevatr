@@ -37,3 +37,8 @@ Run `revdepcheck::revdep_details(, "shoredate")` for more info
       Execution halted
     ```
 
+## In both
+
+*   R CMD check timed out
+    
+
