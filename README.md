@@ -8,6 +8,18 @@ downloads](https://cranlogs.r-pkg.org/badges/elevatr)](https://www.r-pkg.org/pkg
 coverage](https://codecov.io/gh/jhollist/elevatr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jhollist/elevatr?branch=main)
 [![DOI](https://zenodo.org/badge/65325400.svg)](https://zenodo.org/badge/latestdoi/65325400)
 
+# Key information about version 0.99.0 and upcoming versions of `elevatr`
+
+Several major changes have been made to `elevatr` in response to the
+retirement of legacy spatial packages (see
+<https://r-spatial.org/r/2023/05/15/evolution4.html> for details).
+Version 0.99.0 has switched to using `sf` and `terra` for all data
+handling; however, in this version a `raster RasterLayer` is still
+returned from `get_elev_raster()`. Additional changes are planned for
+version 1+, most notably the return for `get_elev_raster()` will be a
+`terra SpatRaster`. Please plan accordingly for your analyses and/or
+packages account for this change.
+
 # elevatr
 
 An R package for accessing elevation data from various sources
@@ -42,15 +54,12 @@ elevation web services:
 
 ## Installation
 
-Version 0.4.5 of this package is currently available from CRAN and may
+Version 0.99.0 of this package is currently available from CRAN and may
 be installed by:
 
 ``` r
 install.packages("elevatr")
 ```
-
-NOTE: As of 2023-06-16, the CRAN version is the older version that does
-not support `terra`.
 
 The development version (this repo) may installed with `devtools`:
 
@@ -58,10 +67,6 @@ The development version (this repo) may installed with `devtools`:
 library(devtools)
 install_github("jhollist/elevatr")
 ```
-
-NOTE: As of 2023-06-16, the development version on GitHub, 1.0.0.9999,
-is the latest version and supports `sf` and `terra`. Support for `sp`
-and `raster` has been deprecated.
 
 ## Contributions and Use Cases
 
