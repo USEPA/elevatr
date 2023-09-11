@@ -36,4 +36,4 @@ Issues with CRAN packages are summarised below.
   checking tests ...
   
   test failure for change in returned elevation - difference of 2.71 millimeters.
-  Issue submitted on package repository.
+  Issue submitted on package repository. Fix has been made by package maintainer on GitHub and will be submitted to CRAN upon release of elevatr 0.99.0
