@@ -222,7 +222,9 @@ get_epqs <- function(locations, units = c("meters","feet"),
       message("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
       return(NA)
     } else if(httr::status_code(resp) == 200){
-      
+      #browser()
+      print(resp)
+      print(httr::content(resp))
       resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
                                simplifyVector = FALSE)
     } else {
@@ -249,7 +251,7 @@ get_epqs <- function(locations, units = c("meters","feet"),
       clear = FALSE, 
       width= 60
     ))
-  
+  #browser()
   progressr::with_progress({
   if(serial){
     p <- progressor(along = coords_df)

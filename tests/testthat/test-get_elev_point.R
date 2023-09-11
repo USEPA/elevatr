@@ -18,18 +18,18 @@ sf_sm_raster <- rasterize(sf_sm, rast(sf_sm, nrow = 10, ncol = 10))
 
 test_that("get_elev_point returns correctly", {
   
-  epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs")
-  epqs_sf <- get_elev_point(locations = sf_sm, src = "epqs")
-  epqs_sf_prj <- get_elev_point(locations = sf_sm_prj, src = "epqs")
-  epqs_ft <- get_elev_point(locations = sf_sm, src = "epqs", units = "feet")
-  epqs_m <- get_elev_point(locations = sf_sm, src = "epqs", units = "meters")
-  epqs_df_aws <- get_elev_point(locations = pt_df, prj = ll_prj, src = "aws")
-  epqs_sf_aws <- get_elev_point(locations = sf_sm, src = "aws")
-  epqs_sf_aws_z <- get_elev_point(locations = sf_sm, src = "aws", z = 4)
-  epqs_sf_aws <- get_elev_point(locations = sf_sm, src = "aws")
-  epqs_ft_aws <- get_elev_point(locations = sf_sm, src = "aws", units = "feet")
-  epqs_rast <- get_elev_point(locations = blank_raster)
-  epqs_sf_raster <- get_elev_point(locations = sf_sm_raster)
+  epqs_df <- get_elev_point(locations = pt_df, prj = ll_prj, src = "epqs", serial = TRUE)
+  epqs_sf <- get_elev_point(locations = sf_sm, src = "epqs", serial = TRUE)
+  epqs_sf_prj <- get_elev_point(locations = sf_sm_prj, src = "epqs", serial = TRUE)
+  epqs_ft <- get_elev_point(locations = sf_sm, src = "epqs", units = "feet", serial = TRUE)
+  epqs_m <- get_elev_point(locations = sf_sm, src = "epqs", units = "meters", serial = TRUE)
+  epqs_df_aws <- get_elev_point(locations = pt_df, prj = ll_prj, src = "aws", serial = TRUE)
+  epqs_sf_aws <- get_elev_point(locations = sf_sm, src = "aws", serial = TRUE)
+  epqs_sf_aws_z <- get_elev_point(locations = sf_sm, src = "aws", z = 4, serial = TRUE)
+  epqs_sf_aws <- get_elev_point(locations = sf_sm, src = "aws", serial = TRUE)
+  epqs_ft_aws <- get_elev_point(locations = sf_sm, src = "aws", units = "feet", serial = TRUE)
+  epqs_rast <- get_elev_point(locations = blank_raster, serial = TRUE)
+  epqs_sf_raster <- get_elev_point(locations = sf_sm_raster, serial = TRUE)
   
   
   
