@@ -222,11 +222,23 @@ get_epqs <- function(locations, units = c("meters","feet"),
       message("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
       return(NA)
     } else if(httr::status_code(resp) == 200){
-      #browser()
-      print(resp)
-      print(httr::content(resp))
-      resp <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
-                               simplifyVector = FALSE)
+      
+      resp <- tryCatch(jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+                                          simplifyVector = FALSE), error = function(e) e)
+      n<-1
+      while(n <= 5 & any(class(resp) == "simpleError")) {
+        # Hit it again.  Getting hard to repeat API errors that usually self correct...
+        
+        resp <- tryCatch(jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+                                            simplifyVector = FALSE), error = function(e) e)
+        n <- n + 1
+      }
+      
+      if(n >= 5 & any(class(resp) == "simpleError")) {
+        message("API error, NA returned for elevation")
+        return(NA)
+      }
+    
     } else {
       message(paste0("API returned a status code:'", resp$status_code, 
                      "'. NA returned for elevation"), 
