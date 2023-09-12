@@ -13,14 +13,15 @@ BugReports: https://github.com/jhollist/elevatr/issues/
 Maintainer: Jeffrey Hollister <hollister.jeff@epa.gov>
 Description: Several web services are available that provide access to elevation
              data. This package provides access to many of those services and 
-             returns elevation data either as a simple features POINT/MULTIPOINT 
-             from point elevation services or as a raster RasterLayer from raster 
-             elevation services. In future versions, elevatr will drop 
-             support for raster RasterLayers and will instead return terra 
-             SpatRaster objects. Currently, the package supports access to the
-             Amazon Web Services Terrain Tiles <https://registry.opendata.aws/terrain-tiles/>, 
-             the Open Topography Global Datasets API <https://opentopography.org/developers/>, 
-             and the USGS Elevation Point Query Service <https://apps.nationalmap.gov/epqs/>.
+             returns elevation data either as an 'sf' simple features object 
+             from point elevation services or as a 'raster' object from raster 
+             elevation services. In future versions, 'elevatr' will drop 
+             support for 'raster' and will instead return 'terra' objects. 
+             Currently, the package supports access to the Amazon Web Services 
+             Terrain Tiles <https://registry.opendata.aws/terrain-tiles/>, 
+             the Open Topography Global Datasets 
+             API <https://opentopography.org/developers/>, and the USGS 
+             Elevation Point Query Service <https://apps.nationalmap.gov/epqs/>.
 Depends: R (>= 3.5.0)
 Imports:
     httr,
