@@ -2,6 +2,7 @@
 
 - Modified startup message to note switch to sf and terra, but keeping RasterLayer as output for now..
 - NOTEs in CRAN check results have been addressed.
+- Resubmission for issues with package names and object types in DESCRIPTION
 
 ## Test Environments
 

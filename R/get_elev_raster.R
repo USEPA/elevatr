@@ -85,7 +85,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
                             src = c("aws", "gl3", "gl1", "alos", "srtm15plus"),
                             expand = NULL, clip = c("tile", "bbox", "locations"), 
                             verbose = TRUE, neg_to_na = FALSE, 
-                            override_size_check = FALSE, ...){
+                            override_size_check = FALSE, tmp_dir = tempdir(), ...){
   # First Check for internet
   if(!curl::has_internet()) {
     message("Please connect to the internet and try again.")
@@ -192,7 +192,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 
 get_aws_terrain <- function(locations, z, prj, expand=NULL, 
                             ncpu = future::availableCores() - 1,
-                            serial = NULL, ...){
+                            serial = NULL, tmp_dir = tempdir(), ...){
   # Expand (if needed) and re-project bbx to dd
   
   bbx <- proj_expand(locations,prj,expand)
@@ -236,7 +236,8 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
     dem_list <- purrr::map(urls,
                            function(x){
                              p()
-                             tmpfile <- tempfile(fileext = ".tif")
+                             tmpfile <- tempfile(tmpdir = tmp_dir, 
+                                                 fileext = ".tif")
                              resp <- httr::GET(x, 
                                                httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
                                                httr::write_disk(tmpfile,overwrite=TRUE), ...)
@@ -254,7 +255,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
     dem_list <- furrr::future_map(urls,
                                   function(x){
                                     p()
-                                    tmpfile <- tempfile(fileext = ".tif")
+                                    tmpfile <- tempfile(tempdir = tmp_dir, fileext = ".tif")
                                     resp <- httr::GET(x, 
                                                       httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
                                                       httr::write_disk(tmpfile,overwrite=TRUE), ...)
@@ -297,11 +298,12 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
 #' @export
 #' @keywords internal
           
-merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnRaster = TRUE){
+merge_rasters <- function(raster_list,  target_prj, method = "bilinear", 
+                          returnRaster = TRUE, tmp_dir = tempdir()){
   
   message(paste("Mosaicing & Projecting"))
   
-  destfile <- tempfile(fileext = ".tif")
+  destfile <- tempfile(tempdir = temp_dir, fileext = ".tif")
   files    <- unlist(raster_list)
  
   if(is.null(target_prj)){
@@ -316,7 +318,7 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
              )
   # Using two steps now as gdal with one step introduced NA's along seams
   # Slower but more accurate!
-  destfile2 <- tempfile(fileext = ".tif")
+  destfile2 <- tempfile(tempdir = temp_dir, fileext = ".tif")
   sf::gdal_utils(util = "warp", 
                  source = destfile, 
                  destination = destfile2,
@@ -352,14 +354,15 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
 #'            vector.              
 #' @export
 #' @keywords internal
-get_opentopo <- function(locations, src, prj, expand=NULL, ...){
+get_opentopo <- function(locations, src, prj, expand=NULL, tmp_dir = tempdir(),
+                         ...){
   
   api_key <- get_opentopo_key()
   
   # Expand (if needed) and re-project bbx to ll_geo
   bbx <- proj_expand(locations,prj,expand)
   
-  tmpfile <- tempfile()
+  tmpfile <- tempfile(tempdir = temp_dir)
   base_url <- "https://portal.opentopography.org/API/globaldem?demtype="
   data_set <- switch(src,
                      gl3 = "SRTMGL3",
