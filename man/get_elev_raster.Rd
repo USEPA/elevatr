@@ -14,6 +14,7 @@ get_elev_raster(
   verbose = TRUE,
   neg_to_na = FALSE,
   override_size_check = FALSE,
+  tmp_dir = tempdir(),
   ...
 )
 }
@@ -65,6 +66,11 @@ continue.  Between 500Mb and 3000Mb requires
 interaction and greater than 3000Mb fails.  These
 can be overriden with this argument set to TRUE.}
 
+\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a 
+temporary location.  Alternatively, the user may supply an 
+existing path for these raster files.  New folders are not 
+created by \code{get_elev_raster}.}
+
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
 \code{config}.   See
 \code{\link{get_aws_terrain}} for more details.}
@@ -108,7 +114,7 @@ loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin,
                                max=sf::st_bbox(lake)$ymax))
                                
 x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
-x <- get_elev_raster(lake, z = 12)
+x <- get_elev_raster(lake, z = 14)
 x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 x <- get_elev_raster(lake_buff, z = 10, clip = "locations")
 }

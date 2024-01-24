@@ -7,7 +7,7 @@
 Attribution: Details here
 }
 \usage{
-get_opentopo(locations, src, prj, expand = NULL, ...)
+get_opentopo(locations, src, prj, expand = NULL, tmp_dir = tempdir(), ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
@@ -20,6 +20,11 @@ argument is required for a \code{data.frame} of locations.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the SRTM data.}
+
+\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a 
+temporary location.  Alternatively, the user may supply an 
+existing path for these raster files.  New folders are not 
+created by \code{get_elev_raster}.}
 
 \item{...}{Extra configuration parameters to be passed to httr::GET.  Common 
 usage is to adjust timeout.  This is done as 

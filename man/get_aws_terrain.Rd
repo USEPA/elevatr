@@ -17,6 +17,7 @@ get_aws_terrain(
   expand = NULL,
   ncpu = future::availableCores() - 1,
   serial = NULL,
+  tmp_dir = tempdir(),
   ...
 )
 }
@@ -43,6 +44,11 @@ additional area around the feature is desired. Default is NULL.}
 
 \item{serial}{Logical to determine if API should be hit in serial or in 
 parallel.  TRUE will use purrr, FALSE will use furrr.}
+
+\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a 
+temporary location.  Alternatively, the user may supply an 
+existing path for these raster files.  New folders are not 
+created by \code{get_elev_raster}.}
 
 \item{...}{Extra configuration parameters to be passed to httr::GET.  Common 
 usage is to adjust timeout.  This is done as 

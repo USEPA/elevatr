@@ -44,7 +44,11 @@
 #'                            between 100 Mb and 500Mb report a message but
 #'                            continue.  Between 500Mb and 3000Mb requires 
 #'                            interaction and greater than 3000Mb fails.  These
-#'                            can be overriden with this argument set to TRUE.    
+#'                            can be overriden with this argument set to TRUE.  
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
+#'                created by \code{get_elev_raster}.                              
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
@@ -76,7 +80,7 @@
 #'                                max=sf::st_bbox(lake)$ymax))
 #'                                
 #' x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
-#' x <- get_elev_raster(lake, z = 12)
+#' x <- get_elev_raster(lake, z = 14)
 #' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
 #' x <- get_elev_raster(lake_buff, z = 10, clip = "locations")
 #' }
@@ -92,6 +96,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
     return(NULL)
   }
   
+  tmp_dir <- normalizePath(tmp_dir, mustWork = TRUE)
   src  <- match.arg(src)
   clip <- match.arg(clip) 
   
@@ -124,9 +129,11 @@ get_elev_raster <- function(locations, z, prj = NULL,
   
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
-    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand, ...)
+    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand, 
+                                   tmp_dir = tmp_dir, ...)
   } else if(src %in% c("gl3", "gl1", "alos", "srtm15plus")){
-    raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, ...)
+    raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, 
+                                tmp_dir = tmp_dir, ...)
   }
   sources <- attr(raster_elev, "sources")
   if(is.null(sources)){sources <- src}
@@ -181,6 +188,10 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #' @param ncpu Number of CPU's to use when downloading aws tiles.
 #' @param serial Logical to determine if API should be hit in serial or in 
 #'               parallel.  TRUE will use purrr, FALSE will use furrr. 
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
+#'                created by \code{get_elev_raster}.
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
 #'            usage is to adjust timeout.  This is done as 
 #'            \code{config=timeout(x)} where \code{x} is a numeric value in 
@@ -229,6 +240,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
       clear = FALSE, 
       width= 60
     ))
+  
   progressr::with_progress({
   if(serial){
     
@@ -255,7 +267,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
     dem_list <- furrr::future_map(urls,
                                   function(x){
                                     p()
-                                    tmpfile <- tempfile(tempdir = tmp_dir, fileext = ".tif")
+                                    tmpfile <- tempfile(tmpdir = tmp_dir, fileext = ".tif")
                                     resp <- httr::GET(x, 
                                                       httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
                                                       httr::write_disk(tmpfile,overwrite=TRUE), ...)
@@ -270,7 +282,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
   }
   })
   
-  merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
+  merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj, tmp_dir = tmp_dir)
   sources <- unlist(lapply(dem_list, function(x) attr(x, "source")))
   if(!is.null(sources)){
     sources <- trimws(unlist(strsplit(sources, ",")))
@@ -295,6 +307,10 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
 #' @param method the method for resampling/reprojecting. Default is 'bilinear'. 
 #' Options can be found [here](https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-r)
 #' @param returnRaster if TRUE, return a raster object (default), else, return the file path to the object
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
+#'                created by \code{get_elev_raster}.
 #' @export
 #' @keywords internal
           
@@ -303,7 +319,7 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear",
   
   message(paste("Mosaicing & Projecting"))
   
-  destfile <- tempfile(tempdir = temp_dir, fileext = ".tif")
+  destfile <- tempfile(tmpdir = tmp_dir, fileext = ".tif")
   files    <- unlist(raster_list)
  
   if(is.null(target_prj)){
@@ -318,7 +334,7 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear",
              )
   # Using two steps now as gdal with one step introduced NA's along seams
   # Slower but more accurate!
-  destfile2 <- tempfile(tempdir = temp_dir, fileext = ".tif")
+  destfile2 <- tempfile(tmpdir = tmp_dir, fileext = ".tif")
   sf::gdal_utils(util = "warp", 
                  source = destfile, 
                  destination = destfile2,
@@ -347,6 +363,10 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear",
 #'            argument is required for a \code{data.frame} of locations.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the SRTM data. 
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
+#'                created by \code{get_elev_raster}.
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
 #'            usage is to adjust timeout.  This is done as 
 #'            \code{config=timeout(x)} where \code{x} is a numeric value in 
@@ -362,7 +382,7 @@ get_opentopo <- function(locations, src, prj, expand=NULL, tmp_dir = tempdir(),
   # Expand (if needed) and re-project bbx to ll_geo
   bbx <- proj_expand(locations,prj,expand)
   
-  tmpfile <- tempfile(tempdir = temp_dir)
+  tmpfile <- tempfile(tmpdir = tmp_dir)
   base_url <- "https://portal.opentopography.org/API/globaldem?demtype="
   data_set <- switch(src,
                      gl3 = "SRTMGL3",
@@ -391,7 +411,7 @@ get_opentopo <- function(locations, src, prj, expand=NULL, tmp_dir = tempdir(),
   if (httr::http_type(resp) != "application/octet-stream") {
     stop("API did not return octet-stream as expected", call. = FALSE)
   } 
-  dem <- merge_rasters(tmpfile, target_prj = prj)
+  dem <- merge_rasters(tmpfile, target_prj = prj, tmp_dir = tmp_dir)
   dem
 }
 
