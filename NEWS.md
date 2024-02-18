@@ -1,13 +1,42 @@
-elevatr 0.4.3 (2023-04-XX)
+elevatr 0.99.0 (2024-0x-xx)
+=============
+# API Changes
+- add argument for specifying temp directory for download files.  Allows users to specify a specific location. (Thanks, @andrew-caudillo: https://github.com/jhollist/elevatr/issues/95)
+
+
+elevatr 0.99.0 (2023-09-11)
+=============
+
+# Major refactor
+- dropped sp, rgdal and rgeos depends
+- All sf
+- Terra
+- Still returns RasterLayer, but raster will be dropped in upcoming release.
+
+# Vignette
+- Add location clip example 
+- cleaned up examples (e.g. plot was throwing warning, now max.plot = 1)
+
+# Other Changes
+- Switched to MIT from CCO
+- clean up: typos, update citations for new CRAN req, hide one test (thanks @Nowosad)
+- Updated documentation
+
+elevatr 0.4.5 (2023-06-12)
+=============
+
+# Startup
+- added startup message warning of switch to sf and terra in future releases.
+
+
+elevatr 0.4.4 (2023-05-30)
 =============
 
 # Fixes
-- Changed API ERRORS to warnings and return NA.  Would bomb out runs when this would happen only occasionally.
+- Changed API ERRORS to messages and return NA.  Would bomb out runs when this would happen only occasionally. Also this should meet CRAN policy on failing gracefully.
 - Switched long lat check from my homespun thing to st::sf_is_longlat
 - Fixed EPQS API URL.  Moved to a new one.  Thanks @haas4726 for the catch.
-
-
-
+- URL fixes in docs
 
 elevatr 0.4.2 (2021-12-28)
 =============
@@ -21,7 +50,6 @@ elevatr 0.4.2 (2021-12-28)
 - Changing to future::plans was losing tempfiles on parallel downloads.  Moved the change back to serial plan after creation of raster.
 - Changed get_tile_xy.  My math was messing up in areas near 180/-180 longitude were trying to grab non-existent tiles.  Now using slippymath::lonlat_to_tilenum instead.
 - NA's introduced with simultaneous gdal mosaic and project.  Now uses two steps.  Solves https://stackoverflow.com/questions/67839878/gridded-dot-artifacts-in-geom-raster-plot
-
 
 elevatr 0.4.1 (2021-07-21)
 ==============
@@ -143,7 +171,7 @@ elevatr 0.1.4 (2017-12-28)
 ==========================
 ## Bug Fixes
 - Primary change with this released is fixing a bug with the return file type on the AWS and mapzen APIs.  "tif" was changed to "tiff" and the check was stopping processing of the raster images.  Details are on <https://github.com/jhollist/elevatr/issues/17>. Thanks to the following individuals for catching this: @yipcma, @TomBor, @jslingsby.  And thanks to @vividbot for <https://github.com/jhollist/elevatr/pull/18> which provided a fix.  
-- Thanks to @pascalfust for this issue: <https://github.com/USEPA/elevatr/issues/2>.  Kicked me into gear to send fix to CRAN.
+- Thanks to @pascalfust for kicking me into gear to send fix to CRAN.
 - Fixed NOTE on CRAN: Packages in Imports, not imported.
     - Removed prettyunits
     - moved rgdal to suggests

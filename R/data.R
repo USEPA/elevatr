@@ -21,14 +21,14 @@ NULL
 #' @name pt_df
 NULL
 
-#' SpatialPoints of random points
+#' A sf POINT dataset of random points
 #' 
-#' This SpatialPoints dataset is 250 uniform random points to be used for 
+#' This sf POINT dataset is 250 uniform random points to be used for 
 #' examples and tests
 #' 
 #' @docType data
 #' @keywords datasets
-#' @format A SpatialPoints object
+#' @format A sf POINT object
 #' 
-#' @name sp_big
+#' @name sf_big
 NULL

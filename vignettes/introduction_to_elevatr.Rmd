@@ -1,5 +1,5 @@
 ---
-title: "Accessing elevation data in R with the elevatr package"
+title: "Accessing elevation data in R with the elevatr package, version 1"
 author: "Jeffrey W. Hollister"
 date: '`r Sys.Date()`'
 output:
@@ -9,8 +9,10 @@ output:
     toc_float: yes
 vignette: >
   %\VignetteIndexEntry{Introduction to elevatr} 
-  %\VignetteEngine{knitr::rmarkdown} 
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown} 
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -18,8 +20,7 @@ vignette: >
 ################################################################################
 #Load packages
 ################################################################################
-library("sp")
-library("raster")
+library("terra")
 library("knitr")
 library("elevatr")
 library("httr")
@@ -38,6 +39,11 @@ knitr::opts_chunk$set(purl = NOT_CRAN,
 #Sys.setenv(mapzen_key=key)
 ```
 
+# Key information about version 0.99.0 and upcoming versions of `elevatr`
+
+Several major changes have been made to `elevatr` in response to the retirement of legacy spatial packages (see
+<https://r-spatial.org/r/2023/05/15/evolution4.html> for details).  Version 0.99.0 has switched to using `sf` and `terra` for all data handling; however, in this version a `raster RasterLayer` is still returned from `get_elev_raster()`.  Additional changes are planned for version 1+, most notably the return for `get_elev_raster()` will be a `terra SpatRaster`.  Please plan accordingly for your analyses and/or packages account for this change. 
+
 # Introduction to `elevatr`
 
 Elevation data is used for a wide array of applications, including, for example, visualization, hydrology, and ecological modelling.  Gaining access to these data in R has not had a single interface, is made available through functions across many packages, or requires local access to the data.  This is no longer required as a variety of APIs now exist that provide programmatic access to elevation data.  The `elevatr` package was written to standarize access to elevation data from web APIs.  This introductory vignette provides details on how to use `elevatr` to access elevation data and provides a bit of detail on the source data it accesses.
@@ -46,11 +52,11 @@ As of version 0.4.2, there are several endpoints that `elevatr` accesses.  For p
 
 # Get Point Elevation Data
 
-Point elevation is accessed from `get_elev_point()`.  This function takes either a data.frame with  x (longitude) and y (latitude) locations as the first two columns  or a SpatialPoints/SpatialPointsDataFrame as input and then fetches the reported elevation for that location.  As mentioned there is one service that provides this information.  Details are provided below.
+Point elevation is accessed from `get_elev_point()`.  This function takes either a data.frame with  x (longitude) and y (latitude) locations as the first two columns  or a `sf`,  as input and then fetches the reported elevation for that location.  As mentioned there is one service that provides this information.  Details are provided below.
 
 ## USGS Elevation Point Query Service 
 
-The [USGS Elevation Point Query Service](http://ned.usgs.gov/epqs/) is accessible from `elevatr`.  It is only available for the United States (including Alaska and Hawaii).  Points that fall within the United States but are not on land return a value of zero.  Points outside the United States boundaries return a value of -1000000.
+The [USGS Elevation Point Query Service](https://apps.nationalmap.gov/epqs/) is accessible from `elevatr`.  It is only available for the United States (including Alaska and Hawaii).  Points that fall within the United States but are not on land return a value of zero.  Points outside the United States boundaries return a value of -1000000.
 
 ### Using `get_elev_point()` to Access The USGS Elevation Point Query Service
 
@@ -63,36 +69,31 @@ Example usage of each is included below.  For these examples, we can create a da
 set.seed(65.7)
 examp_df <- data.frame(x = runif(3, min = -73, max = -72.5), 
                        y = runif(3, min = 42 , max = 43))
-prj_dd <- "EPSG:4326"
+crs_dd <- 4326
 
 # Create and example data.frame with additional columns
 cats <- data.frame(category = c("H", "M", "L"))
 
 examp_df2 <- data.frame(examp_df, cats)
 
-# Create an example SpatialPoints
-examp_sp <- SpatialPoints(examp_df, proj4string = CRS(prj_dd))
-
-# Create an example SpatialPointsDataFrame
-examp_spdf <- SpatialPointsDataFrame(examp_sp, data = cats)
+# Create an example 
+examp_sf <- sf::st_as_sf(examp_df2, coords = c("x", "y"), crs = crs_dd)
 ```
 
-If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output SpatialPointsDataFrame.  Similarly, an elevation column is added to the data slot of a SpatialPointsDataFrame.
+If a data frame is used it may have additional columns beyond the first two, which must contain the coordinates.  The additional columns, along with the returned elevation, will be part of the output `POINT` or `MULTIPOINT` `sf` object.  Similarly, an elevation and units column is added to the data frame.
 
-The USGS Elevation Point Query Service returns a single point at a time.  The implemntation in `get_elev_point()` will loop through each point, thus can be slow for large number of requests.  
+The USGS Elevation Point Query Service returns a single point at a time.  The implementation in `get_elev_point()` will loop through each point, thus can be slow for large number of requests.  
 
 Accessing data from this service is done by setting the `src` to `"epqs"`.  No API key is required and there are no rate limits.
 
 
-```{r}
-df_elev_epqs <- get_elev_point(examp_df, prj = prj_dd, src = "epqs")
-data.frame(df_elev_epqs)
-df2_elev_epqs <- get_elev_point(examp_df2, prj = prj_dd, src = "epqs")
-data.frame(df2_elev_epqs)
-sp_elev_epqs <- get_elev_point(examp_sp, src = "epqs")
-sp_elev_epqs
-spdf_elev_epqs <- get_elev_point(examp_spdf, src = "epqs")
-spdf_elev_epqs
+```{r epqs_examp}
+df_elev_epqs <- get_elev_point(examp_df, prj = crs_dd, src = "epqs")
+df_elev_epqs
+df2_elev_epqs <- get_elev_point(examp_df2, prj = crs_dd, src = "epqs")
+df2_elev_epqs
+sf_elev_epqs <- get_elev_point(examp_sf, src = "epqs")
+sf_elev_epqs
 ```
 
 ## Point elevation from Amazon Web Service Terrain Tiles
@@ -100,7 +101,7 @@ spdf_elev_epqs
 Since version 0.2.0, `elevatr` has also provided access to point elevations from the AWS Terrain Tiles.  This is not a separate service from the raster DEM service (see below).  It is provided as a convenience so users don't need to download the raster DEMs from AWS and perform their own point data extraction.  The added benefit is that points outside of the United States may be used with the AWS source.  To access the the point elevations using "aws":
 
 ```{r}
-df_elev_aws <- get_elev_point(examp_df, prj = prj_dd, src = "aws")
+df_elev_aws <- get_elev_point(examp_df, prj = crs_dd, src = "aws")
 ```
 
 An important thing to note, that the elevations will differ, and the prime reason is the resolution of the AWS tiles at the specified zoom.  The default zoom of 5 (i.e., `z=5`) is rather coarse and that is reflected in the elevations.
@@ -113,18 +114,18 @@ df_elev_epqs$elevation
 A larger zoom results in a smaller pixel size and the two sources converge.
 
 ```{r}
-df_elev_aws_z12 <- get_elev_point(examp_df, prj = prj_dd, src = "aws", z = 12)
+df_elev_aws_z12 <- get_elev_point(examp_df, prj = crs_dd, src = "aws", z = 12)
 df_elev_aws_z12$elevation
 df_elev_epqs$elevation
 ```
 
-Determining the correct zoom is a function of the needs of the user and represents a trade off between higher accuracy/longer download.
+Determining the correct zoom is a function of the needs of the user and represents a trade off between higher accuracy/longer downloads.
 
 Lastly, an example using locations outside of the United States.
 
 ```{r}
 mt_everest <- data.frame(x = 86.9250, y = 27.9881)
-everest_aws_elev <- get_elev_point(mt_everest, prj = prj_dd, z = 14, src = "aws")
+everest_aws_elev <- get_elev_point(mt_everest, prj = crs_dd, z = 14, src = "aws")
 everest_aws_elev
 ```
 
@@ -132,7 +133,7 @@ everest_aws_elev
 
 While point elevations are useful, they will not provide the information required for most elevation based analysis such as hydrologic modeling, viewsheds, etc.  To do that requires a raster digital elevation model (DEM).  There are several sources for digital elevation models such as the Shuttle Radar Topography Mission (SRTM), the USGS National Elevation Dataset (NED), Global DEM (GDEM), and others.  Each of these DEMs has pros and cons for their use.  Prior to its closure in January of 2018, Mapzen combined [several of these sources](https://github.com/tilezen/joerd/blob/master/docs/data-sources.md) to create a synthesis elevation product that utilizes the best available elevation data for a given region at given zoom level.  Additionally, the elevation data are enhanced with the inclusion of bathymetry in oceans from ETOPO1.  Although closed, these data compiled by Mapzen are made available through two separate APIs: the [Nextzen Terrain Tile Service](https://www.nextzen.org#terrain-tiles) and the [Terrain Tiles on Amazon Web Services](https://registry.opendata.aws/terrain-tiles/).  Only the Amazon tiles are currently accessible via `elevatr`.
 
-The input for `get_elev_raster()` is a data.frame with  x (longitude) and y (latitude) locations as the first two columns, any `sp` object, or any `raster` object and it returns a RasterLayer of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged Raster Layer.  Details for each service and their usage via `get_elev_raster()` are provided below.
+The input for `get_elev_raster()` is a data.frame with  x (longitude) and y (latitude) locations as the first two columns, any `sp` object, any `sf` object, any `terra` object, or any `raster` object and it returns a `RasterLayer` of the tiles that overlap the bounding box of the input.  If multiple tiles are retrieved, the resultant output is a merged `RasterLayer`.  Details for each service and their usage via `get_elev_raster()` are provided below.
 
 ## Using `get_elev_raster()` to access the Terrain Tiles on AWS.
 
@@ -141,32 +142,43 @@ As mentioned a data frame with x and y columns, a `sp` object, or a `raster` obj
 There is no difference in using the `sp` and `raster` input data types.  The data frame requires a `prj`.   We show examples using a `SpatialPolygonsDataFrame` and a data frame.  The zoom level (`z`) defaults to 9 (a trade off between resolution and time for download), but different zoom levels are often desired.  For example:  
 
 ```{r get_raster}
-# SpatialPolygonsDataFrame example
+# sf POLYGON example
 data(lake)
-elevation <- get_elev_raster(lake,z = 9)
+elevation <- get_elev_raster(lake, z = 9)
 plot(elevation)
-plot(lake, add=TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
 
 # data.frame example
-elevation_df <- get_elev_raster(examp_df,prj=prj_dd, z = 5)
+elevation_df <- get_elev_raster(examp_df, prj=crs_dd, z = 5)
 plot(elevation_df)
-plot(examp_sp, add = TRUE)
+plot(examp_sf, add = TRUE, col = "black", pch = 19, max.plot = 1)
 ```
 
 The zoom level determines the resolution of the output raster.  More details on resolution and zoom level is still available in the [Mapzen Documentation on ground resolution](https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution).
 
-In addition the the required arguments (`locations`, `z`, and  `prj` for data frames), several additional arguments may be passsed to `get_elev_raster()`.  First, the `expand` argument is provided to expand the size of the bounding box by a given value in map units.  This is useful when bounding box coordinates are near the edge of an xyz tile. For example:
+In addition the the required arguments (`locations`, `z`, and  `prj` for data frames), several additional arguments may be passed to `get_elev_raster()`.  First, the `expand` argument is provided to expand the size of the bounding box by a given value in map units.  This is useful when bounding box coordinates are near the edge of an xyz tile. For example:
 
 ```{r expand}
 # Bounding box on edge
 elev_edge<-get_elev_raster(lake, z = 10)
 plot(elev_edge)
-plot(lake, add = TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
 
 # Use expand to grab additional tiles
 elev_expand<-get_elev_raster(lake, z = 10, expand = 15000)
 plot(elev_expand)
-plot(lake, add = TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
+```
+
+Second, the `clip` argument provides some control over the extent and shape of the elevation raster that is returned.  The default value returns the entire tile for the "aws" `src`.  The default value for the OpenTopography is also tile, but as these datasets are not served by tile, the "tile" and "bbox" clip return the same elevation raster.  The "locations" clip option will clip the elevation raster to the locations themselves.  If the input locations are points, this is no different that "bbox", however if the input locations are a polygon, the elevation raster will be clipped to the boudary of that polygon.  For example:
+
+```{r clip_it}
+lake_buffer <- st_buffer(lake, 1000)
+
+lake_buffer_elev <- get_elev_raster(lake_buffer, z = 9, clip = "locations")
+plot(lake_buffer_elev)
+plot(st_geometry(lake), add = TRUE, col = "blue")
+plot(st_geometry(lake_buffer), add = TRUE)
 ```
 
 Lastly, `...` provides the ability to pass additional arguments to `httr::GET` which is used to access the API endpoints.  While any `httr::GET` arguments may be used, this will most likely be used to pass on configuration arguments such as `httr::timeout()` or `httr::verbose()` via a named argument, `config` to `httr::GET`.  The `httr::timeout()` can be used to increase the timeout if downloads are timing out.  For instance:
@@ -174,7 +186,7 @@ Lastly, `...` provides the ability to pass additional arguments to `httr::GET` w
 ```{r timeout}
 library(httr)
 # Increase timeout:
-get_elev_raster(lake, z = 5, config = timeout(5))
+get_elev_raster(lake, z = 5, config = timeout(100))
 ```
 
 Lastly, multiple configurations may be passed.  Below is an example combining `httr::timeout()` with `httr::verbose()`.
@@ -200,5 +212,5 @@ Below is an example for grabbing the OpenTopography SRTM data.
 ```{r, eval=FALSE}
 lake_srtmgl1 <- get_elev_raster(lake, src = "gl1", clip = "bbox", expand = 1000)
 plot(lake_srtmgl1)
-plot(lake, add = TRUE)
+plot(st_geometry(lake), add = TRUE, col = "blue")
 ```

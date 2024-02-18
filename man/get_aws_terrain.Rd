@@ -17,20 +17,22 @@ get_aws_terrain(
   expand = NULL,
   ncpu = future::availableCores() - 1,
   serial = NULL,
+  tmp_dir = tempdir(),
   ...
 )
 }
 \arguments{
+\item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
+\code{sp}, \code{sf}, or \code{raster} object as input.}
+
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 of the resultant raster is determined by the zoom and latitude.  For 
 details on zoom and resolution see the documentation from Mapzen at 
 \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}}
 
-\item{prj}{A string defining the projection of the locations argument. The 
-string needs to be an acceptable SRS_string for 
-\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-object, a \code{sp} object or a \code{raster} object 
-is provided, the string will be taken from that.  This 
+\item{prj}{A valid input to \code{\link{st_crs}} If a \code{sf} 
+object or a \code{terra} object is provided as the \code{locations}, 
+the prj is optional and will be taken from \code{locations}.  This 
 argument is required for a \code{data.frame} of locations.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
@@ -43,17 +45,20 @@ additional area around the feature is desired. Default is NULL.}
 \item{serial}{Logical to determine if API should be hit in serial or in 
 parallel.  TRUE will use purrr, FALSE will use furrr.}
 
+\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a 
+temporary location.  Alternatively, the user may supply an 
+existing path for these raster files.  New folders are not 
+created by \code{get_elev_raster}.}
+
 \item{...}{Extra configuration parameters to be passed to httr::GET.  Common 
 usage is to adjust timeout.  This is done as 
 \code{config=timeout(x)} where \code{x} is a numeric value in 
 seconds.  Multiple configuration functions may be passed as a 
 vector.}
-
-\item{bbx}{a \code{sp::bbox} object that is used to select x,y,z tiles.}
 }
 \description{
 This function uses the AWS Terrain Tile service to retrieve an elevation
-raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
+raster from the geotiff service.  It accepts a \code{sf::st_bbox} object as 
 input and returns a single raster object covering that extent.
 }
 \keyword{internal}

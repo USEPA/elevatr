@@ -16,9 +16,9 @@ latlong_to_tilexy <- function(lon_deg, lat_deg, zoom){
 #' @keywords internal
 get_tilexy <- function(bbx,z){
   #Convert to -180 - +180
-  bbx["x",] <- ifelse(bbx["x",] > 180, bbx["x",] - 360, bbx["x",])
-  min_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,1],bbx[2,1],z))
-  max_tile <- unlist(slippymath::lonlat_to_tilenum(bbx[1,2],bbx[2,2],z))
+  bbx[c("xmin","xmax")] <- ifelse( bbx[c("xmin","xmax")] > 180,  bbx[c("xmin","xmax")] - 360,  bbx[c("xmin","xmax")])
+  min_tile <- unlist(slippymath::lonlat_to_tilenum(bbx["xmin"],bbx["ymin"],z))
+  max_tile <- unlist(slippymath::lonlat_to_tilenum(bbx["xmax"],bbx["ymax"],z))
   x_all <- seq(from = floor(min_tile[1]), to = floor(max_tile[1]))
   y_all <- seq(from = floor(min_tile[2]), to = floor(max_tile[2]))
   
@@ -35,142 +35,47 @@ get_tilexy <- function(bbx,z){
   return(expand.grid(x_all,y_all))
 }
 
-#' function to get a data.frame of all xyz tiles to download
-#' @keywords internal
-get_tilexy_coords <- function(locations,z){
-  coords <- sp::coordinates(locations)
-  
-  tiles <- latlong_to_tilexy(coords[,1],coords[,2],z)
-  tiles <- matrix(tiles, nrow = nrow(coords), ncol = 2)
-  tiles <- floor(tiles)
-  tiles <- unique(tiles)
-  
-  tiles
-}
-
-
 
 #' function to check input type and projection.  All input types convert to a
 #' SpatialPointsDataFrame for point elevation and bbx for raster.
-#' @importFrom sp wkt
-#' @importFrom sf st_crs st_as_sf
 #' @keywords internal
 loc_check <- function(locations, prj = NULL){
-  
-  #prj <- st_crs(prj)
-  
-  #Convert sf locations to SP
-  if(("sf" %in% class(locations)) | ("sfc" %in% class(locations))){
-    locations <- sf::as_Spatial(locations)
-  }
-  
+ 
   if(is.null(nrow(locations))){
     nfeature <- length(locations) 
   } else {
     nfeature <- nrow(locations)
   }
   
-  if(class(locations)=="data.frame"){ 
-    if(is.null(prj)){
-      stop("Please supply a valid crs via locations or prj.")
-    }
-    if(ncol(locations) > 2){
-      df <- data.frame(locations[,3:ncol(locations)],
-                       vector("numeric",nfeature))
-      names(df) <- c(names(locations)[3:ncol(locations)],
-                     "elevation")
-    } else {
-      df <- data.frame(vector("numeric",nfeature))
-      names(df) <- "elevation"
-    }
-    if(grepl("+proj", prj)){
-      locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
-                                            proj4string = sp::CRS(prj),
-                                            data = df)
-    } else {  
-      locations<-sp::SpatialPointsDataFrame(sp::coordinates(locations[,1:2]),
-                               proj4string = sp::CRS(SRS_string = prj),
-                               data = df)
-    }
-  } else if(class(locations) == "SpatialPoints"){
-    
-    crs_check <- is.na(st_crs(st_as_sf(locations)))
-    if(crs_check &  is.null(prj)){
-      stop("Please supply a valid crs via locations or prj.")
+  if(all(class(locations)=="data.frame")){ 
+    if(is.null(prj) & !any(class(locations) %in% c("sf", "sfc", "sfg"))){
+      stop("Please supply a valid sf crs via locations or prj.")
     }
     
-    if(crs_check){
-      if(grepl("+proj", prj)){
-        locations <- sp::SpatialPoints(locations, 
-                                       proj4string = sp::CRS(prj))
-      } else {  
-        locations <- sp::SpatialPoints(locations, 
-                                       proj4string = sp::CRS(SRS_string = prj))
-      }
+    locations <- sf::st_as_sf(x = locations, coords = c("x", "y"), crs = prj)
+    locations$elevation <- vector("numeric", nfeature)
+    
+  } else if(any(class(locations) %in% c("sf", "sfc", "sfg"))){
+    
+    sf_crs <- sf::st_crs(locations)
+    locations$elevation <- vector("numeric", nfeature)
+    
+    if((is.null(sf_crs) | is.na(sf_crs)) & is.null(prj)){
+      stop("Please supply an sf object with a valid crs.")
     }
     
-    locations<-sp::SpatialPointsDataFrame(locations, 
-                    data = data.frame(
-                      elevation = vector("numeric", nrow(
-                        sp::coordinates(locations)))))
+  } else if(any(class(locations) %in% c("SpatRaster", "SpatVector"))){
     
-  } else if(class(locations) == "SpatialPointsDataFrame"){
-    crs_check <- is.na(st_crs(st_as_sf(locations)))
-    if(crs_check & is.null(prj)) {
-      stop("Please supply a valid crs via locations or prj.")
-    }
-    if(crs_check){
-      if(grepl("+proj", prj)){
-        locations <- sp::SpatialPoints(locations, 
-                                       proj4string = sp::CRS(prj))
-      } else {
-        locations <- sp::SpatialPoints(locations, 
-                                       proj4string = sp::CRS(SRS_string = prj))
-      }
-    }
-    
-    locations@data <- data.frame(locations@data,
-                                 elevation = vector("numeric",nfeature)) 
-  } else if(attributes(class(locations)) %in% c("raster","sp")){
-    
-    if(attributes(class(locations)) %in% "raster"){
-      locs <- raster::crs(locations)
-    } else if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-      locs <- sp::wkt(locations)
-    } else {
-      locs <- sp::proj4string(locations)
-    } 
-    
-    if((is.null(locs) | 
-       is.na(locs)) & is.null(prj)){
-      stop("Please supply a valid crs via locations or prj.")
-    }
-    if(is.null(locs) | is.na(locs)){
-        if(attributes(class(locations)) == "raster"){
-          
-          if(sum(!is.na(raster::getValues(locations))) == 0){
-            stop("No distinct points, all values NA.")
-          } else {
-            locations <- raster::rasterToPoints(locations,spatial = TRUE)
-            locations<-sp::SpatialPointsDataFrame(locations, 
-                                                 data = data.frame(
-                                                   elevation = vector("numeric", nrow(
-                                                     sp::coordinates(locations)))))
-          }
-        } else if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-          locs <- sp::wkt(locations)
-        } else {
-          locs <- sp::proj4string(locations)
-        } 
-    } else if(attributes(class(locations)) %in% c("raster")){
-      locations <- raster::rasterToPoints(locations,spatial = TRUE)
-      locations<-sp::SpatialPointsDataFrame(locations, 
-                                            data = data.frame(
-                                              elevation = vector("numeric", nrow(
-                                                sp::coordinates(locations)))))
+    sf_crs <- sf::st_crs(locations)
+    locations <- sf::st_as_sf(terra::as.points(locations, values = FALSE), 
+                              coords = terra::crds(locations, df = TRUE),
+                              crs = sf_crs)
+    locations$elevation <- vector("numeric", nrow(locations))
+    if((is.null(sf_crs) | is.na(sf_crs)) & is.null(prj)){
+      stop("Please supply a valid sf crs via locations or prj.")
     }
   }
-  
+
   #check for long>180
   if(is.null(prj)){
     prj_test <- sf::st_crs(locations)
@@ -178,16 +83,11 @@ loc_check <- function(locations, prj = NULL){
     prj_test <- prj
   }
   
+
   lll <- sf::st_is_longlat(prj_test)
-  #any(grepl("\\bGEOGCRS\\b",st_crs(prj_test)) | 
-  #     grepl("\\bGEODCRS\\b", st_crs(prj_test)) |
-  #     grepl("\\bGEODETICCRS\\b", st_crs(prj_test)) |
-  #     grepl("\\bGEOGRAPHICCRS\\b", st_crs(prj_test)) |
-  #     grepl("\\blonglat\\b", st_crs(prj_test)) |
-  #     grepl("\\blatlong\\b", st_crs(prj_test)))
   
   if(lll){
-    if(any(sp::coordinates(locations)[,1]>180)){
+    if(any(sf::st_coordinates(locations)[,1]>180)){
       stop("The elevatr package requires longitude in a range from -180 to 180.")
     } 
   }
@@ -215,7 +115,7 @@ proj_expand <- function(locations,prj,expand){
     nfeature <- nrow(locations)
   }
   
-  if(any(sp::bbox(locations)[2,] == 0) & lll & is.null(expand)){
+  if(any(sf::st_bbox(locations)[c("ymin","ymax")] == 0) & lll & is.null(expand)){
     # Edge case for lat exactly at the equator - was returning NA
     expand <- 0.01
   } else if(nfeature == 1 & lll & is.null(expand)){
@@ -224,26 +124,27 @@ proj_expand <- function(locations,prj,expand){
   } else if(nfeature == 1 & is.null(expand)){
     # Edge case for single point and projected
     # set to 1000 meters
-    unit <- st_crs(sf::st_as_sf(locations), parameters = TRUE)$ud_unit
+    unit <- sf::st_crs(sf::st_as_sf(locations), parameters = TRUE)$ud_unit
     expand <- units::set_units(units::set_units(1000, "m"), unit, 
                                mode = "standard")
     expand <- as.numeric(expand)
   }
- 
-  #
+
   
   if(!is.null(expand)){
-    #bbx <- methods::as(sf::st_buffer(sf::st_as_sf(bbx), expand), "Spatial")
-    bbx <- sp::bbox(locations) + c(-expand, -expand, expand, expand)
+    
+    bbx <- sf::st_bbox(locations) + c(-expand, -expand, expand, expand)
   } else {
-    bbx <- sp::bbox(locations)
+    bbx <- sf::st_bbox(locations)
   }
-  bbx <- bbox_to_sp(bbx, prj = prj)
-  bbx <- sp::bbox(sp::spTransform(bbx, sp::CRS(ll_geo)))
+
+  bbx <- bbox_to_sf(bbx, prj = prj)
+  bbx <- sf::st_bbox(sf::st_transform(bbx, crs = ll_geo))
   bbx_coord_check <- as.numeric(bbx)
   if(any(!bbx_coord_check >= -180 & bbx_coord_check <= 360)){
     stop("The elevatr package requires longitude in a range from -180 to 180.")
   } 
+
   bbx
   
   #sf expand - save for later
@@ -258,38 +159,26 @@ proj_expand <- function(locations,prj,expand){
 #' function to clip the DEM
 #' @keywords internal
 clip_it <- function(rast, loc, expand, clip){
-
-  loc_wm <- sp::spTransform(loc, raster::crs(rast))
-  if(clip == "locations" & !grepl("Points", class(loc_wm))){
-    dem <- raster::mask(raster::crop(rast,loc_wm), loc_wm)
-  } else if(clip == "bbox" | grepl("Points", class(loc_wm))){
-    bbx <- proj_expand(loc_wm, as.character(raster::crs(rast)), expand)
-    bbx_sp <- sp::spTransform(bbox_to_sp(bbx), raster::crs(rast))
-    dem <- raster::mask(raster::crop(rast,bbx_sp), bbx_sp)
+  loc_wm <- sf::st_transform(loc, crs = terra::crs(rast))
+  if(clip == "locations" & !grepl("sfc_POINT", class(sf::st_geometry(loc_wm))[1])){
+    dem <- terra::mask(terra::crop(rast,loc_wm), loc_wm)
+  } else if(clip == "bbox" | grepl("sfc_POINT", class(sf::st_geometry(loc_wm))[1])){
+    bbx <- proj_expand(loc_wm, as.character(terra::crs(rast)), expand)
+    bbx_sf <- sf::st_transform(bbox_to_sf(bbx), crs = terra::crs(rast))
+    dem <- terra::mask(terra::crop(rast,bbx_sf), bbx_sf)
   }
   dem
 }
 
-#' Edited from https://github.com/jhollist/quickmapr/blob/master/R/internals.R
 #' Assumes geographic projection
-#' sp bbox to poly
-#' @param bbx an sp bbox object
+#' sf bbox to poly
+#' @param bbox an sf bbox object
 #' @param prj defaults to "EPSG:4326"
 #' @keywords internal
-#' @importFrom sp wkt
-bbox_to_sp <- function(bbox, prj = "EPSG:4326") {
-  x <- c(bbox[1, 1], bbox[1, 1], bbox[1, 2], bbox[1, 2], bbox[1, 1])
-  y <- c(bbox[2, 1], bbox[2, 2], bbox[2, 2], bbox[2, 1], bbox[2, 1])
-  p <- sp::Polygon(cbind(x, y))
-  ps <- sp::Polygons(list(p), "p1")
-  if(grepl("+proj", prj)){
-    sp_bbx <- sp::SpatialPolygons(list(ps), 1L, 
-                                  proj4string = sp::CRS(prj))
-  } else {
-    sp_bbx <- sp::SpatialPolygons(list(ps), 1L, 
-                                  proj4string = sp::CRS(SRS_string = prj))
-  }
-  sp_bbx
+bbox_to_sf <- function(bbox, prj = 4326) {
+  sf_bbx <- sf::st_as_sf(sf::st_as_sfc(bbox))
+  sf_bbx <- sf::st_transform(sf_bbx, crs = prj)
+  sf_bbx
 }
 
 #' Estimate download size of DEMs
@@ -298,13 +187,12 @@ bbox_to_sp <- function(bbox, prj = "EPSG:4326") {
 #' @param src the src
 #' @param z zoom level if source is aws
 #' @keywords internal
-#' @importFrom sp wkt
 estimate_raster_size <- function(locations, prj, src, z = NULL){
   
-  locations <- bbox_to_sp(sp::bbox(locations), 
+  locations <- bbox_to_sf(sf::st_bbox(locations), 
                           prj = prj)
 
-  locations <- sp::spTransform(locations, sp::CRS(SRS_string = "EPSG:4326"))
+  locations <- sf::st_transform(locations, crs = 4326)
   # Estimated cell size (at equator) from zoom level source
   # https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#sources-native-resolution
   # Each degree at equator = 111319.9 meters
@@ -318,7 +206,7 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
                     1223.0, 611.5, 305.7, 152.9, 76.4, 38.2, 19.1, 9.6, 4.8, 
                     2.4)
   z_res <- data.frame(z = 0:16, res_dd = m_at_equator/111319.9)
-
+ 
   bits <- switch(src,
                  aws = 32,
                  gl3 = 32,
@@ -336,8 +224,8 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
                   alos = 0.0002778,
                   srtm15plus = 0.004165) 
   }
-  num_rows <- (sp::bbox(locations)[1, "max"] - sp::bbox(locations)[1, "min"])/res
-  num_cols <- (sp::bbox(locations)[2, "max"] - sp::bbox(locations)[2, "min"])/res
+  num_rows <- (sf::st_bbox(locations)$xmax - sf::st_bbox(locations)$xmin)/res
+  num_cols <- (sf::st_bbox(locations)$ymax - sf::st_bbox(locations)$ymin)/res
   
   num_megabytes <- (num_rows * num_cols * bits)/8388608
   num_megabytes

@@ -14,12 +14,13 @@ get_elev_raster(
   verbose = TRUE,
   neg_to_na = FALSE,
   override_size_check = FALSE,
+  tmp_dir = tempdir(),
   ...
 )
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
-\code{sp}, \code{sf}, or \code{raster} object as input.}
+\code{sf}, or \code{terra} object as input.}
 
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 of the resultant raster is determined by the zoom and latitude.  For 
@@ -27,11 +28,9 @@ details on zoom and resolution see the documentation from Mapzen at
 \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 The z is not required for the OpenTopography data sources.}
 
-\item{prj}{A string defining the projection of the locations argument. The 
-string needs to be an acceptable SRS_string for 
-\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-object, a \code{sp} object or a \code{raster} object 
-is provided, the string will be taken from that.  This 
+\item{prj}{A valid input to \code{\link{st_crs}} If a \code{sf} 
+object or a \code{terra} object is provided as the \code{locations}, 
+the prj is optional and will be taken from \code{locations}.  This 
 argument is required for a \code{data.frame} of locations.}
 
 \item{src}{A character indicating which API to use.  Currently supports "aws" 
@@ -49,7 +48,7 @@ clip is set to "bbox". Default is NULL.}
 The default value is "tile" which returns the full tiles.  Other 
 options are "bbox" which returns the DEM clipped to the bounding 
 box of the original locations (or expanded bounding box if used), 
-or "locations" if the spatials data (e.g. polygons) in the input 
+or "locations" if the spatial data (e.g. polygons) in the input 
 locations should be used to clip the DEM.  Locations are not used 
 to clip input point datasets.  Instead the bounding box is used.}
 
@@ -67,20 +66,28 @@ continue.  Between 500Mb and 3000Mb requires
 interaction and greater than 3000Mb fails.  These
 can be overriden with this argument set to TRUE.}
 
+\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a 
+temporary location.  Alternatively, the user may supply an 
+existing path for these raster files.  New folders are not 
+created by \code{get_elev_raster}.}
+
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
 \code{config}.   See
 \code{\link{get_aws_terrain}} for more details.}
 }
 \value{
 Function returns a \code{RasterLayer} in the projection 
-        specified by the \code{prj} argument.
+        specified by the \code{prj} argument or in the projection of the 
+        provided locations.  In subsequent versions, a \code{SpatRaster}
+        will be returned.
 }
 \description{
 Several web services provide access to raster elevation. Currently, this 
-function provides access to the Amazon Web Services Terrian Tiles and the 
+function provides access to the Amazon Web Services Terrain Tiles and the 
 Open Topography global datasets API. The function accepts a \code{data.frame} 
-of x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  A 
-\code{raster} object is returned.
+of x (long) and y (lat), an \code{sf}, or \code{terra} object as input.  A 
+\code{RasterLayer} object is returned. In subsequent versions, a \code{SpatRaster}
+will be returned.
 }
 \details{
 Currently, the \code{get_elev_raster} function utilizes the 
@@ -97,18 +104,18 @@ Currently, the \code{get_elev_raster} function utilizes the
 }
 \examples{
 \dontrun{
+library(elevatr)
+library(sf)
 data(lake)
-
-loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-                               max=sp::bbox(lake)[1,2]),
-                     y = runif(6,min=sp::bbox(lake)[2,1], 
-                               max=sp::bbox(lake)[2,2]))
-# Example for PROJ > 5.2.0
-x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
-
-# Example for PROJ < 5.2.0 
-x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
-x <- get_elev_raster(lake, z = 12)
+lake_buff  <- st_buffer(lake, 1000)
+loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
+                               max=sf::st_bbox(lake)$xmax),
+                     y = runif(6,min=sf::st_bbox(lake)$ymin, 
+                               max=sf::st_bbox(lake)$ymax))
+                               
+x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
+x <- get_elev_raster(lake, z = 14)
 x <- get_elev_raster(lake, src = "gl3", expand = 5000)
+x <- get_elev_raster(lake_buff, z = 10, clip = "locations")
 }
 }

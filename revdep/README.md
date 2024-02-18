@@ -1,33 +1,43 @@
 # Platform
 
-|field    |value                                              |
-|:--------|:--------------------------------------------------|
-|version  |R version 4.1.0 (2021-05-18)                       |
-|os       |Windows 10 x64 (build 18363)                       |
-|system   |x86_64, mingw32                                    |
-|ui       |RStudio                                            |
-|language |(EN)                                               |
-|collate  |English_United States.1252                         |
-|ctype    |English_United States.1252                         |
-|tz       |America/New_York                                   |
-|date     |2021-12-29                                         |
-|rstudio  |1.4.1106 Tiger Daylily (desktop)                   |
-|pandoc   |2.11.4 @ C:\PROGRA~1\RStudio\bin\pandoc\pandoc.exe |
+|field    |value                                    |
+|:--------|:----------------------------------------|
+|version  |R version 4.2.2 (2022-10-31 ucrt)        |
+|os       |Windows 10 x64 (build 22000)             |
+|system   |x86_64, mingw32                          |
+|ui       |RStudio                                  |
+|language |(EN)                                     |
+|collate  |English_United States.utf8               |
+|ctype    |English_United States.utf8               |
+|tz       |America/New_York                         |
+|date     |2023-09-08                               |
+|rstudio  |2022.12.0+353 Elsbeth Geranium (desktop) |
+|pandoc   |NA                                       |
 
 # Dependencies
 
-|package    |old   |new        |<U+0394>  |
-|:----------|:-----|:----------|:--|
-|elevatr    |0.4.1 |0.4.2.9999 |*  |
-|DBI        |NA    |1.1.2      |*  |
-|glue       |NA    |1.6.0      |*  |
-|openssl    |NA    |1.4.6      |*  |
-|parallelly |NA    |1.30.0     |*  |
-|progressr  |NA    |0.10.0     |*  |
-|raster     |NA    |3.5-11     |*  |
-|sf         |NA    |1.0-5      |*  |
-|sp         |NA    |1.4-6      |*  |
-|terra      |NA    |1.4-22     |*  |
+|package   |old   |new    |Δ  |
+|:---------|:-----|:------|:--|
+|elevatr   |0.4.5 |0.99.0 |*  |
+|askpass   |NA    |1.2.0  |*  |
+|classInt  |NA    |0.4-10 |*  |
+|curl      |NA    |5.0.2  |*  |
+|digest    |NA    |0.6.33 |*  |
+|httr      |NA    |1.4.7  |*  |
+|progressr |NA    |0.14.0 |*  |
+|purrr     |NA    |1.0.2  |*  |
+|raster    |NA    |3.6-23 |*  |
+|Rcpp      |NA    |1.0.11 |*  |
+|sf        |NA    |1.0-14 |*  |
+|terra     |NA    |1.7-46 |*  |
+|units     |NA    |0.8-3  |*  |
+|wk        |NA    |0.8.0  |*  |
 
 # Revdeps
+
+## New problems (1)
+
+|package   |version |error  |warning |note |
+|:---------|:-------|:------|:-------|:----|
+|[shoredate](problems.md#shoredate)|1.1.0   |__+1__ |        |     |
 

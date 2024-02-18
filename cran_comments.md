@@ -1,26 +1,41 @@
 ## Comments
-Several bug and issue fixes, adds API key for OpenTopography.  Addresses invalid URL/URI in README and ignored README.html for re-submit (SORRY!)
+
+- Modified startup message to note switch to sf and terra, but keeping RasterLayer as output for now..
+- NOTEs in CRAN check results have been addressed.
+- Resubmission for issues with package names and object types in DESCRIPTION
 
 ## Test Environments
-- Github Actions, Ubuntu 20.04 LTS, R version 4.1.2
-- Github Actions, Ubuntu 20.04 LTS, R version 4.0.5
-- Github Actions, Ubuntu 20.04 LTS, R development
-- Github Actions, Microsoft Windows Server 2019, R Version 4.1.2
-- Github Actions, Microsoft Windows Server 2019, R Version 3.6.3
-- Github Actions, Mac OS 10.15, R Version 4.1.2
-- R-hub, Oracle Solaris 10, x86, 32 bit, R version 4.1.2
-- Local, Windows 10, R version 4.1.0
+
+- Github Actions, Ubuntu 20.04.6 LTS, R version 4.3.1
+- Github Actions, Ubuntu 20.04.6 LTS, R version 4.2.3
+- Github Actions, Ubuntu 22.04.3 LTS, R development
+- Github Actions, Microsoft Windows Server 2022, R Version 4.3.1
+- Github Actions, Microsoft Windows Server 2022, R Version 4.2.3
+- Github Actions, Mac OS 12.6.8, R Version 4.3.1
+- Local, Windows 10 x64 (build 22000), R version 4.2.2 (2022-10-31 ucrt)
 
 ## R CMD check results
+
 - No ERRORS or WARNINGS
 
-## Downstream dependencies
-There are currently two downstream dependencies
+## revdepcheck results
 
-- movecost 1.4
-- sharpshootR 1.8.4
+Reverse dependencies were checked with release 1.0.0 on Aug 17, 2023.  I have emailed and posted issues about the changes to elevatr for each of these reverse dependencies.  
 
-We checked both, comparing R CMD check results across CRAN and dev versions of this package.
+## revdepcheck results
 
- * We saw 0 new problems
+We checked 10 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
+
+ * We saw 1 new problems
  * We failed to check 0 packages
+
+Issues with CRAN packages are summarised below.
+
+### New problems
+(This reports the first line of each new failure)
+
+* shoredate
+  checking tests ...
+  
+  test failure for change in returned elevation - difference of 2.71 millimeters.
+  Issue submitted on package repository. Fix has been made by package maintainer on GitHub and will be submitted to CRAN upon release of elevatr 0.99.0

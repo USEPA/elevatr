@@ -7,21 +7,24 @@
 Attribution: Details here
 }
 \usage{
-get_opentopo(locations, src, prj, expand = NULL, ...)
+get_opentopo(locations, src, prj, expand = NULL, tmp_dir = tempdir(), ...)
 }
 \arguments{
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
 \code{sp}, an \code{sf}, or \code{raster} object as input.}
 
-\item{prj}{A string defining the projection of the locations argument. The 
-string needs to be an acceptable SRS_string for 
-\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-object, a \code{sp} object or a \code{raster} object 
-is provided, the string will be taken from that.  This 
+\item{prj}{A valid input to \code{\link{st_crs}} If a \code{sf} 
+object or a \code{terra} object is provided as the \code{locations}, 
+the prj is optional and will be taken from \code{locations}.  This 
 argument is required for a \code{data.frame} of locations.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
 bounding box that is used to fetch the SRTM data.}
+
+\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a 
+temporary location.  Alternatively, the user may supply an 
+existing path for these raster files.  New folders are not 
+created by \code{get_elev_raster}.}
 
 \item{...}{Extra configuration parameters to be passed to httr::GET.  Common 
 usage is to adjust timeout.  This is done as 

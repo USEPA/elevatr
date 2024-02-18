@@ -8,7 +8,8 @@ merge_rasters(
   raster_list,
   target_prj,
   method = "bilinear",
-  returnRaster = TRUE
+  returnRaster = TRUE,
+  tmp_dir = tempdir()
 )
 }
 \arguments{
@@ -20,6 +21,11 @@ merge_rasters(
 Options can be found [here](https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-r)}
 
 \item{returnRaster}{if TRUE, return a raster object (default), else, return the file path to the object}
+
+\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a 
+temporary location.  Alternatively, the user may supply an 
+existing path for these raster files.  New folders are not 
+created by \code{get_elev_raster}.}
 }
 \description{
 Merge multiple downloaded raster files into a single file. The input `target_prj` 

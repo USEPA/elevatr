@@ -20,12 +20,9 @@ first column and y (e.g. latitude) as the second column, a
 Elevation for these points will be returned in the 
 originally supplied class.}
 
-\item{prj}{A string defining the projection of the locations argument. The 
-string needs to be an acceptable SRS_string for 
-\code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-object, a \code{sp} object or a \code{raster} object 
-is provided, the string will be taken from that.  This 
-argument is required for a \code{data.frame} of locations.}
+\item{prj}{A valid input to \code{\link{st_crs}}.   This 
+argument is required for a \code{data.frame} of locations and optional
+for \code{sf} locations.}
 
 \item{src}{A character indicating which API to use, either "epqs" or "aws" 
 accepted. The "epqs" source is relatively slow for larger numbers 
@@ -48,35 +45,39 @@ Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what
 for details.}
 }
 \value{
-Function returns a \code{SpatialPointsDataFrame} or \code{sf} object 
-        in the projection specified by the \code{prj} argument.
+Function returns an \code{sf} object in the projection specified by 
+        the \code{prj} argument.
 }
 \description{
 This function provides access to point elevations using either the USGS 
 Elevation Point Query Service (US Only) or by extracting point elevations 
 from the AWS Terrain Tiles.  The function accepts a \code{data.frame} of x 
-(long) and y (lat) or a \code{SpatialPoints}/\code{SpatialPointsDataFame} as 
-input.  A SpatialPointsDataFrame is returned with elevation as an added 
-\code{data.frame}.
+(long) and y (lat) or a \code{sf} \code{POINT} or \code{MULTIPOINT} object as 
+input.  A \code{sf} \code{POINT} or \code{MULTIPOINT} object is returned with 
+elevation and elevation units as an added \code{data.frame}.
 }
 \examples{
 \dontrun{
-mt_wash <- data.frame(x = -71.3036, y = 44.2700)
-mt_mans <- data.frame(x = -72.8145, y = 44.5438)
-mts <- rbind(mt_wash,mt_mans)
-ll_prj <- "EPSG:4326"
-mts_sp <- sp::SpatialPoints(sp::coordinates(mts), 
-                            proj4string = sp::CRS(SRS_string = ll_prj))
-mts_spdf <- sp::SpatialPointsDataFrame(mts_sp, 
-                                       data = data.frame(name = 
-                                       c("Mt. Washington", "Mt. Mansfield"))) 
-mts_raster <- raster::raster(mts_sp, ncol = 2, nrow = 2)
-get_elev_point(locations = mt_wash, prj = ll_prj)
-get_elev_point(locations = mt_wash, units="feet", prj = ll_prj)
-get_elev_point(locations = mt_wash, units="meters", prj = ll_prj)
-get_elev_point(locations = mts_sp)
-get_elev_point(locations = mts_spdf)
+library(elevatr)
+library(sf)
+library(terra)
+
+mts <- data.frame(x = c(-71.3036, -72.8145), 
+                  y = c(44.2700, 44.5438), 
+                  names = c("Mt. Washington", "Mt. Mansfield"))
+ll_prj <- 4326
+mts_sf <- st_as_sf(x = mts, coords = c("x", "y"), crs = ll_prj)
+#Empty Raster
+mts_raster <- rast(mts_sf, nrow = 5, ncol = 5)
+# Raster with cells for each location
+mts_raster_loc <- terra::rasterize(mts_sf, rast(mts_sf, nrow = 10, ncol = 10))
+
+get_elev_point(locations = mts, prj = ll_prj)
+get_elev_point(locations = mts, units="feet", prj = ll_prj)
+get_elev_point(locations = mts_sf)
 get_elev_point(locations = mts_raster)
+get_elev_point(locations = mts_raster_loc)
+
 
 # Code to split into a loop and grab point at a time.
 # This is usually faster for points that are spread apart 
@@ -84,13 +85,11 @@ get_elev_point(locations = mts_raster)
 library(dplyr)
 
 elev <- vector("numeric", length = nrow(mts))
-pb <- progress_estimated(length(elev))
 for(i in seq_along(mts)){
-pb$tick()$print()
-elev[i]<-suppressMessages(get_elev_point(locations = mts[i,], prj = ll_prj, 
-                                        src = "aws", z = 14)$elevation)
-                                        }
+elev[i]<-get_elev_point(locations = mts[i,], prj = ll_prj, src = "aws", 
+                        z = 10)$elevation}
 mts_elev <- cbind(mts, elev)
 mts_elev
 }
+
 }

@@ -25,3 +25,6 @@
 bugs/
 ^revdep$
 contributions/
+^TODO.md$
+^LICENSE\.md$
+^\.devcontainer$

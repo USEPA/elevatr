@@ -1,23 +1,22 @@
 #' Get Raster Elevation
 #' 
 #' Several web services provide access to raster elevation. Currently, this 
-#' function provides access to the Amazon Web Services Terrian Tiles and the 
+#' function provides access to the Amazon Web Services Terrain Tiles and the 
 #' Open Topography global datasets API. The function accepts a \code{data.frame} 
-#' of x (long) and y (lat), an \code{sp}, or \code{raster} object as input.  A 
-#' \code{raster} object is returned.
+#' of x (long) and y (lat), an \code{sf}, or \code{terra} object as input.  A 
+#' \code{RasterLayer} object is returned. In subsequent versions, a \code{SpatRaster}
+#' will be returned.
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
-#'                  \code{sp}, \code{sf}, or \code{raster} object as input. 
+#'                   \code{sf}, or \code{terra} object as input. 
 #' @param z  The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'           of the resultant raster is determined by the zoom and latitude.  For 
 #'           details on zoom and resolution see the documentation from Mapzen at 
 #'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 #'           The z is not required for the OpenTopography data sources. 
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
 #'            argument is required for a \code{data.frame} of locations.
 #' @param src A character indicating which API to use.  Currently supports "aws" 
 #'            and "gl3", "gl1", "gl1e", "alos", or "srtm15plus" from the OpenTopography API global 
@@ -32,7 +31,7 @@
 #'             The default value is "tile" which returns the full tiles.  Other 
 #'             options are "bbox" which returns the DEM clipped to the bounding 
 #'             box of the original locations (or expanded bounding box if used), 
-#'             or "locations" if the spatials data (e.g. polygons) in the input 
+#'             or "locations" if the spatial data (e.g. polygons) in the input 
 #'             locations should be used to clip the DEM.  Locations are not used 
 #'             to clip input point datasets.  Instead the bounding box is used.
 #' @param verbose Toggles on and off the note about units and coordinate 
@@ -45,12 +44,18 @@
 #'                            between 100 Mb and 500Mb report a message but
 #'                            continue.  Between 500Mb and 3000Mb requires 
 #'                            interaction and greater than 3000Mb fails.  These
-#'                            can be overriden with this argument set to TRUE.    
+#'                            can be overriden with this argument set to TRUE.  
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
+#'                created by \code{get_elev_raster}.                              
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector, 
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details. 
 #' @return Function returns a \code{RasterLayer} in the projection 
-#'         specified by the \code{prj} argument.
+#'         specified by the \code{prj} argument or in the projection of the 
+#'         provided locations.  In subsequent versions, a \code{SpatRaster}
+#'         will be returned.
 #' @details Currently, the \code{get_elev_raster} function utilizes the 
 #'          Amazon Web Services 
 #'          (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
@@ -63,43 +68,43 @@
 #'          object submitted for \code{locations} argument, and the z argument 
 #'          must be specified by the user.   
 #' @export
-#' @importFrom sp wkt
 #' @examples 
 #' \dontrun{
+#' library(elevatr)
+#' library(sf)
 #' data(lake)
-#' 
-#' loc_df <- data.frame(x = runif(6,min=sp::bbox(lake)[1,1], 
-#'                                max=sp::bbox(lake)[1,2]),
-#'                      y = runif(6,min=sp::bbox(lake)[2,1], 
-#'                                max=sp::bbox(lake)[2,2]))
-#' # Example for PROJ > 5.2.0
-#' x <- get_elev_raster(locations = loc_df, prj = sp::wkt(lake) , z=10)
-#' 
-#' # Example for PROJ < 5.2.0 
-#' x <- get_elev_raster(locations = loc_df, prj = sp::proj4string(lake) , z=10)
-
-#' x <- get_elev_raster(lake, z = 12, serial = TRUE)
+#' lake_buff  <- st_buffer(lake, 1000)
+#' loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
+#'                                max=sf::st_bbox(lake)$xmax),
+#'                      y = runif(6,min=sf::st_bbox(lake)$ymin, 
+#'                                max=sf::st_bbox(lake)$ymax))
+#'                                
+#' x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
+#' x <- get_elev_raster(lake, z = 14)
 #' x <- get_elev_raster(lake, src = "gl3", expand = 5000)
+#' x <- get_elev_raster(lake_buff, z = 10, clip = "locations")
 #' }
 
 get_elev_raster <- function(locations, z, prj = NULL, 
                             src = c("aws", "gl3", "gl1", "gl1e", "alos", "srtm15plus"),
                             expand = NULL, clip = c("tile", "bbox", "locations"), 
                             verbose = TRUE, neg_to_na = FALSE, 
-                            override_size_check = FALSE, ...){
+                            override_size_check = FALSE, tmp_dir = tempdir(), ...){
+  # First Check for internet
+  if(!curl::has_internet()) {
+    message("Please connect to the internet and try again.")
+    return(NULL)
+  }
   
+  tmp_dir <- normalizePath(tmp_dir, mustWork = TRUE)
   src  <- match.arg(src)
   clip <- match.arg(clip) 
   
-  # Check location type and if sp, set prj.  If no prj (for either) then error
+  # Check location type and if sf, set prj.  If no prj (for either) then error
   locations <- loc_check(locations,prj)
   
   if(is.null(prj)){
-    if(attributes(rgdal::getPROJ4VersionInfo())$short > 520){
-      prj <- sp::wkt(locations)
-    } else {
-      prj <- sp::proj4string(locations)
-    }
+    prj <- sf::st_crs(locations)
   }
    #need to check what is going on with PRJ when no prj passed.
   # Check download size and provide feedback, stop if too big!
@@ -124,9 +129,11 @@ get_elev_raster <- function(locations, z, prj = NULL,
   
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
-    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand, ...)
   } else if(src %in% c("gl3", "gl1", "gl1e", "alos", "srtm15plus")){
-    raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, ...)
+    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand, 
+                                   tmp_dir = tmp_dir, ...)
+    raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, 
+                                tmp_dir = tmp_dir, ...)
   }
   sources <- attr(raster_elev, "sources")
   if(is.null(sources)){sources <- src}
@@ -147,14 +154,16 @@ get_elev_raster <- function(locations, z, prj = NULL,
   }
   
   attr(raster_elev, "sources") <- sources
-  raster_elev
+  #Returning raster for now
+  #Switch to SpatRaster in near future.
+  raster::raster(raster_elev)
   
 }
 
 #' Get a digital elevation model from the AWS Terrain Tiles
 #' 
 #' This function uses the AWS Terrain Tile service to retrieve an elevation
-#' raster from the geotiff service.  It accepts a \code{sp::bbox} object as 
+#' raster from the geotiff service.  It accepts a \code{sf::st_bbox} object as 
 #' input and returns a single raster object covering that extent.   
 #' 
 #' @source Attribution: Mapzen terrain tiles contain 3DEP, SRTM, and GMTED2010 
@@ -162,17 +171,16 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'         courtesy of U.S. National Oceanic and Atmospheric Administration. 
 #'         \url{https://github.com/tilezen/joerd/tree/master/docs} 
 #' 
-#' @param bbx a \code{sp::bbox} object that is used to select x,y,z tiles.
+#' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
+#'                  \code{sp}, \code{sf}, or \code{raster} object as input.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
 #'          of the resultant raster is determined by the zoom and latitude.  For 
 #'          details on zoom and resolution see the documentation from Mapzen at 
 #'          \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
-#'            argument is required for a \code{data.frame} of locations. 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
+#'            argument is required for a \code{data.frame} of locations.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
 #'               be used for features that fall close to the edge of a tile and 
@@ -180,6 +188,10 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #' @param ncpu Number of CPU's to use when downloading aws tiles.
 #' @param serial Logical to determine if API should be hit in serial or in 
 #'               parallel.  TRUE will use purrr, FALSE will use furrr. 
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
+#'                created by \code{get_elev_raster}.
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
 #'            usage is to adjust timeout.  This is done as 
 #'            \code{config=timeout(x)} where \code{x} is a numeric value in 
@@ -191,19 +203,25 @@ get_elev_raster <- function(locations, z, prj = NULL,
 
 get_aws_terrain <- function(locations, z, prj, expand=NULL, 
                             ncpu = future::availableCores() - 1,
-                            serial = NULL, ...){
+                            serial = NULL, tmp_dir = tempdir(), ...){
   # Expand (if needed) and re-project bbx to dd
   
   bbx <- proj_expand(locations,prj,expand)
   
   base_url <- "https://s3.amazonaws.com/elevation-tiles-prod/geotiff"
   
-  #tiles <- get_tilexy_coords(locations, z)
+  
   tiles <- get_tilexy(bbx,z)
   
   urls  <-  sprintf("%s/%s/%s/%s.tif", base_url, z, tiles[,1], tiles[,2])
   
-  #dem_list <- vector("list",length = nrow(tiles))
+  for(i in urls){
+    if(httr::http_error(i)) {
+      message("An AWS URL is invalid.")
+      return(NULL)
+    }
+  }
+  
   
   dir <- tempdir()
   
@@ -222,6 +240,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
       clear = FALSE, 
       width= 60
     ))
+  
   progressr::with_progress({
   if(serial){
     
@@ -229,7 +248,8 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
     dem_list <- purrr::map(urls,
                            function(x){
                              p()
-                             tmpfile <- tempfile(fileext = ".tif")
+                             tmpfile <- tempfile(tmpdir = tmp_dir, 
+                                                 fileext = ".tif")
                              resp <- httr::GET(x, 
                                                httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
                                                httr::write_disk(tmpfile,overwrite=TRUE), ...)
@@ -247,7 +267,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
     dem_list <- furrr::future_map(urls,
                                   function(x){
                                     p()
-                                    tmpfile <- tempfile(fileext = ".tif")
+                                    tmpfile <- tempfile(tmpdir = tmp_dir, fileext = ".tif")
                                     resp <- httr::GET(x, 
                                                       httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
                                                       httr::write_disk(tmpfile,overwrite=TRUE), ...)
@@ -262,7 +282,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
   }
   })
   
-  merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj)
+  merged_elevation_grid <- merge_rasters(dem_list, target_prj = prj, tmp_dir = tmp_dir)
   sources <- unlist(lapply(dem_list, function(x) attr(x, "source")))
   if(!is.null(sources)){
     sources <- trimws(unlist(strsplit(sources, ",")))
@@ -287,19 +307,24 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
 #' @param method the method for resampling/reprojecting. Default is 'bilinear'. 
 #' Options can be found [here](https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-r)
 #' @param returnRaster if TRUE, return a raster object (default), else, return the file path to the object
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
+#'                created by \code{get_elev_raster}.
 #' @export
 #' @keywords internal
           
-merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnRaster = TRUE){
+merge_rasters <- function(raster_list,  target_prj, method = "bilinear", 
+                          returnRaster = TRUE, tmp_dir = tempdir()){
   
   message(paste("Mosaicing & Projecting"))
   
-  destfile <- tempfile(fileext = ".tif")
+  destfile <- tempfile(tmpdir = tmp_dir, fileext = ".tif")
   files    <- unlist(raster_list)
  
   if(is.null(target_prj)){
-    r <- raster::raster(files[1])
-    target_prj <- raster::crs(r)
+    r <- terra::rast(files[1])
+    target_prj <- terra::crs(r)
   }
   
   sf::gdal_utils(util = "warp", 
@@ -309,16 +334,16 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
              )
   # Using two steps now as gdal with one step introduced NA's along seams
   # Slower but more accurate!
-  destfile2 <- tempfile(fileext = ".tif")
+  destfile2 <- tempfile(tmpdir = tmp_dir, fileext = ".tif")
   sf::gdal_utils(util = "warp", 
                  source = destfile, 
                  destination = destfile2,
                  options = c("-r", method,
-                   "-t_srs", as.character(target_prj))
+                   "-t_srs", sf::st_crs(target_prj)$wkt)
   )
   
   if(returnRaster){
-    raster::raster(destfile2)
+    terra::rast(destfile2)
   } else {
     destfile2
   }
@@ -332,14 +357,16 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
 #' 
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an 
 #'                  \code{sp}, an \code{sf}, or \code{raster} object as input. 
-#' @param prj A string defining the projection of the locations argument. The 
-#'            string needs to be an acceptable SRS_string for 
-#'            \code{\link[sp]{CRS-class}} for your version of PROJ. If a \code{sf} 
-#'            object, a \code{sp} object or a \code{raster} object 
-#'            is provided, the string will be taken from that.  This 
-#'            argument is required for a \code{data.frame} of locations. 
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf} 
+#'            object or a \code{terra} object is provided as the \code{locations}, 
+#'            the prj is optional and will be taken from \code{locations}.  This 
+#'            argument is required for a \code{data.frame} of locations.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the SRTM data. 
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
+#'                created by \code{get_elev_raster}.
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common 
 #'            usage is to adjust timeout.  This is done as 
 #'            \code{config=timeout(x)} where \code{x} is a numeric value in 
@@ -347,14 +374,15 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear", returnR
 #'            vector.              
 #' @export
 #' @keywords internal
-get_opentopo <- function(locations, src, prj, expand=NULL, ...){
+get_opentopo <- function(locations, src, prj, expand=NULL, tmp_dir = tempdir(),
+                         ...){
   
   api_key <- get_opentopo_key()
   
   # Expand (if needed) and re-project bbx to ll_geo
   bbx <- proj_expand(locations,prj,expand)
   
-  tmpfile <- tempfile()
+  tmpfile <- tempfile(tmpdir = tmp_dir)
   base_url <- "https://portal.opentopography.org/API/globaldem?demtype="
   data_set <- switch(src,
                      gl3 = "SRTMGL3",
@@ -362,13 +390,19 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
                      gl1e = "SRTMGL1_E",
                      alos = "AW3D30",
                      srtm15plus = "SRTM15Plus")
+  
   url <- paste0(base_url, data_set,
-                "&west=",min(bbx[1,]),
-                "&south=",min(bbx[2,]),
-                "&east=",max(bbx[1,]),
-                "&north=",max(bbx[2,]),
+                "&west=",min(bbx["xmin"]),
+                "&south=",min(bbx["ymin"]),
+                "&east=",max(bbx["xmax"]),
+                "&north=",max(bbx["ymax"]),
                 "&outputFormat=GTiff",
                 "&API_Key=", api_key)
+ 
+  if(httr::http_error(url)) {
+    message("The OpenTopography URL is invalid.")
+    return(NULL)
+  }
   
   message("Downloading OpenTopography DEMs")
   resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE), 
@@ -378,7 +412,7 @@ get_opentopo <- function(locations, src, prj, expand=NULL, ...){
   if (httr::http_type(resp) != "application/octet-stream") {
     stop("API did not return octet-stream as expected", call. = FALSE)
   } 
-  dem <- merge_rasters(tmpfile, target_prj = prj)
+  dem <- merge_rasters(tmpfile, target_prj = prj, tmp_dir = tmp_dir)
   dem
 }
 
