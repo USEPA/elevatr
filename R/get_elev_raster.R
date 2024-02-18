@@ -19,7 +19,7 @@
 #'            the prj is optional and will be taken from \code{locations}.  This 
 #'            argument is required for a \code{data.frame} of locations.
 #' @param src A character indicating which API to use.  Currently supports "aws" 
-#'            and "gl3", "gl1", "alos", or "srtm15plus" from the OpenTopography API global 
+#'            and "gl3", "gl1", "gl1e", "alos", or "srtm15plus" from the OpenTopography API global 
 #'            datasets. "aws" is the default.
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can 
@@ -86,7 +86,7 @@
 #' }
 
 get_elev_raster <- function(locations, z, prj = NULL, 
-                            src = c("aws", "gl3", "gl1", "alos", "srtm15plus"),
+                            src = c("aws", "gl3", "gl1", "gl1e", "alos", "srtm15plus"),
                             expand = NULL, clip = c("tile", "bbox", "locations"), 
                             verbose = TRUE, neg_to_na = FALSE, 
                             override_size_check = FALSE, tmp_dir = tempdir(), ...){
@@ -129,9 +129,9 @@ get_elev_raster <- function(locations, z, prj = NULL,
   
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
+  } else if(src %in% c("gl3", "gl1", "gl1e", "alos", "srtm15plus")){
     raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand, 
                                    tmp_dir = tmp_dir, ...)
-  } else if(src %in% c("gl3", "gl1", "alos", "srtm15plus")){
     raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand, 
                                 tmp_dir = tmp_dir, ...)
   }
@@ -387,6 +387,7 @@ get_opentopo <- function(locations, src, prj, expand=NULL, tmp_dir = tempdir(),
   data_set <- switch(src,
                      gl3 = "SRTMGL3",
                      gl1 = "SRTMGL1",
+                     gl1e = "SRTMGL1_E",
                      alos = "AW3D30",
                      srtm15plus = "SRTM15Plus")
   

@@ -211,6 +211,7 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
                  aws = 32,
                  gl3 = 32,
                  gl1 = 32,
+                 gl1e = 32,
                  alos = 32,
                  srtm15plus = 32)
   if(src == "aws"){
@@ -219,6 +220,7 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
     res <- switch(src,
                   gl3 = 0.0008333,
                   gl1 = 0.0002778,
+                  gl1e = 0.0002778,
                   alos = 0.0002778,
                   srtm15plus = 0.004165) 
   }
