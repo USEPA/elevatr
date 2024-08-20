@@ -7,6 +7,8 @@
 #'   each successive pair of points. If `include = "cumdist"`, the distances are
 #'   provided as a cumulative sum.
 #' @inheritParams get_elev_point
+#' @param dist_col Column name to use for optional distance column. Only used if
+#'   `include` is set to `"dist"` or `"cumdist"`.
 #' @examples
 #'
 #' nc <- sf::st_read(system.file("shape/nc.shp", package = "sf")) |>
@@ -44,9 +46,9 @@ get_elev_profile <- function(locations,
                              prj = NULL,
                              overwrite = FALSE,
                              coords = c("x", "y"),
-                             dist_col = "distance",
                              elev_col = "elevation",
-                             elev_units_col = "elev_units") {
+                             elev_units_col = "elev_units",
+                             dist_col = "distance") {
   locations <- loc_check(locations, prj = prj, elev_col = elev_col, coords = coords)
 
   if (sf::st_is(locations, "LINESTRING")) {

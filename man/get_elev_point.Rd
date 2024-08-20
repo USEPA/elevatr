@@ -35,6 +35,8 @@ cases provided the points are in a similar geographic area.  The
 "aws" source downloads a DEM using \code{get_elev_raster} and then
 extracts the elevation for each point.}
 
+\item{coords}{in case of point data: names or numbers of the numeric columns holding coordinates}
+
 \item{overwrite}{A logical indicating that existing \code{elevation} and
 \code{elev_units} columns should be overwritten.  Default is
 FALSE and \code{get_elev_point} will error if these columns
@@ -51,6 +53,8 @@ for details.}
 \item{units}{Default: \code{c("meters", "feet")}. Set to "meters" by default. Any
 character string that is a valid distance unit supported by
 \code{units::set_units()}.}
+
+\item{elev_col}{Elevation column name.}
 
 \item{elev_units_col}{Elevation units column.}
 }

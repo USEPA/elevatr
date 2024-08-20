@@ -16,9 +16,9 @@ get_elev_profile(
   prj = NULL,
   overwrite = FALSE,
   coords = c("x", "y"),
-  dist_col = "distance",
   elev_col = "elevation",
-  elev_units_col = "elev_units"
+  elev_units_col = "elev_units",
+  dist_col = "distance"
 )
 }
 \arguments{
@@ -59,19 +59,26 @@ for \code{sf} locations.}
 FALSE and \code{get_elev_point} will error if these columns
 already exist.}
 
+\item{coords}{in case of point data: names or numbers of the numeric columns holding coordinates}
+
+\item{elev_col}{Elevation column name.}
+
 \item{elev_units_col}{Elevation units column.}
+
+\item{dist_col}{Column name to use for optional distance column. Only used if
+\code{include} is set to \code{"dist"} or \code{"cumdist"}.}
 }
 \description{
 Get elevation along a profile
 }
 \examples{
 
-nc <- st_read(system.file("shape/nc.shp", package = "sf")) |>
-  st_transform(3857)
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf")) |>
+  sf::st_transform(3857)
 
 nc_line <- suppressWarnings(
-  st_cast(
-    st_union(
+  sf::st_cast(
+    sf::st_union(
       st_centroid(nc[1, ]),
       st_centroid(nc[2, ])
     ),
