@@ -1,4 +1,10 @@
-#' Get elevation along a profile
+#' Get Point Elevation along a Profile Line
+#'
+#' [get_elev_profile()] allows users to provide LINESTRING inputs to
+#' [sf::st_line_sample()] or to cast LINESTRING to POINT before calling
+#' [get_elev_point()] to get the point elevations. The function allows users to
+#' get elevation along a profile line and, optionally, include a distance or
+#' cumulative distance column in the output sf data frame.
 #'
 #' @inheritParams loc_linestring_to_point
 #' @param include Option of columns to include: one of "default", "dist", or
@@ -10,15 +16,18 @@
 #' @param dist_col Column name to use for optional distance column. Only used if
 #'   `include` is set to `"dist"` or `"cumdist"`.
 #' @examples
+#' \dontrun{
+#' library(sf)
+#' library(elevatr)
 #'
-#' nc <- sf::st_read(system.file("shape/nc.shp", package = "sf")) |>
-#'   sf::st_transform(3857)
+#' nc <- st_read(system.file("shape/nc.shp", package = "sf")) |>
+#'   st_transform(3857)
 #'
 #' nc_line <- suppressWarnings(
-#'   sf::st_cast(
-#'     sf::st_union(
-#'       sf::st_centroid(nc[1, ]),
-#'       sf::st_centroid(nc[2, ])
+#'   st_cast(
+#'     st_union(
+#'       st_centroid(nc[1, ]),
+#'       st_centroid(nc[2, ])
 #'     ),
 #'     to = "LINESTRING"
 #'   )
@@ -34,6 +43,7 @@
 #'
 #' elev_point
 #'
+#' }
 #' @export
 get_elev_profile <- function(locations,
                              n = NULL,

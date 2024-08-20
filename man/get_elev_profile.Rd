@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_elev_profile.R
 \name{get_elev_profile}
 \alias{get_elev_profile}
-\title{Get elevation along a profile}
+\title{Get Point Elevation along a Profile Line}
 \usage{
 get_elev_profile(
   locations,
@@ -69,16 +69,23 @@ already exist.}
 \code{include} is set to \code{"dist"} or \code{"cumdist"}.}
 }
 \description{
-Get elevation along a profile
+\code{\link[=get_elev_profile]{get_elev_profile()}} allows users to provide LINESTRING inputs to
+\code{\link[sf:st_line_sample]{sf::st_line_sample()}} or to cast LINESTRING to POINT before calling
+\code{\link[=get_elev_point]{get_elev_point()}} to get the point elevations. The function allows users to
+get elevation along a profile line and, optionally, include a distance or
+cumulative distance column in the output sf data frame.
 }
 \examples{
+\dontrun{
+library(sf)
+library(elevatr)
 
-nc <- sf::st_read(system.file("shape/nc.shp", package = "sf")) |>
-  sf::st_transform(3857)
+nc <- st_read(system.file("shape/nc.shp", package = "sf")) |>
+  st_transform(3857)
 
 nc_line <- suppressWarnings(
-  sf::st_cast(
-    sf::st_union(
+  st_cast(
+    st_union(
       st_centroid(nc[1, ]),
       st_centroid(nc[2, ])
     ),
@@ -96,4 +103,5 @@ elev_point <- get_elev_profile(
 
 elev_point
 
+}
 }
