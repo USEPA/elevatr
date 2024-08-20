@@ -9,25 +9,26 @@ get_aws_points(
   z = 5,
   units = c("meters", "feet"),
   verbose = TRUE,
+  elev_col = "elevation",
   ...
 )
 }
 \arguments{
-\item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the 
-first column and y (e.g. latitude) as the second column, a 
-\code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a 
-\code{sf} \code{POINT} or \code{MULTIPOINT} object.   
-Elevation for these points will be returned in the 
+\item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the
+first column and y (e.g. latitude) as the second column, a
+\code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a
+\code{sf} \code{POINT} or \code{MULTIPOINT} object.
+Elevation for these points will be returned in the
 originally supplied class.}
 
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
-of the resultant raster is determined by the zoom and latitude.  For 
-details on zoom and resolution see the documentation from Mapzen at 
-\url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.  
+of the resultant raster is determined by the zoom and latitude.  For
+details on zoom and resolution see the documentation from Mapzen at
+\url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 default value is 5 is supplied.}
 
-\item{units}{Character string of either meters or feet. Conversions for 
-'aws' are handled in R as the AWS terrain tiles are served in 
+\item{units}{Character string of either meters or feet. Conversions for
+'aws' are handled in R as the AWS terrain tiles are served in
 meters.}
 
 \item{verbose}{Report back messages.}
@@ -35,8 +36,8 @@ meters.}
 \item{...}{Arguments to be passed to \code{get_elev_raster}}
 }
 \value{
-a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
-        elevation added to the data slot and a character of the elevation units
+a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with
+elevation added to the data slot and a character of the elevation units
 }
 \description{
 Function for accessing elevation data from AWS and extracting the elevations
