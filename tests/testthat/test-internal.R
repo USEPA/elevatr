@@ -53,10 +53,10 @@ test_that("proj_expand works",{
 
 test_that("loc_check errors correctly", {
   empty_rast <- rast(nrow = 1, ncol =1)
-  expect_error(get_elev_point(locations = pt_df), 
-               "Please supply a valid sf crs via locations or prj.")
+  expect_error(get_elev_point(locations = pt_df),
+               "Please supply a valid crs via locations or prj.")
   expect_error(get_elev_point(locations = rast_na),
-               "Please supply a valid sf crs via locations or prj.")
+               "Please supply a valid crs via locations or prj.")
   expect_error(get_elev_point(locations = sf_sm_na),
                "Please supply an sf object with a valid crs.")
 })
