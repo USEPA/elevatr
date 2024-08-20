@@ -280,3 +280,10 @@ get_opentopo_key <- function(){
   }
   Sys.getenv("OPENTOPO_KEY")
 }
+
+#' Make sf column the last column in a sf data frame
+#' @keywords internal
+relocate_sf_col_end <- function(x) {
+  cols <- c(setdiff(names(x), attr(x, "sf_column")), attr(x, "sf_column"))
+  x[,cols, drop = FALSE]
+}
