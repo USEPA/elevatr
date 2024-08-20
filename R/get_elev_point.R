@@ -1,40 +1,40 @@
 #' Get Point Elevation
-#' 
-#' This function provides access to point elevations using either the USGS 
-#' Elevation Point Query Service (US Only) or by extracting point elevations 
-#' from the AWS Terrain Tiles.  The function accepts a \code{data.frame} of x 
-#' (long) and y (lat) or a \code{sf} \code{POINT} or \code{MULTIPOINT} object as 
-#' input.  A \code{sf} \code{POINT} or \code{MULTIPOINT} object is returned with 
-#' elevation and elevation units as an added \code{data.frame}. 
-#' 
-#' 
-#' @param locations Either a \code{data.frame} with x (e.g. longitude) as the 
-#'                  first column and y (e.g. latitude) as the second column, a 
-#'                  \code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a 
-#'                  \code{sf} \code{POINT} or \code{MULTIPOINT} object.   
-#'                  Elevation for these points will be returned in the 
+#'
+#' This function provides access to point elevations using either the USGS
+#' Elevation Point Query Service (US Only) or by extracting point elevations
+#' from the AWS Terrain Tiles.  The function accepts a \code{data.frame} of x
+#' (long) and y (lat) or a \code{sf} \code{POINT} or \code{MULTIPOINT} object as
+#' input.  A \code{sf} \code{POINT} or \code{MULTIPOINT} object is returned with
+#' elevation and elevation units as an added \code{data.frame}.
+#'
+#'
+#' @param locations Either a \code{data.frame} with x (e.g. longitude) as the
+#'                  first column and y (e.g. latitude) as the second column, a
+#'                  \code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a
+#'                  \code{sf} \code{POINT} or \code{MULTIPOINT} object.
+#'                  Elevation for these points will be returned in the
 #'                  originally supplied class.
-#' @param prj A valid input to \code{\link{st_crs}}.   This 
+#' @param prj A valid input to \code{\link{st_crs}}.   This
 #'            argument is required for a \code{data.frame} of locations and optional
 #'            for \code{sf} locations.
-#' @param src A character indicating which API to use, either "epqs" or "aws" 
-#'            accepted. The "epqs" source is relatively slow for larger numbers 
-#'            of points (e.g. > 500).  The "aws" source may be quicker in these 
-#'            cases provided the points are in a similar geographic area.  The 
+#' @param src A character indicating which API to use, either "epqs" or "aws"
+#'            accepted. The "epqs" source is relatively slow for larger numbers
+#'            of points (e.g. > 500).  The "aws" source may be quicker in these
+#'            cases provided the points are in a similar geographic area.  The
 #'            "aws" source downloads a DEM using \code{get_elev_raster} and then
-#'            extracts the elevation for each point. 
-#' @param overwrite A logical indicating that existing \code{elevation} and 
-#'                  \code{elev_units} columns should be overwritten.  Default is 
-#'                  FALSE and \code{get_elev_point} will error if these columns 
+#'            extracts the elevation for each point.
+#' @param overwrite A logical indicating that existing \code{elevation} and
+#'                  \code{elev_units} columns should be overwritten.  Default is
+#'                  FALSE and \code{get_elev_point} will error if these columns
 #'                  already exist.
-#' @param ... Additional arguments passed to get_epqs or get_aws_points.  When 
-#'            using "aws" as the source, pay attention to the `z` argument.  A 
-#'            defualt of 5 is used, but this uses a raster with a large ~4-5 km 
-#'            pixel.  Additionally, the source data changes as zoom levels 
-#'            increase.  
-#'            Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
-#'            for details.  
-#' @return Function returns an \code{sf} object in the projection specified by 
+#' @param ... Additional arguments passed to get_epqs or get_aws_points.  When
+#'            using "aws" as the source, pay attention to the `z` argument.  A
+#'            default of 5 is used, but this uses a raster with a large ~4-5 km
+#'            pixel.  Additionally, the source data changes as zoom levels
+#'            increase.
+#'            Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
+#'            for details.
+#' @return Function returns an \code{sf} object in the projection specified by
 #'         the \code{prj} argument.
 #' @export
 #' @examples
@@ -42,9 +42,9 @@
 #' library(elevatr)
 #' library(sf)
 #' library(terra)
-#' 
-#' mts <- data.frame(x = c(-71.3036, -72.8145), 
-#'                   y = c(44.2700, 44.5438), 
+#'
+#' mts <- data.frame(x = c(-71.3036, -72.8145),
+#'                   y = c(44.2700, 44.5438),
 #'                   names = c("Mt. Washington", "Mt. Mansfield"))
 #' ll_prj <- 4326
 #' mts_sf <- st_as_sf(x = mts, coords = c("x", "y"), crs = ll_prj)
@@ -52,124 +52,155 @@
 #' mts_raster <- rast(mts_sf, nrow = 5, ncol = 5)
 #' # Raster with cells for each location
 #' mts_raster_loc <- terra::rasterize(mts_sf, rast(mts_sf, nrow = 10, ncol = 10))
-#' 
+#'
 #' get_elev_point(locations = mts, prj = ll_prj)
 #' get_elev_point(locations = mts, units="feet", prj = ll_prj)
 #' get_elev_point(locations = mts_sf)
 #' get_elev_point(locations = mts_raster)
 #' get_elev_point(locations = mts_raster_loc)
-#' 
-#' 
+#'
+#'
 #' # Code to split into a loop and grab point at a time.
-#' # This is usually faster for points that are spread apart 
-#'  
+#' # This is usually faster for points that are spread apart
+#'
 #' library(dplyr)
-#' 
+#'
 #' elev <- vector("numeric", length = nrow(mts))
 #' for(i in seq_along(mts)){
-#' elev[i]<-get_elev_point(locations = mts[i,], prj = ll_prj, src = "aws", 
+#' elev[i]<-get_elev_point(locations = mts[i,], prj = ll_prj, src = "aws",
 #'                         z = 10)$elevation}
 #' mts_elev <- cbind(mts, elev)
 #' mts_elev
 #' }
 #'
-get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), 
-                           overwrite = FALSE, ...){
-  
+get_elev_point <- function(locations,
+                           prj = NULL,
+                           src = c("epqs", "aws"),
+                           coords = c("x", "y"),
+                           overwrite = FALSE,
+                           ...,
+                           units = c("meters", "feet"),
+                           elev_col = "elevation",
+                           elev_units_col = "elev_units") {
   # First Check for internet
   if(!curl::has_internet()) {
     message("Please connect to the internet and try again.")
     return(NULL)
   }
-  
+
   src <- match.arg(src)
-  
+
   # Check for existing elevation/elev_units columns and overwrite or error
-  if(!overwrite & any(names(locations) %in% c("elevation", "elev_units"))){
-    stop(paste0("The elevation and elev_units columns already exist.\n", 
+  if (!overwrite && any(names(locations) %in% c(elev_col, elev_units_col))) {
+    stop(paste0("The elevation and elev_units columns already exist.\n",
     "  To replace these columns set the overwrite argument to TRUE."))
   }
-  
-  locations <- loc_check(locations,prj)
-  
-  if(is.null(prj)){
+
+  locations <- loc_check(
+    locations,
+    prj = prj,
+    coords = coords
+  )
+
+  if (is.null(prj)) {
     prj <- sf::st_crs(locations)
   }
-  
+
+  if (all(units %in% c("meters", "feet"))) {
+    units <- match.arg(units)
+    convert_units <- units
+  } else {
+    convert_units <- units
+    units <- "meters"
+  }
+
   # Pass of reprojected to epqs or aws to get data as spatialpointsdataframe
-  if (src == "epqs"){
-    locations_prj <- get_epqs(locations, ...)
-    units <- locations_prj[[2]]
+  if (src == "epqs") {
+    locations_prj <- get_epqs(
+      locations,
+      elev_col = elev_col,
+      units = units,
+      ...
+    )
+
     locations_prj <- locations_prj[[1]]
-  } 
-  
-  if(src == "aws"){
-    locations_prj <- get_aws_points(locations, verbose = FALSE, ...)
-    units <- locations_prj[[2]]
+  }
+
+  if(src == "aws") {
+    locations_prj <- get_aws_points(
+      locations,
+      verbose = FALSE,
+      elev_col = elev_col,
+      units = units,
+      ...
+    )
+
     locations_prj <- locations_prj[[1]]
   }
 
   # Re-project back to original, add in units, and return
-  locations <- sf::st_transform(sf::st_as_sf(locations_prj), 
-                                sf::st_crs(locations))
-  
-  if(is.null(nrow(locations))){
-    nfeature <- length(locations) 
-  } else {
-    nfeature <- nrow(locations)
+  locations <- sf::st_transform(
+    sf::st_as_sf(locations_prj),
+    crs = prj
+  )
+
+  nfeature <- loc_length(locations)
+
+  if (convert_units != units) {
+    print("here")
+    mode <- "standard"
+    elev_units_label <- convert_units
+
+    # TODO: Implement handling for non-character units values
+    # if (!is.character(convert_units)) {
+    #   elev_units_label <- unique(as.character(base::units(convert_units)[["numerator"]]))
+    #   mode <- units::units_options("set_units_mode")
+    # }
+    stopifnot(is.character(convert_units) && (length(convert_units) == 1))
+
+    elevation <- units::set_units(locations[[elev_col]], value = units, mode = mode)
+
+    locations[[elev_col]] <- as.numeric(
+      units::set_units(elevation, value = convert_units, mode = mode)
+    )
+
+    units <- convert_units
   }
-  
-  unit_column_name <- "elev_units"
-  
-  if(any(names(list(...)) %in% "units")){
-    if(list(...)$units == "feet"){
-      locations[[unit_column_name]] <- rep("feet", nfeature)
-    } else {
-      locations[[unit_column_name]] <- rep("meters", nfeature)
-    }
-  } else {
-    locations[[unit_column_name]] <- rep("meters", nfeature)
-  }
-  
-  if(src == "aws") {
-    message(paste("Note: Elevation units are in", units))
-  } else {
-    message(paste("Note: Elevation units are in", 
-                  tolower(strsplit(units, "=")[[1]][2])))
-  }
-  locations
+
+  locations[[elev_units_col]] <- rep(units, nfeature)
+
+  message(paste("Note: Elevation units are in", units))
+
+  relocate_sf_col_end(locations)
 }
 
 #' Get point elevation data from the USGS Elevation Point Query Service
-#' 
+#'
 #' Function for accessing elevation data from the USGS epqs
-#' 
-#' @param locations A SpatialPointsDataFrame of the location(s) for which you 
-#'                  wish to return elevation. The first column is Longitude and 
-#'                  the second column is Latitude.  
-#' @param units Character string of either meters or feet. Conversions for 
+#'
+#' @param locations A SpatialPointsDataFrame of the location(s) for which you
+#'                  wish to return elevation. The first column is Longitude and
+#'                  the second column is Latitude.
+#' @param units Character string of either meters or feet. Conversions for
 #'              'epqs' are handled by the API itself.
 #' @param ncpu Number of CPU's to use when downloading epqs data.
-#' @param serial Logical to determine if API should be hit in serial or in 
+#' @param serial Logical to determine if API should be hit in serial or in
 #'               parallel.  TRUE will use purrr, FALSE will use furrr.
-#' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
+#' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with
 #'         elevation added to the data slot and a character of the elevation units
 #' @export
 #' @importFrom progressr handlers progressor with_progress
 #' @importFrom purrr map_dbl
 #' @keywords internal
-get_epqs <- function(locations, units = c("meters","feet"), 
+get_epqs <- function(locations,
+                     units = c("meters", "feet"),
                      ncpu = future::availableCores() - 1,
-                     serial = NULL){
-  
+                     serial = NULL,
+                     elev_col = "elevation") {
+
   ll_prj  <- "EPSG:4326"
-  
-  if(is.null(nrow(locations))){
-    nfeature <- length(locations) 
-  } else {
-    nfeature <- nrow(locations)
-  }
-  
+  nfeature <- loc_length(locations)
+
   if(is.null(serial)){
     if(nfeature < 25){
       serial <- TRUE
@@ -177,90 +208,91 @@ get_epqs <- function(locations, units = c("meters","feet"),
      serial <- FALSE
     }
   }
-  
+
   base_url <- "https://epqs.nationalmap.gov/v1/json?"
-  
-  if(match.arg(units) == "meters"){
-    units <- "Meters"
-  } else if(match.arg(units) == "feet"){
-    units <- "Feet"
-  }
-  
+
+  units <- match.arg(units)
+
+  units <- switch(units,
+    meters = "Meters",
+    feet = "Feet"
+  )
+
   locations <- sf::st_transform(locations, sf::st_crs(ll_prj))
   units <- paste0("&units=",units)
-  
+
   get_epqs_resp <- function(coords, base_url, units, progress = FALSE) {
-    
+
     Sys.sleep(0.001) #Getting non-repeateable errors maybe too many hits...
     x <- coords[1]
     y <- coords[2]
-    
+
     loc <- paste0("x=",x, "&y=", y)
     url <- paste0(base_url,loc,units,"&output=json")
-    
+
     resp <- tryCatch(httr::GET(url), error = function(e) e)
     n<-1
-    
+
     while(n <= 5 & any(class(resp) == "simpleError")) {
       # Hit it again to test as most times this is a unexplained timeout that
       # Corrects on next hit
-      
+
       resp <- tryCatch(httr::GET(url), error = function(e) e)
       n <- n + 1
     }
-    
+
     if(n > 5 & any(class(resp) == "simpleError"))  {
-      message(paste0("API returned:'", resp$message, 
-                     "'. NA returned for elevation"), 
+      message(paste0("API returned:'", resp$message,
+                     "'. NA returned for elevation"),
               call. = FALSE)
       return(NA)
     }
-    
-    if(httr::status_code(resp) == 200 & 
-       httr::content(resp, "text", encoding = "UTF-8") == 
+
+    if(httr::status_code(resp) == 200 &
+       httr::content(resp, "text", encoding = "UTF-8") ==
        "Invalid or missing input parameters."){
       message("API returned an empty repsonse (e.g. location in ocean or not in U.S.). NA returned for elevation")
       return(NA)
     } else if(httr::status_code(resp) == 200){
-      
-      resp <- tryCatch(jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+
+      resp <- tryCatch(jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"),
                                           simplifyVector = FALSE), error = function(e) e)
       n<-1
       while(n <= 5 & any(class(resp) == "simpleError")) {
         # Hit it again.  Getting hard to repeat API errors that usually self correct...
-        
-        resp <- tryCatch(jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), 
+
+        resp <- tryCatch(jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"),
                                             simplifyVector = FALSE), error = function(e) e)
         n <- n + 1
       }
-      
+
       if(n >= 5 & any(class(resp) == "simpleError")) {
         message("API error, NA returned for elevation")
         return(NA)
       }
-    
+
     } else {
-      message(paste0("API returned a status code:'", resp$status_code, 
-                     "'. NA returned for elevation"), 
+      message(paste0("API returned a status code:'", resp$status_code,
+                     "'. NA returned for elevation"),
               call. = FALSE)
       return(NA)
     }
     round(as.numeric(resp$value), 2)
   }
-   
-  coords_df <- split(data.frame(sf::st_coordinates(locations)), 
-                     seq_along(locations$elevation))   
-  
+
+  coords_df <- split(data.frame(sf::st_coordinates(locations)),
+                     seq_along(locations[["elevation"]]))
+
   #elev_column_name <- make.unique(c(names(locations), "elevation"))
   #elev_column_name <- elev_column_name[!elev_column_name %in% names(locations)]
-  elev_column_name <- "elevation"
-  
+  elev_column_name <- elev_col
+
   message("Downloading point elevations:")
-  
+
   progressr::handlers(
     progressr::handler_progress(
       format = " Accessing point elevations [:bar] :percent",
-      clear = FALSE, 
+      clear = FALSE,
       width= 60
     ))
   #browser()
@@ -273,99 +305,66 @@ get_epqs <- function(locations, units = c("meters","feet"),
                                             get_epqs_resp(x, base_url, units)
                                             })
   } else {
-    
+
     future::plan(future::multisession, workers = ncpu)
     p <- progressor(along = coords_df)
-    locations[[elev_column_name]] <-furrr::future_map_dbl(coords_df,
+    locations[[elev_column_name]] <- furrr::future_map_dbl(coords_df,
                                                function(x) {
                                                  p()
-                                                 get_epqs_resp(x, base_url, 
+                                                 get_epqs_resp(x, base_url,
                                                                units)})
-    
+
   }
   })
-  
+
   # For areas without epqs values that return -1000000, switch to NA
-  locations$elevation[locations[[elev_column_name]] == -1000000] <- NA
+  locations[[elev_col]][locations[[elev_column_name]] == -1000000] <- NA
   location_list <- list(locations, units)
   if(serial==FALSE){future::plan(future::sequential)}
   location_list
 }
 
 #' Get point elevation data from the AWS Terrain Tiles
-#' 
-#' Function for accessing elevation data from AWS and extracting the elevations 
-#' 
-#' @param locations Either a \code{data.frame} with x (e.g. longitude) as the 
-#'                  first column and y (e.g. latitude) as the second column, a 
-#'                  \code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a 
-#'                  \code{sf} \code{POINT} or \code{MULTIPOINT} object.   
-#'                  Elevation for these points will be returned in the 
+#'
+#' Function for accessing elevation data from AWS and extracting the elevations
+#'
+#' @param locations Either a \code{data.frame} with x (e.g. longitude) as the
+#'                  first column and y (e.g. latitude) as the second column, a
+#'                  \code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a
+#'                  \code{sf} \code{POINT} or \code{MULTIPOINT} object.
+#'                  Elevation for these points will be returned in the
 #'                  originally supplied class.
 #' @param z The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
-#'           of the resultant raster is determined by the zoom and latitude.  For 
-#'           details on zoom and resolution see the documentation from Mapzen at 
-#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.  
-#'           default value is 5 is supplied.   
-#' @param units Character string of either meters or feet. Conversions for 
-#'              'aws' are handled in R as the AWS terrain tiles are served in 
+#'           of the resultant raster is determined by the zoom and latitude.  For
+#'           details on zoom and resolution see the documentation from Mapzen at
+#'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
+#'           default value is 5 is supplied.
+#' @param units Character string of either meters or feet. Conversions for
+#'              'aws' are handled in R as the AWS terrain tiles are served in
 #'              meters.
-#' @param verbose Report back messages.                             
+#' @param verbose Report back messages.
 #' @param ... Arguments to be passed to \code{get_elev_raster}
-#' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
+#' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with
 #'         elevation added to the data slot and a character of the elevation units
 #' @export
 #' @keywords internal
-get_aws_points <- function(locations, z = 5, units = c("meters", "feet"), 
-                           verbose = TRUE, ...){
+get_aws_points <- function(locations,
+                           z = 5,
+                           units = c("meters", "feet"),
+                           verbose = TRUE,
+                           elev_col = "elevation",
+                           ...) {
   units <- match.arg(units)
   dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
   dem <- methods::as(dem, "SpatRaster")
   elevation <- units::set_units(terra::extract(dem, locations)[,2], "m")
-  if(units == "feet"){
+  if (units == "feet"){
     elevation <- as.numeric(units::set_units(elevation, "ft"))
   } else {
     elevation <- as.numeric(elevation)
   }
-  locations$elevation <- round(elevation, 2)
+
+  locations[[elev_col]] <- round(elevation, 2)
   location_list <- list(locations, units)
   location_list
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
