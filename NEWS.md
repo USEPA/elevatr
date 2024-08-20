@@ -3,6 +3,11 @@ elevatr 0.99.0 (2024-0x-xx)
 # API Changes
 - add argument for specifying temp directory for download files.  Allows users to specify a specific location. (Thanks, @andrew-caudillo: https://github.com/jhollist/elevatr/issues/95)
 
+# Added Functionality
+- Add new `get_elev_profile()` function (#93, @elipousson)
+
+# Fixes
+- Fix issue with `SpatVector` input objects (#91, @elipousson)
 
 elevatr 0.99.0 (2023-09-11)
 =============
