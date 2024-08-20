@@ -14,10 +14,7 @@
 #'           details on zoom and resolution see the documentation from Mapzen at
 #'           \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 #'           The z is not required for the OpenTopography data sources.
-#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf}
-#'            object or a \code{terra} object is provided as the \code{locations},
-#'            the prj is optional and will be taken from \code{locations}.  This
-#'            argument is required for a \code{data.frame} of locations.
+#' @inheritParams loc_check
 #' @param src A character indicating which API to use.  Currently supports "aws"
 #'            and "gl3", "gl1", "alos", or "srtm15plus" from the OpenTopography API global
 #'            datasets. "aws" is the default.
@@ -179,10 +176,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'          of the resultant raster is determined by the zoom and latitude.  For
 #'          details on zoom and resolution see the documentation from Mapzen at
 #'          \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
-#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf}
-#'            object or a \code{terra} object is provided as the \code{locations},
-#'            the prj is optional and will be taken from \code{locations}.  This
-#'            argument is required for a \code{data.frame} of locations.
+#' @inheritParams loc_check
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the terrain tiles. This can
 #'               be used for features that fall close to the edge of a tile and
@@ -359,10 +353,7 @@ merge_rasters <- function(raster_list,  target_prj, method = "bilinear",
 #'
 #' @param locations Either a \code{data.frame} of x (long) and y (lat), an
 #'                  \code{sp}, an \code{sf}, or \code{raster} object as input.
-#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf}
-#'            object or a \code{terra} object is provided as the \code{locations},
-#'            the prj is optional and will be taken from \code{locations}.  This
-#'            argument is required for a \code{data.frame} of locations.
+#' @inheritParams loc_check
 #' @param expand A numeric value of a distance, in map units, used to expand the
 #'               bounding box that is used to fetch the SRTM data.
 #' @param tmp_dir The location to store downloaded raster files.  Defaults to a

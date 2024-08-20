@@ -72,6 +72,8 @@ temporary location.  Alternatively, the user may supply an
 existing path for these raster files.  New folders are not
 created by \code{get_elev_raster}.}
 
+\item{coords}{in case of point data: names or numbers of the numeric columns holding coordinates}
+
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector,
 \code{config}.   See
 \code{\link{get_aws_terrain}} for more details.}
