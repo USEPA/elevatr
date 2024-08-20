@@ -21,8 +21,8 @@ get_tilexy <- function(bbx,z){
   max_tile <- unlist(slippymath::lonlat_to_tilenum(bbx["xmax"],bbx["ymax"],z))
   x_all <- seq(from = floor(min_tile[1]), to = floor(max_tile[1]))
   y_all <- seq(from = floor(min_tile[2]), to = floor(max_tile[2]))
-  
-  
+
+
   if(z == 1){
     x_all <- x_all[x_all<2]
     y_all <- y_all[y_all<2]
@@ -30,9 +30,39 @@ get_tilexy <- function(bbx,z){
     x_all <- x_all[x_all<1]
     y_all <- y_all[y_all<1]
   }
-  
-  
+
+
   return(expand.grid(x_all,y_all))
+}
+
+#' function sf, sfc, or sfg with LINESTRING geometry to POINT geometry
+#'
+#' Optionally use [sf::st_line_sample()] when n, density, or sample are
+#' supplied.
+#'
+#' @param locations A sf, sfc, or sfg object with LINESTRING geometry.
+#' @inheritParams sf::st_line_sample
+#' @keywords internal
+loc_linestring_to_point <- function(
+    locations,
+    n = NULL,
+    density = NULL,
+    type = "regular",
+    sample = NULL) {
+  stopifnot(
+    sf::st_is(locations, "LINESTRING")
+  )
+
+  if (is.numeric(c(n, density, sample))) {
+    locations <- sf::st_line_sample(
+      locations,
+      n = n, density = density,
+      sample = sample,
+      type = type
+    )
+  }
+
+  sf::st_cast(locations, to = "POINT")
 }
 
 #' Get length of vector or nrow for data frame input
@@ -108,7 +138,7 @@ loc_check <- function(locations,
 #' function to project bounding box and if needed expand it
 #' @keywords internal
 proj_expand <- function(locations,prj,expand){
-  
+
   lll <- sf::st_is_longlat(prj)
     #any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
     #           grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
@@ -116,13 +146,13 @@ proj_expand <- function(locations,prj,expand){
     #           grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
     #           grepl("\\blonglat\\b", sf::st_crs(prj)) |
     #           grepl("\\blatlong\\b", sf::st_crs(prj)))
-  
+
   if(is.null(nrow(locations))){
-    nfeature <- length(locations) 
+    nfeature <- length(locations)
   } else {
     nfeature <- nrow(locations)
   }
-  
+
   if(any(sf::st_bbox(locations)[c("ymin","ymax")] == 0) & lll & is.null(expand)){
     # Edge case for lat exactly at the equator - was returning NA
     expand <- 0.01
@@ -133,14 +163,14 @@ proj_expand <- function(locations,prj,expand){
     # Edge case for single point and projected
     # set to 1000 meters
     unit <- sf::st_crs(sf::st_as_sf(locations), parameters = TRUE)$ud_unit
-    expand <- units::set_units(units::set_units(1000, "m"), unit, 
+    expand <- units::set_units(units::set_units(1000, "m"), unit,
                                mode = "standard")
     expand <- as.numeric(expand)
   }
 
-  
+
   if(!is.null(expand)){
-    
+
     bbx <- sf::st_bbox(locations) + c(-expand, -expand, expand, expand)
   } else {
     bbx <- sf::st_bbox(locations)
@@ -151,10 +181,10 @@ proj_expand <- function(locations,prj,expand){
   bbx_coord_check <- as.numeric(bbx)
   if(any(!bbx_coord_check >= -180 & bbx_coord_check <= 360)){
     stop("The elevatr package requires longitude in a range from -180 to 180.")
-  } 
+  }
 
   bbx
-  
+
   #sf expand - save for later
   #loc_sf <- sf::st_as_sf(locations)
   #loc_bbx <- sf::st_bbox(loc_sf)
@@ -196,8 +226,8 @@ bbox_to_sf <- function(bbox, prj = 4326) {
 #' @param z zoom level if source is aws
 #' @keywords internal
 estimate_raster_size <- function(locations, prj, src, z = NULL){
-  
-  locations <- bbox_to_sf(sf::st_bbox(locations), 
+
+  locations <- bbox_to_sf(sf::st_bbox(locations),
                           prj = prj)
 
   locations <- sf::st_transform(locations, crs = 4326)
@@ -207,14 +237,14 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
   # Convert ground res to dd
   # zoom level 0 = 156543 meters 156543/111319.9
   # old resolution (no idea how I calculated these...)
-  # c(0.54905236, 0.27452618, 0.15455633, 0.07145545, 0.03719130, 0.01901903, 
-  # 0.00962056, 0.00483847, 0.00241219, 0.00120434, 0.00060173, 0.00030075, 
+  # c(0.54905236, 0.27452618, 0.15455633, 0.07145545, 0.03719130, 0.01901903,
+  # 0.00962056, 0.00483847, 0.00241219, 0.00120434, 0.00060173, 0.00030075,
   #  0.00015035, 0.00007517, 0.00003758)
-  m_at_equator <- c(156543.0, 78271.5, 39135.8, 19567.9, 9783.9, 4892.0, 2446.0, 
-                    1223.0, 611.5, 305.7, 152.9, 76.4, 38.2, 19.1, 9.6, 4.8, 
+  m_at_equator <- c(156543.0, 78271.5, 39135.8, 19567.9, 9783.9, 4892.0, 2446.0,
+                    1223.0, 611.5, 305.7, 152.9, 76.4, 38.2, 19.1, 9.6, 4.8,
                     2.4)
   z_res <- data.frame(z = 0:16, res_dd = m_at_equator/111319.9)
- 
+
   bits <- switch(src,
                  aws = 32,
                  gl3 = 32,
@@ -228,20 +258,20 @@ estimate_raster_size <- function(locations, prj, src, z = NULL){
                   gl3 = 0.0008333,
                   gl1 = 0.0002778,
                   alos = 0.0002778,
-                  srtm15plus = 0.004165) 
+                  srtm15plus = 0.004165)
   }
   num_rows <- (sf::st_bbox(locations)$xmax - sf::st_bbox(locations)$xmin)/res
   num_cols <- (sf::st_bbox(locations)$ymax - sf::st_bbox(locations)$ymin)/res
-  
+
   num_megabytes <- (num_rows * num_cols * bits)/8388608
   num_megabytes
 }
 
 #' OpenTopo Key
-#' 
+#'
 #' The OpenTopography API now requires an API Key.  This function will grab your
 #' key from an .Renviron file
-#' 
+#'
 #' @keywords internal
 get_opentopo_key <- function(){
   if(Sys.getenv("OPENTOPO_KEY")==""){
