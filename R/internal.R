@@ -95,6 +95,10 @@ loc_check <- function(locations,
       stop("Please supply a valid crs via locations or prj.")
     }
 
+    stopifnot(
+      "`locations` must contain column names matching `coords`" = all(coords %in% names(locations))
+    )
+
     locations <- sf::st_as_sf(x = locations, coords = coords, crs = prj)
   } else if (inherits(locations, c("sf", "sfc", "sfg"))) {
     sf_crs <- sf::st_crs(locations)
@@ -112,11 +116,15 @@ loc_check <- function(locations,
 
   } else if (any(class(locations) %in% c("SpatRaster", "SpatVector"))) {
     sf_crs <- sf::st_crs(locations)
-    locations <- sf::st_as_sf(
-      terra::as.points(locations, values = FALSE),
-      coords = terra::crds(locations, df = TRUE),
-      crs = sf_crs
-    )
+    coords <- terra::crds(locations, df = TRUE)
+
+    if (inherits(locations, "SpatVector")) {
+      locations <- terra::as.points(locations)
+    } else {
+      locations <- terra::as.points(locations, values = FALSE)
+    }
+
+    locations <- sf::st_as_sf(locations, coords = coords, crs = sf_crs)
 
     if ((is.null(sf_crs) || is.na(sf_crs)) && is.null(prj)) {
       stop("Please supply a valid crs via locations or prj.")
