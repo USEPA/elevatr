@@ -35,67 +35,75 @@ get_tilexy <- function(bbx,z){
   return(expand.grid(x_all,y_all))
 }
 
+#' Get length of vector or nrow for data frame input
+#' @noRd
+loc_length <- function(locations) {
+  if (is.data.frame(locations)) {
+    return(nrow(locations))
+  }
 
-#' function to check input type and projection.  All input types convert to a
-#' SpatialPointsDataFrame for point elevation and bbx for raster.
+  length(locations)
+}
+
+#' function to check and prepare input locations
+#'
+#' All input types convert to a sf data frame.
+#' @inheritParams sf::st_as_sf
+#' @param elev_col Elevation column name.
 #' @keywords internal
-loc_check <- function(locations, prj = NULL){
- 
-  if(is.null(nrow(locations))){
-    nfeature <- length(locations) 
-  } else {
-    nfeature <- nrow(locations)
-  }
-  
-  if(all(class(locations)=="data.frame")){ 
-    if(is.null(prj) & !any(class(locations) %in% c("sf", "sfc", "sfg"))){
-      stop("Please supply a valid sf crs via locations or prj.")
+loc_check <- function(locations,
+                      prj = NULL,
+                      coords = c("x", "y"),
+                      elev_col = "elevation") {
+  if (is.data.frame(locations) && !inherits(locations, "sf")) {
+    if (is.null(prj)) {
+      stop("Please supply a valid crs via locations or prj.")
     }
-    
-    locations <- sf::st_as_sf(x = locations, coords = c("x", "y"), crs = prj)
-    locations$elevation <- vector("numeric", nfeature)
-    
-  } else if(any(class(locations) %in% c("sf", "sfc", "sfg"))){
-    
+
+    locations <- sf::st_as_sf(x = locations, coords = coords, crs = prj)
+  } else if (inherits(locations, c("sf", "sfc", "sfg"))) {
     sf_crs <- sf::st_crs(locations)
-    locations$elevation <- vector("numeric", nfeature)
-    
-    if((is.null(sf_crs) | is.na(sf_crs)) & is.null(prj)){
-      stop("Please supply an sf object with a valid crs.")
+    if ((is.null(sf_crs) || is.na(sf_crs)) && is.null(prj)) {
+      stop("Please supply an sf or sfc object with a valid crs.")
     }
-    
-  } else if(any(class(locations) %in% c("SpatRaster", "SpatVector"))){
-    
+
+    if (inherits(locations, "sfg")) {
+      locations <- sf::st_sfc(locations, crs = prj)
+    }
+
+    if (!inherits(locations, "sf")) {
+      locations <- sf::st_as_sf(locations)
+    }
+
+  } else if (any(class(locations) %in% c("SpatRaster", "SpatVector"))) {
     sf_crs <- sf::st_crs(locations)
-    locations <- sf::st_as_sf(terra::as.points(locations, values = FALSE), 
-                              coords = terra::crds(locations, df = TRUE),
-                              crs = sf_crs)
-    locations$elevation <- vector("numeric", nrow(locations))
-    if((is.null(sf_crs) | is.na(sf_crs)) & is.null(prj)){
-      stop("Please supply a valid sf crs via locations or prj.")
+    locations <- sf::st_as_sf(
+      terra::as.points(locations, values = FALSE),
+      coords = terra::crds(locations, df = TRUE),
+      crs = sf_crs
+    )
+
+    if ((is.null(sf_crs) || is.na(sf_crs)) && is.null(prj)) {
+      stop("Please supply a valid crs via locations or prj.")
     }
   }
 
-  #check for long>180
-  if(is.null(prj)){
-    prj_test <- sf::st_crs(locations)
+  nfeature <- loc_length(locations)
+  locations[[elev_col]] <- vector("numeric", nfeature)
+
+  # check for long>180
+  if (!is.null(prj)) {
+    lll <- sf::st_is_longlat(prj)
   } else {
-    prj_test <- prj
+    lll <- sf::st_is_longlat(locations)
   }
-  
 
-  lll <- sf::st_is_longlat(prj_test)
-  
-  if(lll){
-    if(any(sf::st_coordinates(locations)[,1]>180)){
-      stop("The elevatr package requires longitude in a range from -180 to 180.")
-    } 
+  if (lll && any(sf::st_coordinates(locations)[, 1] > 180)) {
+    stop("The elevatr package requires longitude in a range from -180 to 180.")
   }
-  
-locations
-} 
 
-
+  locations
+}
 
 #' function to project bounding box and if needed expand it
 #' @keywords internal
