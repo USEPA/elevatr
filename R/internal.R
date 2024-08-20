@@ -137,48 +137,39 @@ loc_check <- function(locations,
 
 #' function to project bounding box and if needed expand it
 #' @keywords internal
-proj_expand <- function(locations,prj,expand){
-
+proj_expand <- function(locations, prj, expand = NULL) {
   lll <- sf::st_is_longlat(prj)
-    #any(grepl("\\bGEOGCRS\\b",sf::st_crs(prj)) |
-    #           grepl("\\bGEODCRS\\b", sf::st_crs(prj)) |
-    #           grepl("\\bGEODETICCRS\\b", sf::st_crs(prj)) |
-    #           grepl("\\bGEOGRAPHICCRS\\b", sf::st_crs(prj)) |
-    #           grepl("\\blonglat\\b", sf::st_crs(prj)) |
-    #           grepl("\\blatlong\\b", sf::st_crs(prj)))
+  nfeature <- loc_length(locations)
+  single_pt <- nfeature == 1 && is.null(expand)
+  bbx <- sf::st_bbox(locations)
 
-  if(is.null(nrow(locations))){
-    nfeature <- length(locations)
-  } else {
-    nfeature <- nrow(locations)
-  }
-
-  if(any(sf::st_bbox(locations)[c("ymin","ymax")] == 0) & lll & is.null(expand)){
+  if (any(loc_bbox[c("ymin","ymax")] == 0) && lll && is.null(expand)) {
     # Edge case for lat exactly at the equator - was returning NA
     expand <- 0.01
-  } else if(nfeature == 1 & lll & is.null(expand)){
+  } else if (single_pt && lll) {
     # Edge case for single point and lat long
     expand <- 0.01
-  } else if(nfeature == 1 & is.null(expand)){
+  } else if (single_pt) {
     # Edge case for single point and projected
     # set to 1000 meters
     unit <- sf::st_crs(sf::st_as_sf(locations), parameters = TRUE)$ud_unit
-    expand <- units::set_units(units::set_units(1000, "m"), unit,
-                               mode = "standard")
+
+    expand <- units::set_units(
+      units::set_units(1000, "m"),
+      unit,
+      mode = "standard"
+    )
     expand <- as.numeric(expand)
   }
 
-
   if(!is.null(expand)){
-
-    bbx <- sf::st_bbox(locations) + c(-expand, -expand, expand, expand)
-  } else {
-    bbx <- sf::st_bbox(locations)
+    bbx <- bbx + c(-expand, -expand, expand, expand)
   }
 
-  bbx <- bbox_to_sf(bbx, prj = prj)
-  bbx <- sf::st_bbox(sf::st_transform(bbx, crs = ll_geo))
+  bbx_sf <- bbox_to_sf(bbx, prj = prj)
+  bbx <- sf::st_bbox(sf::st_transform(bbx_sf, crs = prj))
   bbx_coord_check <- as.numeric(bbx)
+
   if(any(!bbx_coord_check >= -180 & bbx_coord_check <= 360)){
     stop("The elevatr package requires longitude in a range from -180 to 180.")
   }
