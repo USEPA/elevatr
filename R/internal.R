@@ -287,3 +287,64 @@ relocate_sf_col_end <- function(x) {
   cols <- c(setdiff(names(x), attr(x, "sf_column")), attr(x, "sf_column"))
   x[,cols, drop = FALSE]
 }
+
+#' Get distances between successive pairs of points
+#' @inheritDotParams sf::st_distance -x -y
+#' @keywords internal
+st_point_distances <- function(x,
+                               cumulative = TRUE,
+                               units = NULL,
+                               prj = sf::st_crs(x),
+                               ...) {
+  stopifnot(
+    inherits(x, c("sfc", "sf")),
+    all(sf::st_is(x, "POINT"))
+  )
+
+  points <- x
+
+  if (inherits(x, "sf")) {
+    points <- sf::st_geometry(x)
+  }
+
+  point_list <- lapply(
+    points,
+    \(x) {
+      sf::st_sfc(x, crs = prj)
+    }
+  )
+
+  dist_points <- purrr::reduce(
+    seq_along(point_list),
+    \(x, y) {
+      if (y == length(point_list)) {
+        return(x)
+      }
+
+      c(
+        x,
+        sf::st_distance(
+          x = point_list[[y]],
+          y = point_list[[y + 1]],
+          ...
+        )
+      )
+    },
+    .init = 0
+  )
+
+  if (cumulative) {
+    dist_points <- cumsum(dist_points)
+  }
+
+  # TODO: Add handling for non character units values
+  if (!is.null(units)) {
+    dist_points <- units::set_units(
+      dist_points,
+      value = units,
+      mode = "standard"
+    )
+  }
+
+  dist_points
+}
