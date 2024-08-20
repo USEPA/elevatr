@@ -78,6 +78,11 @@ loc_length <- function(locations) {
 #' function to check and prepare input locations
 #'
 #' All input types convert to a sf data frame.
+#'
+#' @param prj A valid input to \code{\link{st_crs}} If a \code{sf}
+#'            object or a \code{terra} object is provided as the \code{locations},
+#'            the prj is optional and will be taken from \code{locations}.  This
+#'            argument is required for a \code{data.frame} of locations.
 #' @inheritParams sf::st_as_sf
 #' @param elev_col Elevation column name.
 #' @keywords internal
@@ -143,7 +148,7 @@ proj_expand <- function(locations, prj, expand = NULL) {
   single_pt <- nfeature == 1 && is.null(expand)
   bbx <- sf::st_bbox(locations)
 
-  if (any(loc_bbox[c("ymin","ymax")] == 0) && lll && is.null(expand)) {
+  if (any(bbx[c("ymin","ymax")] == 0) && lll && is.null(expand)) {
     # Edge case for lat exactly at the equator - was returning NA
     expand <- 0.01
   } else if (single_pt && lll) {
