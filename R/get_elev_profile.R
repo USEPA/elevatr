@@ -17,8 +17,8 @@
 #' nc_line <- suppressWarnings(
 #'   sf::st_cast(
 #'     sf::st_union(
-#'       st_centroid(nc[1, ]),
-#'       st_centroid(nc[2, ])
+#'       sf::st_centroid(nc[1, ]),
+#'       sf::st_centroid(nc[2, ])
 #'     ),
 #'     to = "LINESTRING"
 #'   )
