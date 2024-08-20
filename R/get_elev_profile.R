@@ -9,12 +9,12 @@
 #' @inheritParams get_elev_point
 #' @examples
 #'
-#' nc <- st_read(system.file("shape/nc.shp", package = "sf")) |>
-#'   st_transform(3857)
+#' nc <- sf::st_read(system.file("shape/nc.shp", package = "sf")) |>
+#'   sf::st_transform(3857)
 #'
 #' nc_line <- suppressWarnings(
-#'   st_cast(
-#'     st_union(
+#'   sf::st_cast(
+#'     sf::st_union(
 #'       st_centroid(nc[1, ]),
 #'       st_centroid(nc[2, ])
 #'     ),

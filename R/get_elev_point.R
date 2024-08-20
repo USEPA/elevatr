@@ -34,6 +34,11 @@
 #'            increase.
 #'            Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
 #'            for details.
+#' @param units Default: `c("meters", "feet")`. Set to "meters" by default. Any
+#'   character string that is a valid distance unit supported by
+#'   `units::set_units()`.
+#' @param elev_units_col Elevation units column.
+#' @inheritParams loc_check
 #' @return Function returns an \code{sf} object in the projection specified by
 #'         the \code{prj} argument.
 #' @export
@@ -99,7 +104,8 @@ get_elev_point <- function(locations,
   locations <- loc_check(
     locations,
     prj = prj,
-    coords = coords
+    coords = coords,
+    elev_col = elev_col
   )
 
   if (is.null(prj)) {

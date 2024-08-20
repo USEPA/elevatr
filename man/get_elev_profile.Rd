@@ -32,6 +32,10 @@ get_elev_profile(
 
 \item{sample}{numeric; a vector of numbers between 0 and 1 indicating the points to sample - if defined sample overrules n, density and type.}
 
+\item{units}{Default: \code{c("meters", "feet")}. Set to "meters" by default. Any
+character string that is a valid distance unit supported by
+\code{units::set_units()}.}
+
 \item{include}{Option of columns to include: one of "default", "dist", or
 "cumdist". Default value returns same columns as \code{\link[=get_elev_point]{get_elev_point()}}. If
 \code{include = "dist"}, the returned locations include the distance between
@@ -54,6 +58,8 @@ for \code{sf} locations.}
 \code{elev_units} columns should be overwritten.  Default is
 FALSE and \code{get_elev_point} will error if these columns
 already exist.}
+
+\item{elev_units_col}{Elevation units column.}
 }
 \description{
 Get elevation along a profile

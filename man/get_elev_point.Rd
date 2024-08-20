@@ -47,6 +47,12 @@ pixel.  Additionally, the source data changes as zoom levels
 increase.
 Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
 for details.}
+
+\item{units}{Default: \code{c("meters", "feet")}. Set to "meters" by default. Any
+character string that is a valid distance unit supported by
+\code{units::set_units()}.}
+
+\item{elev_units_col}{Elevation units column.}
 }
 \value{
 Function returns an \code{sf} object in the projection specified by

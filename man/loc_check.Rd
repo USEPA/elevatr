@@ -7,6 +7,11 @@
 loc_check(locations, prj = NULL, coords = c("x", "y"), elev_col = "elevation")
 }
 \arguments{
+\item{prj}{A valid input to \code{\link{st_crs}} If a \code{sf}
+object or a \code{terra} object is provided as the \code{locations},
+the prj is optional and will be taken from \code{locations}.  This
+argument is required for a \code{data.frame} of locations.}
+
 \item{coords}{in case of point data: names or numbers of the numeric columns holding coordinates}
 
 \item{elev_col}{Elevation column name.}
