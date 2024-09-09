@@ -22,7 +22,9 @@
 #'            of points (e.g. > 500).  The "aws" source may be quicker in these 
 #'            cases provided the points are in a similar geographic area.  The 
 #'            "aws" source downloads a DEM using \code{get_elev_raster} and then
-#'            extracts the elevation for each point. 
+#'            extracts the elevation for each point.
+#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2 
+#'             if more than two available, 1 otherwise. 
 #' @param overwrite A logical indicating that existing \code{elevation} and 
 #'                  \code{elev_units} columns should be overwritten.  Default is 
 #'                  FALSE and \code{get_elev_point} will error if these columns 
@@ -73,7 +75,8 @@
 #' mts_elev
 #' }
 #'
-get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"), 
+get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
+                           ncpu = ifelse(future::availableCores() > 2, 2, 1),
                            overwrite = FALSE, ...){
   
   # First Check for internet
@@ -98,13 +101,13 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
   
   # Pass of reprojected to epqs or aws to get data as spatialpointsdataframe
   if (src == "epqs"){
-    locations_prj <- get_epqs(locations, ...)
+    locations_prj <- get_epqs(locations, ncpu = ncpu, ...)
     units <- locations_prj[[2]]
     locations_prj <- locations_prj[[1]]
   } 
   
   if(src == "aws"){
-    locations_prj <- get_aws_points(locations, verbose = FALSE, ...)
+    locations_prj <- get_aws_points(locations, ncpu = ncpu, verbose = FALSE, ...)
     units <- locations_prj[[2]]
     locations_prj <- locations_prj[[1]]
   }
@@ -149,6 +152,8 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
 #'                  the second column is Latitude.  
 #' @param units Character string of either meters or feet. Conversions for 
 #'              'epqs' are handled by the API itself.
+#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2 
+#'             if more than two available, 1 otherwise.              
 #' @param ncpu Number of CPU's to use when downloading epqs data.
 #' @param serial Logical to determine if API should be hit in serial or in 
 #'               parallel.  TRUE will use purrr, FALSE will use furrr.
@@ -159,7 +164,7 @@ get_elev_point <- function(locations, prj = NULL, src = c("epqs", "aws"),
 #' @importFrom purrr map_dbl
 #' @keywords internal
 get_epqs <- function(locations, units = c("meters","feet"), 
-                     ncpu = future::availableCores() - 1,
+                     ncpu = ifelse(future::availableCores() > 2, 2, 1),
                      serial = NULL){
   
   ll_prj  <- "EPSG:4326"
@@ -310,16 +315,19 @@ get_epqs <- function(locations, units = c("meters","feet"),
 #' @param units Character string of either meters or feet. Conversions for 
 #'              'aws' are handled in R as the AWS terrain tiles are served in 
 #'              meters.
+#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2 
+#'             if more than two available, 1 otherwise.
 #' @param verbose Report back messages.                             
 #' @param ... Arguments to be passed to \code{get_elev_raster}
 #' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
 #'         elevation added to the data slot and a character of the elevation units
 #' @export
 #' @keywords internal
-get_aws_points <- function(locations, z = 5, units = c("meters", "feet"), 
+get_aws_points <- function(locations, z = 5, units = c("meters", "feet"),
+                           ncpu = ifelse(future::availableCores() > 2, 2, 1),
                            verbose = TRUE, ...){
   units <- match.arg(units)
-  dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
+  dem <- get_elev_raster(locations, z, ncpu = ncpu, verbose  = verbose, ...)
   dem <- methods::as(dem, "SpatRaster")
   elevation <- units::set_units(terra::extract(dem, locations)[,2], "m")
   if(units == "feet"){

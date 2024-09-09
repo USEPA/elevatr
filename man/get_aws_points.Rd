@@ -8,6 +8,7 @@ get_aws_points(
   locations,
   z = 5,
   units = c("meters", "feet"),
+  ncpu = ifelse(future::availableCores() > 2, 2, 1),
   verbose = TRUE,
   ...
 )
@@ -29,6 +30,9 @@ default value is 5 is supplied.}
 \item{units}{Character string of either meters or feet. Conversions for 
 'aws' are handled in R as the AWS terrain tiles are served in 
 meters.}
+
+\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2 
+if more than two available, 1 otherwise.}
 
 \item{verbose}{Report back messages.}
 

@@ -8,6 +8,7 @@ get_elev_point(
   locations,
   prj = NULL,
   src = c("epqs", "aws"),
+  ncpu = ifelse(future::availableCores() > 2, 2, 1),
   overwrite = FALSE,
   ...
 )
@@ -30,6 +31,9 @@ of points (e.g. > 500).  The "aws" source may be quicker in these
 cases provided the points are in a similar geographic area.  The 
 "aws" source downloads a DEM using \code{get_elev_raster} and then
 extracts the elevation for each point.}
+
+\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2 
+if more than two available, 1 otherwise.}
 
 \item{overwrite}{A logical indicating that existing \code{elevation} and 
 \code{elev_units} columns should be overwritten.  Default is 

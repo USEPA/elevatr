@@ -15,6 +15,7 @@ get_elev_raster(
   neg_to_na = FALSE,
   override_size_check = FALSE,
   tmp_dir = tempdir(),
+  ncpu = ifelse(future::availableCores() > 2, 2, 1),
   ...
 )
 }
@@ -70,6 +71,9 @@ can be overriden with this argument set to TRUE.}
 temporary location.  Alternatively, the user may supply an 
 existing path for these raster files.  New folders are not 
 created by \code{get_elev_raster}.}
+
+\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2 
+if more than two available, 1 otherwise.}
 
 \item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
 \code{config}.   See
