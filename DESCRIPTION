@@ -8,8 +8,8 @@ Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov",
              person("Alec L.", "Robitaille", role = "ctb", comment = c(ORCID = "0000-0002-4706-1762")),
              person("Marcus W.", "Beck", role = "rev", comment = c(ORCID = "0000-0002-4996-0059")),
              person("Mike", "Johnson", role = "ctb", comment = c(ORCID = "0000-0002-5288-8350")))
-URL: https://github.com/jhollist/elevatr/
-BugReports: https://github.com/jhollist/elevatr/issues/
+URL: https://github.com/usepa/elevatr/
+BugReports: https://github.com/usepa/elevatr/issues/
 Maintainer: Jeffrey Hollister <hollister.jeff@epa.gov>
 Description: Several web services are available that provide access to elevation
              data. This package provides access to many of those services and 
