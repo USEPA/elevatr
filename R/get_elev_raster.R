@@ -46,6 +46,10 @@
 #'                temporary location.  Alternatively, the user may supply an
 #'                existing path for these raster files.  New folders are not
 #'                created by \code{get_elev_raster}.
+#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2
+#'             if more than two available, 1 otherwise.
+#' @param coords Coordinate column names passed to [sf::st_as_sf()]. Defaults to
+#'               `c("x", "y")`.
 #' @param ... Extra arguments to pass to \code{httr::GET} via a named vector,
 #'            \code{config}.   See
 #'            \code{\link{get_aws_terrain}} for more details.

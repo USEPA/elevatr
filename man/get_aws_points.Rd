@@ -32,6 +32,9 @@ default value is 5 is supplied.}
 'aws' are handled in R as the AWS terrain tiles are served in
 meters.}
 
+\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2
+if more than two available, 1 otherwise.}
+
 \item{verbose}{Toggles on and off the note about units and coordinate
 reference system.}
 
