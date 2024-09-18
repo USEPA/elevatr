@@ -9,55 +9,69 @@ get_elev_point(
   prj = NULL,
   src = c("epqs", "aws"),
   ncpu = ifelse(future::availableCores() > 2, 2, 1),
+  coords = c("x", "y"),
   overwrite = FALSE,
-  ...
+  ...,
+  units = c("meters", "feet"),
+  elev_col = "elevation",
+  elev_units_col = "elev_units"
 )
 }
 \arguments{
-\item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the 
-first column and y (e.g. latitude) as the second column, a 
-\code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a 
-\code{sf} \code{POINT} or \code{MULTIPOINT} object.   
-Elevation for these points will be returned in the 
+\item{locations}{Either a \code{data.frame} with x (e.g. longitude) as the
+first column and y (e.g. latitude) as the second column, a
+\code{SpatialPoints}/\code{SpatialPointsDataFrame}, or a
+\code{sf} \code{POINT} or \code{MULTIPOINT} object.
+Elevation for these points will be returned in the
 originally supplied class.}
 
-\item{prj}{A valid input to \code{\link{st_crs}}.   This 
+\item{prj}{A valid input to \code{\link{st_crs}}.   This
 argument is required for a \code{data.frame} of locations and optional
 for \code{sf} locations.}
 
-\item{src}{A character indicating which API to use, either "epqs" or "aws" 
-accepted. The "epqs" source is relatively slow for larger numbers 
-of points (e.g. > 500).  The "aws" source may be quicker in these 
-cases provided the points are in a similar geographic area.  The 
+\item{src}{A character indicating which API to use, either "epqs" or "aws"
+accepted. The "epqs" source is relatively slow for larger numbers
+of points (e.g. > 500).  The "aws" source may be quicker in these
+cases provided the points are in a similar geographic area.  The
 "aws" source downloads a DEM using \code{get_elev_raster} and then
 extracts the elevation for each point.}
 
-\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2 
+\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2
 if more than two available, 1 otherwise.}
 
-\item{overwrite}{A logical indicating that existing \code{elevation} and 
-\code{elev_units} columns should be overwritten.  Default is 
-FALSE and \code{get_elev_point} will error if these columns 
+\item{coords}{in case of point data: names or numbers of the numeric columns holding coordinates}
+
+\item{overwrite}{A logical indicating that existing \code{elevation} and
+\code{elev_units} columns should be overwritten.  Default is
+FALSE and \code{get_elev_point} will error if these columns
 already exist.}
 
-\item{...}{Additional arguments passed to get_epqs or get_aws_points.  When 
-using "aws" as the source, pay attention to the `z` argument.  A 
-defualt of 5 is used, but this uses a raster with a large ~4-5 km 
-pixel.  Additionally, the source data changes as zoom levels 
-increase.  
-Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution} 
+\item{...}{Additional arguments passed to get_epqs or get_aws_points.  When
+using "aws" as the source, pay attention to the \code{z} argument.  A
+default of 5 is used, but this uses a raster with a large ~4-5 km
+pixel.  Additionally, the source data changes as zoom levels
+increase.
+Read \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}
 for details.}
+
+\item{units}{Default: \code{c("meters", "feet")}. Set to "meters" by default. Any
+character string that is a valid distance unit supported by
+\code{units::set_units()}.}
+
+\item{elev_col}{Elevation column name.}
+
+\item{elev_units_col}{Elevation units column.}
 }
 \value{
-Function returns an \code{sf} object in the projection specified by 
-        the \code{prj} argument.
+Function returns an \code{sf} object in the projection specified by
+the \code{prj} argument.
 }
 \description{
-This function provides access to point elevations using either the USGS 
-Elevation Point Query Service (US Only) or by extracting point elevations 
-from the AWS Terrain Tiles.  The function accepts a \code{data.frame} of x 
-(long) and y (lat) or a \code{sf} \code{POINT} or \code{MULTIPOINT} object as 
-input.  A \code{sf} \code{POINT} or \code{MULTIPOINT} object is returned with 
+This function provides access to point elevations using either the USGS
+Elevation Point Query Service (US Only) or by extracting point elevations
+from the AWS Terrain Tiles.  The function accepts a \code{data.frame} of x
+(long) and y (lat) or a \code{sf} \code{POINT} or \code{MULTIPOINT} object as
+input.  A \code{sf} \code{POINT} or \code{MULTIPOINT} object is returned with
 elevation and elevation units as an added \code{data.frame}.
 }
 \examples{
@@ -66,8 +80,8 @@ library(elevatr)
 library(sf)
 library(terra)
 
-mts <- data.frame(x = c(-71.3036, -72.8145), 
-                  y = c(44.2700, 44.5438), 
+mts <- data.frame(x = c(-71.3036, -72.8145),
+                  y = c(44.2700, 44.5438),
                   names = c("Mt. Washington", "Mt. Mansfield"))
 ll_prj <- 4326
 mts_sf <- st_as_sf(x = mts, coords = c("x", "y"), crs = ll_prj)
@@ -84,13 +98,13 @@ get_elev_point(locations = mts_raster_loc)
 
 
 # Code to split into a loop and grab point at a time.
-# This is usually faster for points that are spread apart 
- 
+# This is usually faster for points that are spread apart
+
 library(dplyr)
 
 elev <- vector("numeric", length = nrow(mts))
 for(i in seq_along(mts)){
-elev[i]<-get_elev_point(locations = mts[i,], prj = ll_prj, src = "aws", 
+elev[i]<-get_elev_point(locations = mts[i,], prj = ll_prj, src = "aws",
                         z = 10)$elevation}
 mts_elev <- cbind(mts, elev)
 mts_elev

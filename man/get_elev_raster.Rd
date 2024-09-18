@@ -16,95 +16,100 @@ get_elev_raster(
   override_size_check = FALSE,
   tmp_dir = tempdir(),
   ncpu = ifelse(future::availableCores() > 2, 2, 1),
+  coords = c("x", "y"),
   ...
 )
 }
 \arguments{
-\item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
+\item{locations}{Either a \code{data.frame} of x (long) and y (lat), an
 \code{sf}, or \code{terra} object as input.}
 
 \item{z}{The zoom level to return.  The zoom ranges from 1 to 14.  Resolution
-of the resultant raster is determined by the zoom and latitude.  For 
-details on zoom and resolution see the documentation from Mapzen at 
+of the resultant raster is determined by the zoom and latitude.  For
+details on zoom and resolution see the documentation from Mapzen at
 \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 The z is not required for the OpenTopography data sources.}
 
-\item{prj}{A valid input to \code{\link{st_crs}} If a \code{sf} 
-object or a \code{terra} object is provided as the \code{locations}, 
-the prj is optional and will be taken from \code{locations}.  This 
+\item{prj}{A valid input to \code{\link{st_crs}} If a \code{sf}
+object or a \code{terra} object is provided as the \code{locations},
+the prj is optional and will be taken from \code{locations}.  This
 argument is required for a \code{data.frame} of locations.}
 
-\item{src}{A character indicating which API to use.  Currently supports "aws" 
-and "gl3", "gl1", "alos", or "srtm15plus" from the OpenTopography API global 
+\item{src}{A character indicating which API to use.  Currently supports "aws"
+and "gl3", "gl1", "alos", or "srtm15plus" from the OpenTopography API global
 datasets. "aws" is the default.}
 
 \item{expand}{A numeric value of a distance, in map units, used to expand the
-bounding box that is used to fetch the terrain tiles. This can 
-be used for features that fall close to the edge of a tile or 
-for retrieving additional area around the feature. If the 
-feature is a single point, the area it returns will be small if 
+bounding box that is used to fetch the terrain tiles. This can
+be used for features that fall close to the edge of a tile or
+for retrieving additional area around the feature. If the
+feature is a single point, the area it returns will be small if
 clip is set to "bbox". Default is NULL.}
 
 \item{clip}{A character value used to determine clipping of returned DEM.
-The default value is "tile" which returns the full tiles.  Other 
-options are "bbox" which returns the DEM clipped to the bounding 
-box of the original locations (or expanded bounding box if used), 
-or "locations" if the spatial data (e.g. polygons) in the input 
-locations should be used to clip the DEM.  Locations are not used 
+The default value is "tile" which returns the full tiles.  Other
+options are "bbox" which returns the DEM clipped to the bounding
+box of the original locations (or expanded bounding box if used),
+or "locations" if the spatial data (e.g. polygons) in the input
+locations should be used to clip the DEM.  Locations are not used
 to clip input point datasets.  Instead the bounding box is used.}
 
-\item{verbose}{Toggles on and off the note about units and coordinate 
+\item{verbose}{Toggles on and off the note about units and coordinate
 reference system.}
 
-\item{neg_to_na}{Some of the data sources return large negative numbers as 
-missing data.  When the end result is a projected those 
-large negative numbers can vary.  When set to TRUE, only 
+\item{neg_to_na}{Some of the data sources return large negative numbers as
+missing data.  When the end result is a projected those
+large negative numbers can vary.  When set to TRUE, only
 zero and positive values are returned.  Default is FALSE.}
 
-\item{override_size_check}{Boolean to override size checks.  Any download 
+\item{override_size_check}{Boolean to override size checks.  Any download
 between 100 Mb and 500Mb report a message but
-continue.  Between 500Mb and 3000Mb requires 
+continue.  Between 500Mb and 3000Mb requires
 interaction and greater than 3000Mb fails.  These
 can be overriden with this argument set to TRUE.}
 
-\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a 
-temporary location.  Alternatively, the user may supply an 
-existing path for these raster files.  New folders are not 
+\item{tmp_dir}{The location to store downloaded raster files.  Defaults to a
+temporary location.  Alternatively, the user may supply an
+existing path for these raster files.  New folders are not
 created by \code{get_elev_raster}.}
 
-\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2 
+\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2
 if more than two available, 1 otherwise.}
 
-\item{...}{Extra arguments to pass to \code{httr::GET} via a named vector, 
+\item{coords}{Coordinate column names passed to \code{\link[sf:st_as_sf]{sf::st_as_sf()}}. Defaults to
+\code{c("x", "y")}.}
+
+\item{...}{Extra arguments to pass to \code{httr::GET} via a named vector,
 \code{config}.   See
 \code{\link{get_aws_terrain}} for more details.}
 }
 \value{
-Function returns a \code{RasterLayer} in the projection 
-        specified by the \code{prj} argument or in the projection of the 
-        provided locations.  In subsequent versions, a \code{SpatRaster}
-        will be returned.
+Function returns a \code{RasterLayer} in the projection
+specified by the \code{prj} argument or in the projection of the
+provided locations.  In subsequent versions, a \code{SpatRaster}
+will be returned.
 }
 \description{
-Several web services provide access to raster elevation. Currently, this 
-function provides access to the Amazon Web Services Terrain Tiles and the 
-Open Topography global datasets API. The function accepts a \code{data.frame} 
-of x (long) and y (lat), an \code{sf}, or \code{terra} object as input.  A 
+Several web services provide access to raster elevation. Currently, this
+function provides access to the Amazon Web Services Terrain Tiles and the
+Open Topography global datasets API. The function accepts a \code{data.frame}
+of x (long) and y (lat), an \code{sf}, or \code{terra} object as input.  A
 \code{RasterLayer} object is returned. In subsequent versions, a \code{SpatRaster}
 will be returned.
 }
 \details{
-Currently, the \code{get_elev_raster} function utilizes the 
-         Amazon Web Services 
-         (\url{https://registry.opendata.aws/terrain-tiles/}) terrain 
-         tiles and the Open Topography Global Datasets API 
-         (\url{https://opentopography.org/developers}).  
-         
-         The AWS Terrain Tiles data is provided via x, y, and z tiles (see 
-         \url{https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for 
-         details.) The x and y are determined from the bounding box of the 
-         object submitted for \code{locations} argument, and the z argument 
-         must be specified by the user.
+Currently, the \code{get_elev_raster} function utilizes the
+Amazon Web Services
+(\url{https://registry.opendata.aws/terrain-tiles/}) terrain
+tiles and the Open Topography Global Datasets API
+(\url{https://opentopography.org/developers}).
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     The AWS Terrain Tiles data is provided via x, y, and z tiles (see
+     \url{https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames} for
+     details.) The x and y are determined from the bounding box of the
+     object submitted for \code{locations} argument, and the z argument
+     must be specified by the user.
+}\if{html}{\out{</div>}}
 }
 \examples{
 \dontrun{
@@ -112,11 +117,11 @@ library(elevatr)
 library(sf)
 data(lake)
 lake_buff  <- st_buffer(lake, 1000)
-loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin, 
+loc_df <- data.frame(x = runif(6,min=sf::st_bbox(lake)$xmin,
                                max=sf::st_bbox(lake)$xmax),
-                     y = runif(6,min=sf::st_bbox(lake)$ymin, 
+                     y = runif(6,min=sf::st_bbox(lake)$ymin,
                                max=sf::st_bbox(lake)$ymax))
-                               
+
 x <- get_elev_raster(locations = loc_df, prj = st_crs(lake) , z=10)
 x <- get_elev_raster(lake, z = 14)
 x <- get_elev_raster(lake, src = "gl3", expand = 5000)

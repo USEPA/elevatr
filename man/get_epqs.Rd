@@ -8,25 +8,26 @@ get_epqs(
   locations,
   units = c("meters", "feet"),
   ncpu = ifelse(future::availableCores() > 2, 2, 1),
-  serial = NULL
+  serial = NULL,
+  elev_col = "elevation"
 )
 }
 \arguments{
-\item{locations}{A SpatialPointsDataFrame of the location(s) for which you 
-wish to return elevation. The first column is Longitude and 
+\item{locations}{A SpatialPointsDataFrame of the location(s) for which you
+wish to return elevation. The first column is Longitude and
 the second column is Latitude.}
 
-\item{units}{Character string of either meters or feet. Conversions for 
+\item{units}{Character string of either meters or feet. Conversions for
 'epqs' are handled by the API itself.}
 
 \item{ncpu}{Number of CPU's to use when downloading epqs data.}
 
-\item{serial}{Logical to determine if API should be hit in serial or in 
+\item{serial}{Logical to determine if API should be hit in serial or in
 parallel.  TRUE will use purrr, FALSE will use furrr.}
 }
 \value{
-a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with 
-        elevation added to the data slot and a character of the elevation units
+a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with
+elevation added to the data slot and a character of the elevation units
 }
 \description{
 Function for accessing elevation data from the USGS epqs

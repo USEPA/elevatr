@@ -8,7 +8,7 @@
 A sf POINT object
 }
 \description{
-This sf POINT dataset is 250 uniform random points to be used for 
+This sf POINT dataset is 250 uniform random points to be used for
 examples and tests
 }
 \keyword{datasets}

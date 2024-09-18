@@ -8,7 +8,7 @@
 SpatialPolygonDataframe with 1 lakes, each with 13 variables
 }
 \description{
-This example data is a SpatialPolygonsDataFrame 
+This example data is a SpatialPolygonsDataFrame
 of a single lake, Lake Sunapee.  Used for examples and tests.
 }
 \keyword{datasets}
