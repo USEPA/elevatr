@@ -18,9 +18,9 @@ jobs:
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: 'oldrel'}
           - {os: macos-latest, r: 'release'}
-          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          #- {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-latest, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
-          - {os: ubuntu-20.04, r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          #- {os: ubuntu-20.04, r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -58,32 +58,32 @@ jobs:
           do
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
-          
+
       - name: "Install spatial libraries on linux"
         if: runner.os == 'Linux'
         run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
-        
+
       - name: "Install spatial libraries on macOS"
         if: runner.os == 'macOS'
         run: |
           # conflicts with gfortran from r-lib/actions when linking gcc
           # rm '/usr/local/bin/gfortran'
           brew install pkg-config gdal proj geos sqlite3
-      
+
       - name: Install dependencies on windows and mac
         if: runner.os != 'Linux'
         run: |
           remotes::install_deps(dependencies = TRUE, type = "binary")
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
-        
+
       - name: Install dependencies linux
         if: runner.os == 'Linux'
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
-        
+
       - name: Set API key
         env:
           OPENTOPO_KEY: ${{ secrets.OPENTOPO }}
