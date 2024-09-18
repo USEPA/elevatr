@@ -23,11 +23,11 @@
 #'            cases provided the points are in a similar geographic area.  The
 #'            "aws" source downloads a DEM using \code{get_elev_raster} and then
 #'            extracts the elevation for each point.
-#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2
-#'             if more than two available, 1 otherwise.
-#' @param overwrite A logical indicating that existing \code{elevation} and
-#'                  \code{elev_units} columns should be overwritten.  Default is
-#'                  FALSE and \code{get_elev_point} will error if these columns
+#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2 
+#'             if more than two available, 1 otherwise. 
+#' @param overwrite A logical indicating that existing \code{elevation} and 
+#'                  \code{elev_units} columns should be overwritten.  Default is 
+#'                  FALSE and \code{get_elev_point} will error if these columns 
 #'                  already exist.
 #' @param ... Additional arguments passed to get_epqs or get_aws_points.  When
 #'            using "aws" as the source, pay attention to the `z` argument.  A
@@ -194,6 +194,8 @@ get_elev_point <- function(locations,
 #'                  the second column is Latitude.
 #' @param units Character string of either meters or feet. Conversions for
 #'              'epqs' are handled by the API itself.
+#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2 
+#'             if more than two available, 1 otherwise.              
 #' @param ncpu Number of CPU's to use when downloading epqs data.
 #' @param serial Logical to determine if API should be hit in serial or in
 #'               parallel.  TRUE will use purrr, FALSE will use furrr.

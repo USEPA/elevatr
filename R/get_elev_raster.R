@@ -133,7 +133,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
-    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand,
+    raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand, 
                                    tmp_dir = tmp_dir, ncpu = ncpu, ...)
   } else if(src %in% c("gl3", "gl1", "alos", "srtm15plus")){
     raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand,
@@ -190,12 +190,13 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #'               bounding box that is used to fetch the terrain tiles. This can
 #'               be used for features that fall close to the edge of a tile and
 #'               additional area around the feature is desired. Default is NULL.
-#' @param ncpu Number of CPU's to use when downloading aws tiles.
-#' @param serial Logical to determine if API should be hit in serial or in
-#'               parallel.  TRUE will use purrr, FALSE will use furrr.
-#' @param tmp_dir The location to store downloaded raster files.  Defaults to a
-#'                temporary location.  Alternatively, the user may supply an
-#'                existing path for these raster files.  New folders are not
+#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2 
+#'             if more than two available, 1 otherwise.  
+#' @param serial Logical to determine if API should be hit in serial or in 
+#'               parallel.  TRUE will use purrr, FALSE will use furrr. 
+#' @param tmp_dir The location to store downloaded raster files.  Defaults to a 
+#'                temporary location.  Alternatively, the user may supply an 
+#'                existing path for these raster files.  New folders are not 
 #'                created by \code{get_elev_raster}.
 #' @param ... Extra configuration parameters to be passed to httr::GET.  Common
 #'            usage is to adjust timeout.  This is done as
@@ -206,7 +207,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #' @importFrom progressr handlers progressor with_progress
 #' @keywords internal
 
-get_aws_terrain <- function(locations, z, prj, expand=NULL,
+get_aws_terrain <- function(locations, z, prj, expand=NULL, 
                             ncpu = ifelse(future::availableCores() > 2, 2, 1),
                             serial = NULL, tmp_dir = tempdir(), ...){
   # Expand (if needed) and re-project bbx to dd

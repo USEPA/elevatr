@@ -40,7 +40,8 @@ bounding box that is used to fetch the terrain tiles. This can
 be used for features that fall close to the edge of a tile and
 additional area around the feature is desired. Default is NULL.}
 
-\item{ncpu}{Number of CPU's to use when downloading aws tiles.}
+\item{ncpu}{Number of CPU's to use when downloading aws tiles. Defaults to 2 
+if more than two available, 1 otherwise.}
 
 \item{serial}{Logical to determine if API should be hit in serial or in
 parallel.  TRUE will use purrr, FALSE will use furrr.}
