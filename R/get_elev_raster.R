@@ -86,7 +86,8 @@ get_elev_raster <- function(locations, z, prj = NULL,
                             src = c("aws", "gl3", "gl1", "alos", "srtm15plus"),
                             expand = NULL, clip = c("tile", "bbox", "locations"),
                             verbose = TRUE, neg_to_na = FALSE,
-                            override_size_check = FALSE,tmp_dir = tempdir(),
+                            override_size_check = FALSE, tmp_dir = tempdir(),
+                            ncpu = ifelse(future::availableCores() > 2, 2, 1),
                             coords = c("x", "y"),
                             ...){
   # First Check for internet
@@ -129,7 +130,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
   # Pass of locations to APIs to get data as raster
   if(src == "aws") {
     raster_elev <- get_aws_terrain(locations, z, prj = prj, expand = expand,
-                                   tmp_dir = tmp_dir, ...)
+                                   tmp_dir = tmp_dir, ncpu = ncpu, ...)
   } else if(src %in% c("gl3", "gl1", "alos", "srtm15plus")){
     raster_elev <- get_opentopo(locations, src, prj = prj, expand = expand,
                                 tmp_dir = tmp_dir, ...)
@@ -153,10 +154,14 @@ get_elev_raster <- function(locations, z, prj = NULL,
   }
 
   attr(raster_elev, "sources") <- sources
-  #Returning raster for now
-  #Switch to SpatRaster in near future.
-  raster::raster(raster_elev)
 
+  if (requireNamespace("raster", quietly = TRUE)) {
+    # Return raster if raster package is installed
+    raster::raster(raster_elev)
+  } else {
+    # Otherwise return SpatRaster
+    terra::rast(raster_elev)
+  }
 }
 
 #' Get a digital elevation model from the AWS Terrain Tiles
@@ -198,7 +203,7 @@ get_elev_raster <- function(locations, z, prj = NULL,
 #' @keywords internal
 
 get_aws_terrain <- function(locations, z, prj, expand=NULL,
-                            ncpu = future::availableCores() - 1,
+                            ncpu = ifelse(future::availableCores() > 2, 2, 1),
                             serial = NULL, tmp_dir = tempdir(), ...){
   # Expand (if needed) and re-project bbx to dd
 
@@ -247,7 +252,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                              tmpfile <- tempfile(tmpdir = tmp_dir,
                                                  fileext = ".tif")
                              resp <- httr::GET(x,
-                                               httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
+                                               httr::user_agent("elevatr R package (https://github.com/usepa/elevatr)"),
                                                httr::write_disk(tmpfile,overwrite=TRUE), ...)
                              if (!grepl("image/tif", httr::http_type(resp))) {
                                stop(paste("This url:", x,"did not return a tif"), call. = FALSE)
@@ -265,7 +270,7 @@ get_aws_terrain <- function(locations, z, prj, expand=NULL,
                                     p()
                                     tmpfile <- tempfile(tmpdir = tmp_dir, fileext = ".tif")
                                     resp <- httr::GET(x,
-                                                      httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
+                                                      httr::user_agent("elevatr R package (https://github.com/usepa/elevatr)"),
                                                       httr::write_disk(tmpfile,overwrite=TRUE), ...)
                                     if (!grepl("image/tif", httr::http_type(resp))) {
                                       stop(paste("This url:", x,"did not return a tif"), call. = FALSE)
@@ -398,7 +403,7 @@ get_opentopo <- function(locations, src, prj, expand=NULL, tmp_dir = tempdir(),
 
   message("Downloading OpenTopography DEMs")
   resp <- httr::GET(url,httr::write_disk(tmpfile,overwrite=TRUE),
-                    httr::user_agent("elevatr R package (https://github.com/jhollist/elevatr)"),
+                    httr::user_agent("elevatr R package (https://github.com/usepa/elevatr)"),
                     httr::progress(), ...)
   message("")
   if (httr::http_type(resp) != "application/octet-stream") {

@@ -29,8 +29,8 @@ Description: Several web services are available that provide access to
     USGS Elevation Point Query Service
     <https://apps.nationalmap.gov/epqs/>.
 License: MIT + file LICENSE
-URL: https://github.com/jhollist/elevatr/
-BugReports: https://github.com/jhollist/elevatr/issues/
+URL: https://github.com/usepa/elevatr/
+BugReports: https://github.com/usepa/elevatr/issues/
 Depends: 
     R (>= 3.5.0)
 Imports:

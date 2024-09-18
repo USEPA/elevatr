@@ -7,7 +7,7 @@
 get_epqs(
   locations,
   units = c("meters", "feet"),
-  ncpu = future::availableCores() - 1,
+  ncpu = ifelse(future::availableCores() > 2, 2, 1),
   serial = NULL,
   elev_col = "elevation"
 )

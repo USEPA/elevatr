@@ -23,6 +23,8 @@
 #'            cases provided the points are in a similar geographic area.  The
 #'            "aws" source downloads a DEM using \code{get_elev_raster} and then
 #'            extracts the elevation for each point.
+#' @param ncpu Number of CPU's to use when downloading aws tiles. Defaults to 2
+#'             if more than two available, 1 otherwise.
 #' @param overwrite A logical indicating that existing \code{elevation} and
 #'                  \code{elev_units} columns should be overwritten.  Default is
 #'                  FALSE and \code{get_elev_point} will error if these columns
@@ -81,6 +83,7 @@
 get_elev_point <- function(locations,
                            prj = NULL,
                            src = c("epqs", "aws"),
+                           ncpu = ifelse(future::availableCores() > 2, 2, 1),
                            coords = c("x", "y"),
                            overwrite = FALSE,
                            ...,
@@ -124,6 +127,7 @@ get_elev_point <- function(locations,
   if (src == "epqs") {
     locations_prj <- get_epqs(
       locations,
+      ncpu = ncpu,
       elev_col = elev_col,
       units = units,
       ...
@@ -135,6 +139,7 @@ get_elev_point <- function(locations,
   if(src == "aws") {
     locations_prj <- get_aws_points(
       locations,
+      ncpu = ncpu,
       verbose = FALSE,
       elev_col = elev_col,
       units = units,
@@ -200,7 +205,7 @@ get_elev_point <- function(locations,
 #' @keywords internal
 get_epqs <- function(locations,
                      units = c("meters", "feet"),
-                     ncpu = future::availableCores() - 1,
+                     ncpu = ifelse(future::availableCores() > 2, 2, 1),
                      serial = NULL,
                      elev_col = "elevation") {
 
@@ -348,7 +353,7 @@ get_epqs <- function(locations,
 #' @param units Character string of either meters or feet. Conversions for
 #'              'aws' are handled in R as the AWS terrain tiles are served in
 #'              meters.
-#' @param verbose Report back messages.
+#' @inheritParams get_elev_raster
 #' @param ... Arguments to be passed to \code{get_elev_raster}
 #' @return a list with a SpatialPointsDataFrame or sf POINT or MULTIPOINT object with
 #'         elevation added to the data slot and a character of the elevation units
@@ -357,11 +362,12 @@ get_epqs <- function(locations,
 get_aws_points <- function(locations,
                            z = 5,
                            units = c("meters", "feet"),
+                           ncpu = ifelse(future::availableCores() > 2, 2, 1),
                            verbose = TRUE,
                            elev_col = "elevation",
                            ...) {
   units <- match.arg(units)
-  dem <- get_elev_raster(locations, z, verbose  = verbose, ...)
+  dem <- get_elev_raster(locations, z, ncpu = ncpu, verbose  = verbose, ...)
   dem <- methods::as(dem, "SpatRaster")
   elevation <- units::set_units(terra::extract(dem, locations)[,2], "m")
   if (units == "feet"){

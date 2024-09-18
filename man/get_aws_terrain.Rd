@@ -15,7 +15,7 @@ get_aws_terrain(
   z,
   prj,
   expand = NULL,
-  ncpu = future::availableCores() - 1,
+  ncpu = ifelse(future::availableCores() > 2, 2, 1),
   serial = NULL,
   tmp_dir = tempdir(),
   ...

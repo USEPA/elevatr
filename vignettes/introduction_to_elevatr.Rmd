@@ -1,12 +1,8 @@
 ---
-title: "Accessing elevation data in R with the elevatr package, version 1"
+title: "Introduction to elevatr"
 author: "Jeffrey W. Hollister"
 date: '`r Sys.Date()`'
-output:
-  html_document:
-    theme: readable
-    toc: yes
-    toc_float: yes
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to elevatr} 
   %\VignetteEncoding{UTF-8}

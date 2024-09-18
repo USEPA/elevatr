@@ -8,6 +8,7 @@ get_aws_points(
   locations,
   z = 5,
   units = c("meters", "feet"),
+  ncpu = ifelse(future::availableCores() > 2, 2, 1),
   verbose = TRUE,
   elev_col = "elevation",
   ...
@@ -31,7 +32,8 @@ default value is 5 is supplied.}
 'aws' are handled in R as the AWS terrain tiles are served in
 meters.}
 
-\item{verbose}{Report back messages.}
+\item{verbose}{Toggles on and off the note about units and coordinate
+reference system.}
 
 \item{...}{Arguments to be passed to \code{get_elev_raster}}
 }

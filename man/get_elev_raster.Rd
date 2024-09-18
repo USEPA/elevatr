@@ -15,6 +15,7 @@ get_elev_raster(
   neg_to_na = FALSE,
   override_size_check = FALSE,
   tmp_dir = tempdir(),
+  ncpu = ifelse(future::availableCores() > 2, 2, 1),
   coords = c("x", "y"),
   ...
 )
