@@ -14,7 +14,7 @@
 #'                  \code{sf} \code{POINT} or \code{MULTIPOINT} object.   
 #'                  Elevation for these points will be returned in the 
 #'                  originally supplied class.
-#' @param prj A valid input to \code{\link{st_crs}}.   This 
+#' @param prj A valid input to \code{\link[sf]{st_crs}}.   This 
 #'            argument is required for a \code{data.frame} of locations and optional
 #'            for \code{sf} locations.
 #' @param src A character indicating which API to use, either "epqs" or "aws" 
