@@ -29,7 +29,7 @@ details on zoom and resolution see the documentation from Mapzen at
 \url{https://github.com/tilezen/joerd/blob/master/docs/data-sources.md#what-is-the-ground-resolution}.
 The z is not required for the OpenTopography data sources.}
 
-\item{prj}{A valid input to \code{\link{st_crs}} If a \code{sf} 
+\item{prj}{A valid input to \code{\link[sf]{st_crs}} If a \code{sf} 
 object or a \code{terra} object is provided as the \code{locations}, 
 the prj is optional and will be taken from \code{locations}.  This 
 argument is required for a \code{data.frame} of locations.}

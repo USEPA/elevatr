@@ -13,7 +13,7 @@ get_opentopo(locations, src, prj, expand = NULL, tmp_dir = tempdir(), ...)
 \item{locations}{Either a \code{data.frame} of x (long) and y (lat), an 
 \code{sp}, an \code{sf}, or \code{raster} object as input.}
 
-\item{prj}{A valid input to \code{\link{st_crs}} If a \code{sf} 
+\item{prj}{A valid input to \code{\link[sf]{st_crs}} If a \code{sf} 
 object or a \code{terra} object is provided as the \code{locations}, 
 the prj is optional and will be taken from \code{locations}.  This 
 argument is required for a \code{data.frame} of locations.}

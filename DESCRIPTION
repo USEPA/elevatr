@@ -1,6 +1,6 @@
 Package: elevatr
 Title: Access Elevation Data from Various APIs
-Version: 1.0.0.9999
+Version: 0.99.1
 Authors@R: c(person("Jeffrey", "Hollister", email = "hollister.jeff@epa.gov", 
                   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9254-9740")),
              person("Tarak", "Shah", role = "ctb"),
@@ -47,4 +47,4 @@ Suggests:
     formatR,
     progress
 VignetteBuilder: knitr
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

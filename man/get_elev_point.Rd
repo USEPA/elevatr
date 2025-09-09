@@ -21,7 +21,7 @@ first column and y (e.g. latitude) as the second column, a
 Elevation for these points will be returned in the 
 originally supplied class.}
 
-\item{prj}{A valid input to \code{\link{st_crs}}.   This 
+\item{prj}{A valid input to \code{\link[sf]{st_crs}}.   This 
 argument is required for a \code{data.frame} of locations and optional
 for \code{sf} locations.}
 
