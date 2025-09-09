@@ -1,11 +1,11 @@
 
 [![R build
-status](https://github.com/jhollist/elevatr/workflows/R-CMD-check/badge.svg)](https://github.com/jhollist/elevatr/actions)
+status](https://github.com/usepa/elevatr/workflows/R-CMD-check/badge.svg)](https://github.com/usepa/elevatr/actions)
 [![](https://www.r-pkg.org/badges/version/elevatr)](https://www.r-pkg.org/pkg/elevatr)
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/elevatr)](https://www.r-pkg.org/pkg/elevatr)
 [![Codecov test
-coverage](https://codecov.io/gh/jhollist/elevatr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jhollist/elevatr?branch=main)
+coverage](https://codecov.io/gh/usepa/elevatr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/usepa/elevatr?branch=main)
 [![DOI](https://zenodo.org/badge/65325400.svg)](https://zenodo.org/badge/latestdoi/65325400)
 
 # Key information about version 0.99.0 and upcoming versions of `elevatr`
@@ -65,7 +65,7 @@ The development version (this repo) may installed with `devtools`:
 
 ``` r
 library(devtools)
-install_github("jhollist/elevatr")
+install_github("usepa/elevatr")
 ```
 
 ## Contributions and Use Cases
@@ -77,7 +77,7 @@ I will gladly add it. Here are some of the ones that I have seen. Thank
 you all!
 
 - [Michaela Mulhearn’s `rayshader` and `elevatr`
-  cheatsheet](https://github.com/jhollist/elevatr/blob/main/contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
+  cheatsheet](https://github.com/usepa/elevatr/blob/main/contributions/mulhearn_rayshader_elevatr_cheatsheet.pdf)
 - researchremora on twitter has created some amazing elevation maps
 - [Hugh Graham’s `rayvista` package uses `rayshader`, `maptiles`, and
   `elevatr` to create some cool
@@ -98,8 +98,7 @@ details.
 ## Repositories
 
 The source code for this repository is maintained at
-<https://github.com/jhollist/elevatr> which is also mirrored at
-<https://github.com/usepa/elevatr>
+<https://github.com/usepa/elevatr>.
 
 ## EPA Disclaimer
 

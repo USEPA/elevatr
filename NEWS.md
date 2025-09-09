@@ -1,8 +1,11 @@
-elevatr 1.0.0 (2024-0x-xx)
+elevatr 0.99.1 (2025-09-09)
 =============
 # API Changes
-- add argument for specifying temp directory for download files.  Allows users to specify a specific location. (Thanks, @andrew-caudillo: https://github.com/jhollist/elevatr/issues/95)
+- add argument for specifying temp directory for download files.  Allows users to specify a specific location. (Thanks, @andrew-caudillo: https://github.com/usepa/elevatr/issues/95)
 - exposed ncpu argument so user can control.  Defaults to 2 if more than 2 cores available.  Thanks to @courtiol for finding this issue and the suggestion!
+
+# CRAN Fixes
+- Resolved NOTE about package anchors in Rd files.
 
 elevatr 0.99.0 (2023-09-11)
 =============
@@ -46,7 +49,7 @@ elevatr 0.4.2 (2021-12-28)
 - The "Introduction to elevatr" vignette has been updated to include chanage reflected in version 0.4.2 and also includes a new section on accessing data from OpenTopography and details on setting the API key.
 
 # Bug Fixes
-- The epqs server was occasionally returning an empty response (see https://github.com/jhollist/elevatr/issues/29) and would error.  If that happens now, elevatr will retry up to 5 times (which usually fixes the issue).  If still an empty response after 5 tries, NA is returned and a warning is issued indicating what happened.
+- The epqs server was occasionally returning an empty response (see https://github.com/usepa/elevatr/issues/29) and would error.  If that happens now, elevatr will retry up to 5 times (which usually fixes the issue).  If still an empty response after 5 tries, NA is returned and a warning is issued indicating what happened.
 - Changing to future::plans was losing tempfiles on parallel downloads.  Moved the change back to serial plan after creation of raster.
 - Changed get_tile_xy.  My math was messing up in areas near 180/-180 longitude were trying to grab non-existent tiles.  Now using slippymath::lonlat_to_tilenum instead.
 - NA's introduced with simultaneous gdal mosaic and project.  Now uses two steps.  Solves https://stackoverflow.com/questions/67839878/gridded-dot-artifacts-in-geom-raster-plot
@@ -92,7 +95,7 @@ elevatr 0.4.0 (2021-07-19)
   WithRegards on SO for helping me find this.
 - In tests with spTransform, changed SRS_string to 
   CRS(SRS_string=paste0("EPSG:", ll_prj$epsg)).  Details in 
-  https://github.com/jhollist/elevatr/issues/56.  Thanks to rsbivand and 
+  https://github.com/usepa/elevatr/issues/56.  Thanks to rsbivand and 
   Fonteh-Bonaventure for helping me with this. 
 - Raster locations were not returning correctly, that is now fixed.
 
@@ -128,11 +131,11 @@ elevatr 0.3.3 (2021-01-08)
 ==========================
 
 # Bug Fixes
-- Rasters were not getting handled correctly by size estimation.  Thanks to @tteo for the catch (https://github.com/jhollist/elevatr/issues/37)
+- Rasters were not getting handled correctly by size estimation.  Thanks to @tteo for the catch (https://github.com/usepa/elevatr/issues/37)
 - Single point requests to Open Topography were failing.  Expands now to capture small area around single point
 - Switched to using wkt instead of proj4.  I think this will help with the more recent versions of PROJ...
 - Added rgdal_show_exportToProj4_warning=thin to options on load.  
-- Fixed https://github.com/jhollist/elevatr/issues/38.  Thanks to @cjcarlson, @ACheysson, and @jsta for helping track this one down.
+- Fixed https://github.com/usepa/elevatr/issues/38.  Thanks to @cjcarlson, @ACheysson, and @jsta for helping track this one down.
 
 elevatr 0.3.1 (2020-11-09)
 ==========================
@@ -144,8 +147,8 @@ elevatr 0.3.1 (2020-11-09)
 
 # Bug Fixes
 - Zoom levels 1 and 0 were throwing errors becuase tile selction was overzealous and was selecting tiles that existed.  Conditionals to check fo this.  Also zoom 0 returns as "image/tif", not "image/tiff" that all other levls return.  More robust checking on return type.
-- Tiles for points that fall exactly on the equator were returning NA on `get_elev_point()`.  On tile selection in `get_tilexy()` a conditional was added to check for lat == 0 and projeciton being and acceptable proj4 alias of Lat/Long.  If that is met a very small (~ 1meter) expansion to the bounding box is done.  Thanks @willgearty for the bug report <https://github.com/jhollist/elevatr/issues/25>. 
-- USGS epqs return -1000000 for areas without an elevation.  `elevatr` now converts those values to NA.  Thanks to George Moroz for the catch! <https://github.com/jhollist/elevatr/issues/24>
+- Tiles for points that fall exactly on the equator were returning NA on `get_elev_point()`.  On tile selection in `get_tilexy()` a conditional was added to check for lat == 0 and projeciton being and acceptable proj4 alias of Lat/Long.  If that is met a very small (~ 1meter) expansion to the bounding box is done.  Thanks @willgearty for the bug report <https://github.com/usepa/elevatr/issues/25>. 
+- USGS epqs return -1000000 for areas without an elevation.  `elevatr` now converts those values to NA.  Thanks to George Moroz for the catch! <https://github.com/usepa/elevatr/issues/24>
 - Updated stale sp objects.  Thank you Roger Bivand for making the update very easy!
 - Updated links to mapzen documentation.  Thanks to Alec Robitaille for the fix.
 - Sped up merging and projecting via PR from Mike Johnson.  Thanks for the contribution, Mike.
@@ -157,7 +160,7 @@ elevatr 0.2.0 (2018-11-28)
 
 # Added Functionality
 - Added point elevations from AWS.  Extract point elevations from a DEM obtained via `get_elev_raster()`.  Will likely be faster for cases with many points in a relatively small geographic area.
-- Added a clip argument to `get_elev_raster()`.  Default behavior of returning the full tiles is the same as in prior versions.  The argument expands this by allowing users to clip the resultant DEM either by the bounding box of the input locations via `clip = "bbox"` or by the locations themselves via `clip = "locations"`.  Partly inspired by https://github.com/jhollist/elevatr/issues/13.  Thanks to Michael Sumner (@mdsumner) for the inspiration.     
+- Added a clip argument to `get_elev_raster()`.  Default behavior of returning the full tiles is the same as in prior versions.  The argument expands this by allowing users to clip the resultant DEM either by the bounding box of the input locations via `clip = "bbox"` or by the locations themselves via `clip = "locations"`.  Partly inspired by https://github.com/usepa/elevatr/issues/13.  Thanks to Michael Sumner (@mdsumner) for the inspiration.     
 - Support for input simple features of the class `sf` has been added.  This is supported by coercion of the input `sf` class to a `SpatialXDataFrame`.  An `sf` object is also returned when used as the input locations for `get_elev_point`
 
 # Minor Changes
@@ -170,7 +173,7 @@ elevatr 0.2.0 (2018-11-28)
 elevatr 0.1.4 (2017-12-28)
 ==========================
 ## Bug Fixes
-- Primary change with this released is fixing a bug with the return file type on the AWS and mapzen APIs.  "tif" was changed to "tiff" and the check was stopping processing of the raster images.  Details are on <https://github.com/jhollist/elevatr/issues/17>. Thanks to the following individuals for catching this: @yipcma, @TomBor, @jslingsby.  And thanks to @vividbot for <https://github.com/jhollist/elevatr/pull/18> which provided a fix.  
+- Primary change with this released is fixing a bug with the return file type on the AWS and mapzen APIs.  "tif" was changed to "tiff" and the check was stopping processing of the raster images.  Details are on <https://github.com/usepa/elevatr/issues/17>. Thanks to the following individuals for catching this: @yipcma, @TomBor, @jslingsby.  And thanks to @vividbot for <https://github.com/usepa/elevatr/pull/18> which provided a fix.  
 - Thanks to @pascalfust for kicking me into gear to send fix to CRAN.
 - Fixed NOTE on CRAN: Packages in Imports, not imported.
     - Removed prettyunits
@@ -186,7 +189,7 @@ elevatr 0.1.2 (2017-03-13)
 - There was a typo in building the mapzen api key.  Was masked prior as a keyless access was allowed.  It no longer is and get_elev_raster was failing.  That has been fixed
 - Tests also failing due to keyless access.  Encripted key now pushed for use on travis.  Tests not run on CRAN
 - Thanks to @hrbrmstr for pointing me in the right direction on fixing the testing with an api key.
-- Also thanks to @noamross and @ropensci for maintaing <https://discuss.ropensci.org> where I found <https://discuss.ropensci.org/t/test-api-wrapping-r-packages-with-oauth-tokens/157>.  And thanks to @jennybc for wrapping all this up and provide great guidance on testing and vignettes that require a key.  That info is here: <https://rawgit.com/jennybc/googlesheets/master/vignettes/managing-auth-tokens.html#encrypting-tokens-for-hosted-continuous-integration>
+- Also thanks to @noamross and @ropensci for maintaing <https://discuss.ropensci.org> where I found <https://discuss.ropensci.org/t/test-api-wrapping-r-packages-with-oauth-tokens/157>.  And thanks to @jennybc for wrapping all this up and provide great guidance on testing and vignettes that require a key.  That info is here: <https://github.com/jennybc/googlesheets/blob/main/vignettes/managing-auth-tokens.html#encrypting-tokens-for-hosted-continuous-integration>
 
 
 elevatr 0.1.1 (2017-01-27)
@@ -201,3 +204,4 @@ elevatr 0.1.0 (2017-01-25)
 
 ## Initial CRAN Release
 - This is the initial CRAN release. Provides access to point elevation data from USGS and from Mapzen.  Provides access to raster DEM from Mapzen Terrain Tiles and AWS Terrain Tiles.
+
